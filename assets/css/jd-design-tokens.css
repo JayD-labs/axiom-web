@@ -1,0 +1,348 @@
+/*
+ * JD Design System v1.1
+ * Farbpalette + WCAG-AA-orientierte Design Tokens
+ *
+ * Nutzung:
+ *   <link rel="stylesheet" href="jd-design-tokens.css">
+ *
+ * Theme:
+ *   <html data-theme="light">
+ *   <html data-theme="dark">
+ */
+
+:root {
+  /* -------------------------------------------------
+       Brand Scale
+    ------------------------------------------------- */
+  --green-900: #032d01;
+  --green-800: #044203;
+  --green-700: #075204;
+  --green-600: #0b6406;
+  --green-500: #147a0d;
+  --green-400: #2c9625;
+  --green-300: #56b650;
+  --green-200: #8dd589;
+  --green-100: #cbeac8;
+  --green-50: #edf8ec;
+
+  /* -------------------------------------------------
+       Statusfarben
+    ------------------------------------------------- */
+  --success-light: #0f766e;
+  --success-dark: #5dd6c8;
+
+  --warning-light: #8a5a00;
+  --warning-dark: #f2c15c;
+
+  --error-light: #a93434;
+  --error-dark: #f47a7a;
+
+  --info-light: #5b4db7;
+  --info-dark: #b5a7ff;
+
+  /* -------------------------------------------------
+       Akzentfarben
+    ------------------------------------------------- */
+  --accent-warm: #b68a2e;
+  --accent-soft: #7a5c3a;
+  --accent-neutral: #7f958c;
+
+  /* -------------------------------------------------
+       Sonstige Standardwerte
+    ------------------------------------------------- */
+  --radius-sm: 0.375rem;
+  --radius-md: 0.625rem;
+  --radius-lg: 1rem;
+
+  --transition-fast: 150ms ease;
+  --transition-normal: 250ms ease;
+
+  --focus-width: 3px;
+  --focus-offset: 3px;
+}
+
+/* =====================================================
+   LIGHT MODE
+   ===================================================== */
+
+:root,
+[data-theme="light"] {
+  --color-background: #f7faf7;
+  --color-surface: #ffffff;
+  --color-surface-soft: #eef3ee;
+
+  --color-text: #162017;
+  --color-text-muted: #536154;
+
+  --color-primary: #0b6406;
+  --color-primary-hover: #075204;
+  --color-primary-active: #044203;
+  --color-on-primary: #ffffff;
+
+  --color-border-subtle: #dce5dc;
+  --color-border-control: #7a8a7c;
+
+  --color-focus-ring: #0b6406;
+  --color-focus-separator: #ffffff;
+
+  --color-success: var(--success-light);
+  --color-warning: var(--warning-light);
+  --color-error: var(--error-light);
+  --color-info: var(--info-light);
+}
+
+/* =====================================================
+   DARK MODE
+   ===================================================== */
+
+[data-theme="dark"] {
+  --color-background: #0e1110;
+  --color-surface: #151a17;
+  --color-surface-soft: #1d2420;
+
+  --color-text: #f3f7f3;
+  --color-text-muted: #b8c7b9;
+
+  --color-primary: #4bc244;
+  --color-primary-hover: #6dd267;
+  --color-primary-active: #32a82a;
+  --color-on-primary: #081108;
+
+  --color-border-subtle: #2d3631;
+  --color-border-control: #647367;
+
+  --color-focus-ring: #8dd589;
+  --color-focus-separator: #0e1110;
+
+  --color-success: var(--success-dark);
+  --color-warning: var(--warning-dark);
+  --color-error: var(--error-dark);
+  --color-info: var(--info-dark);
+}
+
+/* =====================================================
+   OPTIONALE AUTOMATISCHE DARK-MODE-ERKENNUNG
+
+   Greift nur, wenn am <html>-Element KEIN data-theme
+   gesetzt wurde.
+   ===================================================== */
+
+@media (prefers-color-scheme: dark) {
+  :root:not([data-theme]) {
+    --color-background: #0e1110;
+    --color-surface: #151a17;
+    --color-surface-soft: #1d2420;
+
+    --color-text: #f3f7f3;
+    --color-text-muted: #b8c7b9;
+
+    --color-primary: #4bc244;
+    --color-primary-hover: #6dd267;
+    --color-primary-active: #32a82a;
+    --color-on-primary: #081108;
+
+    --color-border-subtle: #2d3631;
+    --color-border-control: #647367;
+
+    --color-focus-ring: #8dd589;
+    --color-focus-separator: #0e1110;
+
+    --color-success: var(--success-dark);
+    --color-warning: var(--warning-dark);
+    --color-error: var(--error-dark);
+    --color-info: var(--info-dark);
+  }
+}
+
+/* =====================================================
+   BASIS
+   ===================================================== */
+
+html {
+  color-scheme: light dark;
+}
+
+body {
+  margin: 0;
+  background: var(--color-background);
+  color: var(--color-text);
+  font-family:
+    Inter,
+    system-ui,
+    -apple-system,
+    BlinkMacSystemFont,
+    "Segoe UI",
+    sans-serif;
+  line-height: 1.6;
+}
+
+/* =====================================================
+   TEXT
+   ===================================================== */
+
+a {
+  color: var(--color-primary);
+  text-decoration-thickness: 0.1em;
+  text-underline-offset: 0.18em;
+}
+
+a:hover {
+  color: var(--color-primary-hover);
+}
+
+.muted {
+  color: var(--color-text-muted);
+}
+
+/* =====================================================
+   SURFACES / CARDS
+   ===================================================== */
+
+.surface {
+  background: var(--color-surface);
+  color: var(--color-text);
+}
+
+.surface-soft {
+  background: var(--color-surface-soft);
+  color: var(--color-text);
+}
+
+.card {
+  background: var(--color-surface);
+  color: var(--color-text);
+  border: 1px solid var(--color-border-subtle);
+  border-radius: var(--radius-lg);
+}
+
+/* =====================================================
+   BUTTONS
+   ===================================================== */
+
+.button {
+  display: inline-flex;
+  align-items: center;
+  justify-content: center;
+
+  padding: 0.65rem 1rem;
+  border: 1px solid transparent;
+  border-radius: var(--radius-md);
+
+  font: inherit;
+  font-weight: 600;
+  cursor: pointer;
+
+  transition:
+    background-color var(--transition-fast),
+    border-color var(--transition-fast),
+    color var(--transition-fast),
+    transform var(--transition-fast);
+}
+
+.button-primary {
+  background: var(--color-primary);
+  color: var(--color-on-primary);
+}
+
+.button-primary:hover {
+  background: var(--color-primary-hover);
+}
+
+.button-primary:active {
+  background: var(--color-primary-active);
+}
+
+.button-secondary {
+  background: var(--color-surface);
+  color: var(--color-primary);
+  border-color: var(--color-primary);
+}
+
+.button-secondary:hover {
+  background: var(--color-surface-soft);
+}
+
+.button:disabled,
+.button[aria-disabled="true"] {
+  opacity: 0.55;
+  cursor: not-allowed;
+}
+
+/* =====================================================
+   FORM CONTROLS
+   ===================================================== */
+
+input,
+textarea,
+select {
+  background: var(--color-surface);
+  color: var(--color-text);
+
+  border: 1px solid var(--color-border-control);
+  border-radius: var(--radius-sm);
+
+  font: inherit;
+}
+
+::placeholder {
+  color: var(--color-text-muted);
+}
+
+/* =====================================================
+   FOKUS
+   WCAG-orientierter Dual Focus Ring
+   ===================================================== */
+
+:focus {
+  outline: none;
+}
+
+:focus-visible {
+  outline: var(--focus-width) solid var(--color-focus-ring);
+  outline-offset: var(--focus-offset);
+
+  /*
+     * Zusätzlicher Kontrastring.
+     * Dadurch bleibt der Fokus auch auf Flächen sichtbar,
+     * die dieselbe oder eine ähnliche Farbe wie der Focus Ring haben.
+     */
+  box-shadow: 0 0 0 calc(var(--focus-width) + 2px) var(--color-focus-separator);
+}
+
+/* =====================================================
+   STATUS
+   Die Farbe niemals als einziges Signal verwenden.
+   Immer zusätzlich Text, Icon oder Symbol einsetzen.
+   ===================================================== */
+
+.text-success {
+  color: var(--color-success);
+}
+
+.text-warning {
+  color: var(--color-warning);
+}
+
+.text-error {
+  color: var(--color-error);
+}
+
+.text-info {
+  color: var(--color-info);
+}
+
+/* =====================================================
+   AKZENTE
+   ===================================================== */
+
+.accent-warm {
+  color: var(--accent-warm);
+}
+
+.accent-soft {
+  color: var(--accent-soft);
+}
+
+.accent-neutral {
+  color: var(--accent-neutral);
+}
