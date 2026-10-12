@@ -1,5 +1,7 @@
-# Axiom-Katalog V1.2
+# Axiom-Katalog V1.2 – vollständige Dateien
 
-`catalogue.json` ist die maschinenlesbare Quelle der 12 Agentenrollen und aller 30 Axiom-Skills. `plugin-package.schema.json` beschreibt ausschließlich den geplanten, lokalen Axiom-Web-Exportvertrag.
+`catalogue.json` ist die maschinenlesbare Übersicht über 12 Rollen und 30 Skills. Die tatsächlichen Skills sind unter `skills/<id>/SKILL.md` versioniert. Zugehörige Referenzen und Hilfsskripte liegen in den Unterordnern. Die Orchestrator-Datei und Fach-Agenten existieren im Repository.
 
-Dieser Vertrag ist ausdrücklich **kein** ChatGPT-Plugin-Manifest, installiert nichts und enthält keine Zugangsdaten. Ein späterer ZIP-Export kann aus der Auswahl nur die referenzierten Agenten, Skills und Einstellungen erzeugen. Die endgültige Importstruktur richtet sich nach den dann tatsächlich von ChatGPT unterstützten Plugin-Paketen und Kontorechten.
+`export-manifest.json` enthält die verbindliche, überprüfbare Dateiliste für den Offline-ZIP-Export des Wizards. Bei einem Skill-Update müssen Skill-Dateien, Manifest und Tests gemeinsam aktualisiert werden. Alle 30 Skills sind im Archiv enthalten, unabhängig von den empfohlenen Rollen des gewählten Modus.
+
+Es handelt sich um **Instruktionsdateien, keine ausführbaren ChatGPT-Tools**. Das ZIP installiert keine Programme, führt keine Skripte aus, überträgt keine Auswahl an einen Drittdienst und enthält keine Tokens. Installationsskripte für Bridge oder Pi sind ausgeschlossen. `plugin-package.schema.json` ist weiterhin nur ein separater Entwurf und **kein** ChatGPT-Plugin-Manifest.

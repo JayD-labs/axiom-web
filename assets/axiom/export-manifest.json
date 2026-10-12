@@ -1,0 +1,375 @@
+{
+  "format": "axiom-web-offline-assets",
+  "version": 1,
+  "notes": "Alle 30 Skills samt unterstützenden Referenzen und 12 Agentendefinitionen. Kein ChatGPT-Plugin-Manifest oder Credential-Export.",
+  "files": [
+    {
+      "source": "assets/axiom/README.md",
+      "target": "docs/README.md"
+    },
+    {
+      "source": "assets/axiom/agents/agent-brain.md",
+      "target": "agents/agent-brain.md"
+    },
+    {
+      "source": "assets/axiom/agents/agent-calendar.md",
+      "target": "agents/agent-calendar.md"
+    },
+    {
+      "source": "assets/axiom/agents/agent-code.md",
+      "target": "agents/agent-code.md"
+    },
+    {
+      "source": "assets/axiom/agents/agent-design.md",
+      "target": "agents/agent-design.md"
+    },
+    {
+      "source": "assets/axiom/agents/agent-finance.md",
+      "target": "agents/agent-finance.md"
+    },
+    {
+      "source": "assets/axiom/agents/agent-health.md",
+      "target": "agents/agent-health.md"
+    },
+    {
+      "source": "assets/axiom/agents/agent-infrastructure.md",
+      "target": "agents/agent-infrastructure.md"
+    },
+    {
+      "source": "assets/axiom/agents/agent-learning.md",
+      "target": "agents/agent-learning.md"
+    },
+    {
+      "source": "assets/axiom/agents/agent-mail.md",
+      "target": "agents/agent-mail.md"
+    },
+    {
+      "source": "assets/axiom/agents/agent-onboarding.md",
+      "target": "agents/agent-onboarding.md"
+    },
+    {
+      "source": "assets/axiom/agents/agent-security.md",
+      "target": "agents/agent-security.md"
+    },
+    {
+      "source": "assets/axiom/catalogue.json",
+      "target": "docs/catalogue.json"
+    },
+    {
+      "source": "assets/axiom/skills.md",
+      "target": "docs/skills.md"
+    },
+    {
+      "source": "assets/axiom/skills/axiom-actions/SKILL.md",
+      "target": "skills/axiom-actions/SKILL.md"
+    },
+    {
+      "source": "assets/axiom/skills/axiom-actions/references/action-policy.yaml",
+      "target": "skills/axiom-actions/references/action-policy.yaml"
+    },
+    {
+      "source": "assets/axiom/skills/axiom-auth/SKILL.md",
+      "target": "skills/axiom-auth/SKILL.md"
+    },
+    {
+      "source": "assets/axiom/skills/axiom-automation/SKILL.md",
+      "target": "skills/axiom-automation/SKILL.md"
+    },
+    {
+      "source": "assets/axiom/skills/axiom-brain/SKILL.md",
+      "target": "skills/axiom-brain/SKILL.md"
+    },
+    {
+      "source": "assets/axiom/skills/axiom-brain/scripts/document_planner.py",
+      "target": "skills/axiom-brain/scripts/document_planner.py"
+    },
+    {
+      "source": "assets/axiom/skills/axiom-calendar/SKILL.md",
+      "target": "skills/axiom-calendar/SKILL.md"
+    },
+    {
+      "source": "assets/axiom/skills/axiom-capabilities/SKILL.md",
+      "target": "skills/axiom-capabilities/SKILL.md"
+    },
+    {
+      "source": "assets/axiom/skills/axiom-capabilities/references/capabilities-v22.yaml",
+      "target": "skills/axiom-capabilities/references/capabilities-v22.yaml"
+    },
+    {
+      "source": "assets/axiom/skills/axiom-capabilities/references/capabilities.yaml",
+      "target": "skills/axiom-capabilities/references/capabilities.yaml"
+    },
+    {
+      "source": "assets/axiom/skills/axiom-capabilities/scripts/resolve_registry.py",
+      "target": "skills/axiom-capabilities/scripts/resolve_registry.py"
+    },
+    {
+      "source": "assets/axiom/skills/axiom-career/SKILL.md",
+      "target": "skills/axiom-career/SKILL.md"
+    },
+    {
+      "source": "assets/axiom/skills/axiom-code/SKILL.md",
+      "target": "skills/axiom-code/SKILL.md"
+    },
+    {
+      "source": "assets/axiom/skills/axiom-connect/SKILL.md",
+      "target": "skills/axiom-connect/SKILL.md"
+    },
+    {
+      "source": "assets/axiom/skills/axiom-connectors/SKILL.md",
+      "target": "skills/axiom-connectors/SKILL.md"
+    },
+    {
+      "source": "assets/axiom/skills/axiom-contacts/SKILL.md",
+      "target": "skills/axiom-contacts/SKILL.md"
+    },
+    {
+      "source": "assets/axiom/skills/axiom-design/SKILL.md",
+      "target": "skills/axiom-design/SKILL.md"
+    },
+    {
+      "source": "assets/axiom/skills/axiom-documents/SKILL.md",
+      "target": "skills/axiom-documents/SKILL.md"
+    },
+    {
+      "source": "assets/axiom/skills/axiom-finance/SKILL.md",
+      "target": "skills/axiom-finance/SKILL.md"
+    },
+    {
+      "source": "assets/axiom/skills/axiom-health/SKILL.md",
+      "target": "skills/axiom-health/SKILL.md"
+    },
+    {
+      "source": "assets/axiom/skills/axiom-infrastructure/SKILL.md",
+      "target": "skills/axiom-infrastructure/SKILL.md"
+    },
+    {
+      "source": "assets/axiom/skills/axiom-learning/SKILL.md",
+      "target": "skills/axiom-learning/SKILL.md"
+    },
+    {
+      "source": "assets/axiom/skills/axiom-mail/SKILL.md",
+      "target": "skills/axiom-mail/SKILL.md"
+    },
+    {
+      "source": "assets/axiom/skills/axiom-mail/scripts/mail_policy.py",
+      "target": "skills/axiom-mail/scripts/mail_policy.py"
+    },
+    {
+      "source": "assets/axiom/skills/axiom-maintenance/SKILL.md",
+      "target": "skills/axiom-maintenance/SKILL.md"
+    },
+    {
+      "source": "assets/axiom/skills/axiom-notifications/SKILL.md",
+      "target": "skills/axiom-notifications/SKILL.md"
+    },
+    {
+      "source": "assets/axiom/skills/axiom-notifications/scripts/notification_center.py",
+      "target": "skills/axiom-notifications/scripts/notification_center.py"
+    },
+    {
+      "source": "assets/axiom/skills/axiom-onboarding/SKILL.md",
+      "target": "skills/axiom-onboarding/SKILL.md"
+    },
+    {
+      "source": "assets/axiom/skills/axiom-orchestrator/SKILL.md",
+      "target": "skills/axiom-orchestrator/SKILL.md"
+    },
+    {
+      "source": "assets/axiom/skills/axiom-orchestrator/references/agents/auth.md",
+      "target": "skills/axiom-orchestrator/references/agents/auth.md"
+    },
+    {
+      "source": "assets/axiom/skills/axiom-orchestrator/references/agents/automation.md",
+      "target": "skills/axiom-orchestrator/references/agents/automation.md"
+    },
+    {
+      "source": "assets/axiom/skills/axiom-orchestrator/references/agents/brain.md",
+      "target": "skills/axiom-orchestrator/references/agents/brain.md"
+    },
+    {
+      "source": "assets/axiom/skills/axiom-orchestrator/references/agents/calendar.md",
+      "target": "skills/axiom-orchestrator/references/agents/calendar.md"
+    },
+    {
+      "source": "assets/axiom/skills/axiom-orchestrator/references/agents/career.md",
+      "target": "skills/axiom-orchestrator/references/agents/career.md"
+    },
+    {
+      "source": "assets/axiom/skills/axiom-orchestrator/references/agents/code.md",
+      "target": "skills/axiom-orchestrator/references/agents/code.md"
+    },
+    {
+      "source": "assets/axiom/skills/axiom-orchestrator/references/agents/design.md",
+      "target": "skills/axiom-orchestrator/references/agents/design.md"
+    },
+    {
+      "source": "assets/axiom/skills/axiom-orchestrator/references/agents/finance.md",
+      "target": "skills/axiom-orchestrator/references/agents/finance.md"
+    },
+    {
+      "source": "assets/axiom/skills/axiom-orchestrator/references/agents/infrastructure.md",
+      "target": "skills/axiom-orchestrator/references/agents/infrastructure.md"
+    },
+    {
+      "source": "assets/axiom/skills/axiom-orchestrator/references/agents/learning.md",
+      "target": "skills/axiom-orchestrator/references/agents/learning.md"
+    },
+    {
+      "source": "assets/axiom/skills/axiom-orchestrator/references/agents/mail.md",
+      "target": "skills/axiom-orchestrator/references/agents/mail.md"
+    },
+    {
+      "source": "assets/axiom/skills/axiom-orchestrator/references/agents/project-manager.md",
+      "target": "skills/axiom-orchestrator/references/agents/project-manager.md"
+    },
+    {
+      "source": "assets/axiom/skills/axiom-orchestrator/references/agents/research.md",
+      "target": "skills/axiom-orchestrator/references/agents/research.md"
+    },
+    {
+      "source": "assets/axiom/skills/axiom-orchestrator/references/agents/security.md",
+      "target": "skills/axiom-orchestrator/references/agents/security.md"
+    },
+    {
+      "source": "assets/axiom/skills/axiom-orchestrator/references/core/capabilities.md",
+      "target": "skills/axiom-orchestrator/references/core/capabilities.md"
+    },
+    {
+      "source": "assets/axiom/skills/axiom-orchestrator/references/core/identity.md",
+      "target": "skills/axiom-orchestrator/references/core/identity.md"
+    },
+    {
+      "source": "assets/axiom/skills/axiom-orchestrator/references/core/orchestrator.md",
+      "target": "skills/axiom-orchestrator/references/core/orchestrator.md"
+    },
+    {
+      "source": "assets/axiom/skills/axiom-orchestrator/references/core/permissions.md",
+      "target": "skills/axiom-orchestrator/references/core/permissions.md"
+    },
+    {
+      "source": "assets/axiom/skills/axiom-orchestrator/references/core/routing.md",
+      "target": "skills/axiom-orchestrator/references/core/routing.md"
+    },
+    {
+      "source": "assets/axiom/skills/axiom-orchestrator/references/core/safety.md",
+      "target": "skills/axiom-orchestrator/references/core/safety.md"
+    },
+    {
+      "source": "assets/axiom/skills/axiom-orchestrator/references/core/status.md",
+      "target": "skills/axiom-orchestrator/references/core/status.md"
+    },
+    {
+      "source": "assets/axiom/skills/axiom-orchestrator/references/core/tool-policy.md",
+      "target": "skills/axiom-orchestrator/references/core/tool-policy.md"
+    },
+    {
+      "source": "assets/axiom/skills/axiom-orchestrator/references/docs/architecture.md",
+      "target": "skills/axiom-orchestrator/references/docs/architecture.md"
+    },
+    {
+      "source": "assets/axiom/skills/axiom-orchestrator/references/docs/first-run.md",
+      "target": "skills/axiom-orchestrator/references/docs/first-run.md"
+    },
+    {
+      "source": "assets/axiom/skills/axiom-orchestrator/references/docs/handover.md",
+      "target": "skills/axiom-orchestrator/references/docs/handover.md"
+    },
+    {
+      "source": "assets/axiom/skills/axiom-orchestrator/references/docs/infrastructure.md",
+      "target": "skills/axiom-orchestrator/references/docs/infrastructure.md"
+    },
+    {
+      "source": "assets/axiom/skills/axiom-orchestrator/references/docs/integrations.md",
+      "target": "skills/axiom-orchestrator/references/docs/integrations.md"
+    },
+    {
+      "source": "assets/axiom/skills/axiom-orchestrator/references/docs/jd-standard.md",
+      "target": "skills/axiom-orchestrator/references/docs/jd-standard.md"
+    },
+    {
+      "source": "assets/axiom/skills/axiom-orchestrator/references/docs/known-limitations.md",
+      "target": "skills/axiom-orchestrator/references/docs/known-limitations.md"
+    },
+    {
+      "source": "assets/axiom/skills/axiom-orchestrator/references/docs/mail.md",
+      "target": "skills/axiom-orchestrator/references/docs/mail.md"
+    },
+    {
+      "source": "assets/axiom/skills/axiom-orchestrator/references/docs/onboarding.md",
+      "target": "skills/axiom-orchestrator/references/docs/onboarding.md"
+    },
+    {
+      "source": "assets/axiom/skills/axiom-orchestrator/references/docs/operations.md",
+      "target": "skills/axiom-orchestrator/references/docs/operations.md"
+    },
+    {
+      "source": "assets/axiom/skills/axiom-orchestrator/references/docs/productivity.md",
+      "target": "skills/axiom-orchestrator/references/docs/productivity.md"
+    },
+    {
+      "source": "assets/axiom/skills/axiom-orchestrator/references/docs/release-checklist.md",
+      "target": "skills/axiom-orchestrator/references/docs/release-checklist.md"
+    },
+    {
+      "source": "assets/axiom/skills/axiom-orchestrator/references/docs/roadmap.md",
+      "target": "skills/axiom-orchestrator/references/docs/roadmap.md"
+    },
+    {
+      "source": "assets/axiom/skills/axiom-orchestrator/references/docs/second-brain.md",
+      "target": "skills/axiom-orchestrator/references/docs/second-brain.md"
+    },
+    {
+      "source": "assets/axiom/skills/axiom-orchestrator/references/docs/security-model.md",
+      "target": "skills/axiom-orchestrator/references/docs/security-model.md"
+    },
+    {
+      "source": "assets/axiom/skills/axiom-orchestrator/references/docs/setup.md",
+      "target": "skills/axiom-orchestrator/references/docs/setup.md"
+    },
+    {
+      "source": "assets/axiom/skills/axiom-orchestrator/references/docs/v1-contract.md",
+      "target": "skills/axiom-orchestrator/references/docs/v1-contract.md"
+    },
+    {
+      "source": "assets/axiom/skills/axiom-project-manager/SKILL.md",
+      "target": "skills/axiom-project-manager/SKILL.md"
+    },
+    {
+      "source": "assets/axiom/skills/axiom-research/SKILL.md",
+      "target": "skills/axiom-research/SKILL.md"
+    },
+    {
+      "source": "assets/axiom/skills/axiom-runtime/SKILL.md",
+      "target": "skills/axiom-runtime/SKILL.md"
+    },
+    {
+      "source": "assets/axiom/skills/axiom-security/SKILL.md",
+      "target": "skills/axiom-security/SKILL.md"
+    },
+    {
+      "source": "assets/axiom/skills/axiom-settings/SKILL.md",
+      "target": "skills/axiom-settings/SKILL.md"
+    },
+    {
+      "source": "assets/axiom/skills/axiom-state/SKILL.md",
+      "target": "skills/axiom-state/SKILL.md"
+    },
+    {
+      "source": "assets/axiom/skills/axiom-verification/SKILL.md",
+      "target": "skills/axiom-verification/SKILL.md"
+    },
+    {
+      "source": "assets/axiom/skills/axiom-workflows/SKILL.md",
+      "target": "skills/axiom-workflows/SKILL.md"
+    },
+    {
+      "source": "assets/axiom/skills/axiom-workflows/scripts/execution_guard.py",
+      "target": "skills/axiom-workflows/scripts/execution_guard.py"
+    },
+    {
+      "source": "axiom-orchestrator.md",
+      "target": "axiom-orchestrator.md"
+    }
+  ]
+}

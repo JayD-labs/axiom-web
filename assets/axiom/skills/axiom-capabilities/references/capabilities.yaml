@@ -1,0 +1,727 @@
+schema_version: 3
+defaults:
+  evidence_ttl_seconds:
+    read: 300
+    write: 60
+    destructive: 0
+    privileged: 0
+  retry_policies:
+    safe_read_retry:
+      automatic_provider_fallback: true
+      after_execution_started: true
+      max_provider_fallbacks: 1
+    no_blind_retry:
+      automatic_provider_fallback: false
+      after_execution_started: false
+      require_no_effect_evidence_before_retry: true
+    no_automatic_retry:
+      automatic_provider_fallback: false
+      after_execution_started: false
+capabilities:
+  mail.read:
+    domain: mail
+    action_class: READ
+    permission: mail:read
+    connectors:
+    - outlook
+    - gmail
+    - axiom_bridge_imap
+    preference_order:
+    - outlook
+    - gmail
+    - axiom_bridge_imap
+    runtimes:
+    - chatgpt
+    - hybrid
+    - bridge
+    verification:
+      required: true
+      method: tool_result
+    retry_policy: safe_read_retry
+    evidence_ttl_seconds: 300
+  mail.search:
+    domain: mail
+    action_class: READ
+    permission: mail:read
+    connectors:
+    - outlook
+    - gmail
+    - axiom_bridge_imap
+    preference_order:
+    - outlook
+    - gmail
+    - axiom_bridge_imap
+    runtimes:
+    - chatgpt
+    - hybrid
+    - bridge
+    verification:
+      required: true
+      method: result_set
+    retry_policy: safe_read_retry
+    evidence_ttl_seconds: 300
+  mail.draft:
+    domain: mail
+    action_class: WRITE
+    permission: mail:draft
+    connectors:
+    - outlook
+    - gmail
+    - axiom_bridge_imap
+    preference_order:
+    - outlook
+    - gmail
+    - axiom_bridge_imap
+    runtimes:
+    - chatgpt
+    - hybrid
+    - bridge
+    verification:
+      required: true
+      method: draft_reference
+    retry_policy: no_blind_retry
+    evidence_ttl_seconds: 60
+  mail.move:
+    domain: mail
+    action_class: WRITE
+    permission: mail:write
+    connectors:
+    - outlook
+    - gmail
+    - axiom_bridge_imap
+    preference_order:
+    - outlook
+    - gmail
+    - axiom_bridge_imap
+    runtimes:
+    - chatgpt
+    - hybrid
+    - bridge
+    verification:
+      required: true
+      method: post_action_state
+    retry_policy: no_blind_retry
+    evidence_ttl_seconds: 60
+  mail.archive:
+    domain: mail
+    action_class: WRITE
+    permission: mail:write
+    connectors:
+    - outlook
+    - gmail
+    - axiom_bridge_imap
+    preference_order:
+    - outlook
+    - gmail
+    - axiom_bridge_imap
+    runtimes:
+    - chatgpt
+    - hybrid
+    - bridge
+    verification:
+      required: true
+      method: post_action_state
+    retry_policy: no_blind_retry
+    evidence_ttl_seconds: 60
+  mail.mark_read:
+    domain: mail
+    action_class: WRITE
+    permission: mail:write
+    connectors:
+    - outlook
+    - gmail
+    - axiom_bridge_imap
+    preference_order:
+    - outlook
+    - gmail
+    - axiom_bridge_imap
+    runtimes:
+    - chatgpt
+    - hybrid
+    - bridge
+    verification:
+      required: true
+      method: flag_state
+    retry_policy: no_blind_retry
+    evidence_ttl_seconds: 60
+  mail.attachment.save:
+    domain: mail
+    action_class: WRITE
+    permission: mail:read
+    connectors:
+    - outlook
+    - gmail
+    - axiom_bridge_imap
+    preference_order:
+    - outlook
+    - gmail
+    - axiom_bridge_imap
+    runtimes:
+    - hybrid
+    - bridge
+    verification:
+      required: true
+      method: saved_file_metadata
+    retry_policy: no_blind_retry
+    evidence_ttl_seconds: 60
+    additional_permissions:
+    - second_brain:write
+  calendar.read:
+    domain: calendar
+    action_class: READ
+    permission: calendar:read
+    connectors:
+    - outlook_calendar
+    - google_calendar
+    - axiom_bridge_caldav
+    preference_order:
+    - outlook_calendar
+    - google_calendar
+    - axiom_bridge_caldav
+    runtimes:
+    - chatgpt
+    - hybrid
+    - bridge
+    verification:
+      required: true
+      method: tool_result
+    retry_policy: safe_read_retry
+    evidence_ttl_seconds: 300
+  calendar.create:
+    domain: calendar
+    action_class: WRITE
+    permission: calendar:write
+    connectors:
+    - outlook_calendar
+    - google_calendar
+    - axiom_bridge_caldav
+    preference_order:
+    - outlook_calendar
+    - google_calendar
+    - axiom_bridge_caldav
+    runtimes:
+    - chatgpt
+    - hybrid
+    - bridge
+    verification:
+      required: true
+      method: created_object
+    retry_policy: no_blind_retry
+    evidence_ttl_seconds: 60
+  calendar.update:
+    domain: calendar
+    action_class: WRITE
+    permission: calendar:write
+    connectors:
+    - outlook_calendar
+    - google_calendar
+    - axiom_bridge_caldav
+    preference_order:
+    - outlook_calendar
+    - google_calendar
+    - axiom_bridge_caldav
+    runtimes:
+    - chatgpt
+    - hybrid
+    - bridge
+    verification:
+      required: true
+      method: post_action_state
+    retry_policy: no_blind_retry
+    evidence_ttl_seconds: 60
+  calendar.delete:
+    domain: calendar
+    action_class: DESTRUCTIVE
+    permission: calendar:delete
+    connectors:
+    - outlook_calendar
+    - google_calendar
+    - axiom_bridge_caldav
+    preference_order:
+    - outlook_calendar
+    - google_calendar
+    - axiom_bridge_caldav
+    runtimes:
+    - chatgpt
+    - hybrid
+    - bridge
+    verification:
+      required: true
+      method: absence
+    retry_policy: no_automatic_retry
+    evidence_ttl_seconds: 0
+  files.read:
+    domain: files
+    action_class: READ
+    permission: files:read
+    connectors:
+    - chatgpt_files
+    - remote_desktop_commander
+    - axiom_bridge
+    preference_order:
+    - chatgpt_files
+    - remote_desktop_commander
+    - axiom_bridge
+    runtimes:
+    - chatgpt
+    - hybrid
+    - bridge
+    verification:
+      required: true
+      method: content_or_metadata
+    retry_policy: safe_read_retry
+    evidence_ttl_seconds: 300
+  files.search:
+    domain: files
+    action_class: READ
+    permission: files:read
+    connectors:
+    - chatgpt_files
+    - remote_desktop_commander
+    - axiom_bridge
+    preference_order:
+    - chatgpt_files
+    - remote_desktop_commander
+    - axiom_bridge
+    runtimes:
+    - chatgpt
+    - hybrid
+    - bridge
+    verification:
+      required: true
+      method: result_set
+    retry_policy: safe_read_retry
+    evidence_ttl_seconds: 300
+  files.write:
+    domain: files
+    action_class: WRITE
+    permission: files:write
+    connectors:
+    - chatgpt_files
+    - remote_desktop_commander
+    - axiom_bridge
+    preference_order:
+    - chatgpt_files
+    - remote_desktop_commander
+    - axiom_bridge
+    runtimes:
+    - chatgpt
+    - hybrid
+    - bridge
+    verification:
+      required: true
+      method: read_back_or_metadata
+    retry_policy: no_blind_retry
+    evidence_ttl_seconds: 60
+  files.move:
+    domain: files
+    action_class: WRITE
+    permission: files:write
+    connectors:
+    - remote_desktop_commander
+    - axiom_bridge
+    preference_order:
+    - remote_desktop_commander
+    - axiom_bridge
+    runtimes:
+    - hybrid
+    - bridge
+    verification:
+      required: true
+      method: destination_state
+    retry_policy: no_blind_retry
+    evidence_ttl_seconds: 60
+  files.delete:
+    domain: files
+    action_class: DESTRUCTIVE
+    permission: files:delete
+    connectors:
+    - remote_desktop_commander
+    - axiom_bridge
+    preference_order:
+    - remote_desktop_commander
+    - axiom_bridge
+    runtimes:
+    - hybrid
+    - bridge
+    verification:
+      required: true
+      method: absence
+    retry_policy: no_automatic_retry
+    evidence_ttl_seconds: 0
+  second_brain.read:
+    domain: second_brain
+    action_class: READ
+    permission: second_brain:read
+    connectors:
+    - remote_desktop_commander
+    - axiom_bridge
+    preference_order:
+    - remote_desktop_commander
+    - axiom_bridge
+    runtimes:
+    - hybrid
+    - bridge
+    verification:
+      required: true
+      method: content_or_metadata
+    retry_policy: safe_read_retry
+    evidence_ttl_seconds: 300
+  second_brain.search:
+    domain: second_brain
+    action_class: READ
+    permission: second_brain:read
+    connectors:
+    - remote_desktop_commander
+    - axiom_bridge
+    preference_order:
+    - remote_desktop_commander
+    - axiom_bridge
+    runtimes:
+    - hybrid
+    - bridge
+    verification:
+      required: true
+      method: result_set
+    retry_policy: safe_read_retry
+    evidence_ttl_seconds: 300
+  second_brain.extract_text:
+    domain: second_brain
+    action_class: READ
+    permission: second_brain:read
+    connectors:
+    - remote_desktop_commander
+    - axiom_bridge
+    preference_order:
+    - remote_desktop_commander
+    - axiom_bridge
+    runtimes:
+    - hybrid
+    - bridge
+    verification:
+      required: true
+      method: extracted_content
+    retry_policy: safe_read_retry
+    evidence_ttl_seconds: 300
+  second_brain.write:
+    domain: second_brain
+    action_class: WRITE
+    permission: second_brain:write
+    connectors:
+    - remote_desktop_commander
+    - axiom_bridge
+    preference_order:
+    - remote_desktop_commander
+    - axiom_bridge
+    runtimes:
+    - hybrid
+    - bridge
+    verification:
+      required: true
+      method: read_back_or_metadata
+    retry_policy: no_blind_retry
+    evidence_ttl_seconds: 60
+  second_brain.organize:
+    domain: second_brain
+    action_class: WRITE
+    permission: second_brain:write
+    connectors:
+    - remote_desktop_commander
+    - axiom_bridge
+    preference_order:
+    - remote_desktop_commander
+    - axiom_bridge
+    runtimes:
+    - hybrid
+    - bridge
+    verification:
+      required: true
+      method: destination_state
+    retry_policy: no_blind_retry
+    evidence_ttl_seconds: 60
+  server.status:
+    domain: server
+    action_class: READ
+    permission: server:read
+    connectors:
+    - remote_desktop_commander
+    - axiom_bridge
+    preference_order:
+    - remote_desktop_commander
+    - axiom_bridge
+    runtimes:
+    - hybrid
+    - bridge
+    verification:
+      required: true
+      method: tool_result
+    retry_policy: safe_read_retry
+    evidence_ttl_seconds: 300
+  server.logs:
+    domain: server
+    action_class: READ
+    permission: server:read
+    connectors:
+    - remote_desktop_commander
+    - axiom_bridge
+    preference_order:
+    - remote_desktop_commander
+    - axiom_bridge
+    runtimes:
+    - hybrid
+    - bridge
+    verification:
+      required: true
+      method: tool_result
+    retry_policy: safe_read_retry
+    evidence_ttl_seconds: 300
+  server.disk_usage:
+    domain: server
+    action_class: READ
+    permission: server:read
+    connectors:
+    - remote_desktop_commander
+    - axiom_bridge
+    preference_order:
+    - remote_desktop_commander
+    - axiom_bridge
+    runtimes:
+    - hybrid
+    - bridge
+    verification:
+      required: true
+      method: tool_result
+    retry_policy: safe_read_retry
+    evidence_ttl_seconds: 300
+  docker.list:
+    domain: server
+    action_class: READ
+    permission: server:read
+    connectors:
+    - remote_desktop_commander
+    - axiom_bridge
+    preference_order:
+    - remote_desktop_commander
+    - axiom_bridge
+    runtimes:
+    - hybrid
+    - bridge
+    verification:
+      required: true
+      method: result_set
+    retry_policy: safe_read_retry
+    evidence_ttl_seconds: 300
+  docker.logs:
+    domain: server
+    action_class: READ
+    permission: server:read
+    connectors:
+    - remote_desktop_commander
+    - axiom_bridge
+    preference_order:
+    - remote_desktop_commander
+    - axiom_bridge
+    runtimes:
+    - hybrid
+    - bridge
+    verification:
+      required: true
+      method: tool_result
+    retry_policy: safe_read_retry
+    evidence_ttl_seconds: 300
+  backup.status:
+    domain: server
+    action_class: READ
+    permission: server:read
+    connectors:
+    - remote_desktop_commander
+    - axiom_bridge
+    preference_order:
+    - remote_desktop_commander
+    - axiom_bridge
+    runtimes:
+    - hybrid
+    - bridge
+    verification:
+      required: true
+      method: snapshot_metadata
+    retry_policy: safe_read_retry
+    evidence_ttl_seconds: 300
+  server.exec:
+    domain: server
+    action_class: PRIVILEGED
+    permission: server:exec
+    connectors:
+    - remote_desktop_commander
+    - axiom_bridge
+    preference_order:
+    - remote_desktop_commander
+    - axiom_bridge
+    runtimes:
+    - hybrid
+    - bridge
+    verification:
+      required: true
+      method: exit_status_or_effect
+    retry_policy: no_automatic_retry
+    evidence_ttl_seconds: 0
+  git.read:
+    domain: git
+    action_class: READ
+    permission: git:read
+    connectors:
+    - github
+    preference_order:
+    - github
+    runtimes:
+    - chatgpt
+    - hybrid
+    - bridge
+    verification:
+      required: true
+      method: tool_result
+    retry_policy: safe_read_retry
+    evidence_ttl_seconds: 300
+  git.write:
+    domain: git
+    action_class: WRITE
+    permission: git:write
+    connectors:
+    - github
+    preference_order:
+    - github
+    runtimes:
+    - chatgpt
+    - hybrid
+    - bridge
+    verification:
+      required: true
+      method: resulting_object_or_ref
+    retry_policy: no_blind_retry
+    evidence_ttl_seconds: 60
+  web.search:
+    domain: web
+    action_class: READ
+    permission: web:read
+    connectors:
+    - chatgpt_web
+    preference_order:
+    - chatgpt_web
+    runtimes:
+    - chatgpt
+    - hybrid
+    - bridge
+    verification:
+      required: true
+      method: sourced_result
+    retry_policy: safe_read_retry
+    evidence_ttl_seconds: 300
+  automation.create:
+    domain: automation
+    action_class: EXTERNAL_ACTION
+    permission: automation:write
+    connectors:
+    - chatgpt_automations
+    preference_order:
+    - chatgpt_automations
+    runtimes:
+    - chatgpt
+    - hybrid
+    - bridge
+    verification:
+      required: true
+      method: automation_reference
+    retry_policy: no_automatic_retry
+    evidence_ttl_seconds: 0
+  automation.update:
+    domain: automation
+    action_class: EXTERNAL_ACTION
+    permission: automation:write
+    connectors:
+    - chatgpt_automations
+    preference_order:
+    - chatgpt_automations
+    runtimes:
+    - chatgpt
+    - hybrid
+    - bridge
+    verification:
+      required: true
+      method: post_action_state
+    retry_policy: no_automatic_retry
+    evidence_ttl_seconds: 0
+  finance.read:
+    domain: finance
+    action_class: READ
+    permission: finance:read
+    connectors:
+    - chatgpt_files
+    - remote_desktop_commander
+    preference_order:
+    - chatgpt_files
+    - remote_desktop_commander
+    runtimes:
+    - chatgpt
+    - hybrid
+    verification:
+      required: true
+      method: source_reference
+    retry_policy: safe_read_retry
+    evidence_ttl_seconds: 300
+  contacts.search:
+    domain: contacts
+    action_class: READ
+    permission: contacts:read
+    connectors:
+    - axiom_bridge_carddav
+    preference_order:
+    - axiom_bridge_carddav
+    runtimes:
+    - bridge
+    verification:
+      required: true
+      method: result_set
+    retry_policy: safe_read_retry
+    evidence_ttl_seconds: 300
+  state.read:
+    domain: state
+    action_class: READ
+    permission: state:read
+    connectors:
+    - product_memory
+    - remote_desktop_commander
+    - axiom_bridge
+    preference_order:
+    - product_memory
+    - remote_desktop_commander
+    - axiom_bridge
+    runtimes:
+    - chatgpt
+    - hybrid
+    - bridge
+    verification:
+      required: true
+      method: content_or_metadata
+    retry_policy: safe_read_retry
+    evidence_ttl_seconds: 300
+  state.write:
+    domain: state
+    action_class: WRITE
+    permission: state:write
+    connectors:
+    - product_memory
+    - remote_desktop_commander
+    - axiom_bridge
+    preference_order:
+    - product_memory
+    - remote_desktop_commander
+    - axiom_bridge
+    runtimes:
+    - chatgpt
+    - hybrid
+    - bridge
+    verification:
+      required: true
+      method: read_back_or_metadata
+    retry_policy: no_blind_retry
+    evidence_ttl_seconds: 60

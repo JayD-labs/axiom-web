@@ -37,4 +37,4 @@ Dies ist die lesbare Fassung des maschinenlesbaren Katalogs. Alle 30 Einträge s
 
 ## Verwendung im zukünftigen Paket
 
-Ein künftiger, lokaler ZIP-Generator liest nur `catalogue.json`, löst die Agent-zu-Skill-Zuordnung auf und schreibt die gewählten Markdown-Anweisungen sowie eine secret-freie Konfiguration in ein Axiom-eigenes Paket. Er darf kein Plugin-Manifest für ChatGPT erfinden, keinen Connector konfigurieren und keine Zugangsdaten übernehmen.
+Der Wizard lädt beim ZIP-Klick die Dateien aus `export-manifest.json` und erstellt lokal das ZIP. Es enthält **alle 30 Skill-Inhalte**, ihre Referenzen, Agenten-Definitionen und eine secret-freie Konfiguration. Das ZIP ist kein ChatGPT-Plugin-Manifest; Connectoren und Berechtigungen müssen separat autorisiert und geprüft werden.

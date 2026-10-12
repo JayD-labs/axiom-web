@@ -215,11 +215,19 @@ Die Skillmatrix steht in [`assets/axiom/skills.md`](assets/axiom/skills.md), die
 4. Für eine automatische Wizard-Auswahl die Regel in `assets/js/agent-catalogue.js` ergänzen.
 5. Tests aktualisieren und ausführen. Keine Tool-, Connector- oder Installationsbehauptung ohne reale Integration hinzufügen.
 
-### Geplanter privater Plugin-Export
+### Vollständiger Offline-ZIP-Export
 
-V1.2 erstellt **noch keine ZIP-Datei**. `assets/axiom/plugin-package.schema.json` ist ein bewusst als Entwurf markierter, Axiom-eigener Vertrag für einen späteren lokalen Export. Er ist **kein ChatGPT-Manifest** und wird nicht als ChatGPT-importierbar ausgegeben.
+Im fünften Wizard-Schritt kann man **`axiom-setup-v1.2.zip`** herunterladen. Das Paket enthält tatsächlich:
+- **30 originale Skill-Hauptdateien** (`skills/axiom-*/SKILL.md`) aus dem Axiom-Plugin.
+- **12 Agentendefinitionen** (Orchestrator plus 11 Fach-Agenten).
+- Die Referenz-Markdown-Dateien des Orchestrators, Capability-/Action-Policies und kleine Hilfsskripte aus den Skills.
+- `setup.md`, `setup.json` und `package-files.json` sowie einen Paket-README.
 
-Ein künftiger Generator darf nur die gewählten Markdown-Anweisungen, Skill-IDs und secret-freie Einstellungen bündeln. Ob, wie und für welches Konto daraus ein privates ChatGPT-Plugin/App-Paket entsteht, wird erst anhand des dann aktuellen ChatGPT Plugin Creators, der Kontoberechtigungen und der offiziellen Dokumentation implementiert. MCP-Verbindungen, OAuth, Tunnel und API-Schlüssel bleiben außerhalb der ZIP und werden separat minimalberechtigt eingerichtet.
+Quelle: `assets/axiom/export-manifest.json` listet jede erlaubte öffentliche Datei und ihren ZIP-Zielpfad. Der Wizard lädt diese Dateien **erst beim ZIP-Klick über dieselbe Website** und erstellt ohne CDN und ohne externen ZIP-Service ein UTF-8-ZIP mit CRC32 lokal im Browser. Fehlende Dateien brechen den Export vollständig ab. Die Auswahl bleibt im lokalen Arbeitsspeicher, sie wird nicht hochgeladen.
+
+Alle 30 Skills sind bewusst enthalten, auch wenn für die gewählte Betriebsart im Konfigurationsleitfaden nur bestimmte Rollen vorgeschlagen werden. Fachrollen sind Anweisungen, keine unabhängigen Agentenprozesse; Referenzskripte werden nicht automatisch ausgeführt. Installationsskripte für Pi/Bridge werden bewusst **nicht** eingepackt.
+
+**Wichtig:** Dies ist ein Axiom-eigenes Offline-Paket, kein direkt installierbares ChatGPT-App- oder Plugin-Manifest. Es richtet keine Drittanbieter-Connectoren, MCP-Server, OAuth-Verbindungen oder Rechte ein. `plugin-package.schema.json` dokumentiert weiterhin einen gesonderten, nicht implementierten Importentwurf.
 
 ## Projektarchitektur
 
@@ -234,6 +242,8 @@ axiom-web/
     │   ├── agents/              # Versionierte Rollenbeschreibungen
     │   ├── catalogue.json       # Maschinenlesbare 12 Rollen / 30 Skills
     │   ├── skills.md            # Lesbare Skillmatrix
+    │   ├── skills/              # 30 SKILL.md + Referenzen/Skripte
+    │   ├── export-manifest.json # 92 öffentliche Paketdateien
     │   └── plugin-package.schema.json
     ├── css/
     │   ├── jd-design-tokens.css
@@ -260,7 +270,7 @@ axiom-web/
 | `assets/js/setup-content.js` | ChatGPT-Pläne, Betriebsarten, Integrations- und Kombinationstexte (`window.AxiomGuide`) |
 | `assets/js/agent-catalogue.js` | Lokale Regelauflösung Betriebsart/App → Rollen und Skills |
 | `assets/js/setup-wizard-data.js` | Hardware-Daten, Kompatibilitätsprüfung und Leitfadenerzeugung (`window.AxiomWizardRules`) |
-| `assets/js/setup-export.js` | Lokaler testbarer JSON- und Markdown-Export |
+| `assets/js/setup-export.js` | Lokaler JSON-, Markdown- und vollständiger ZIP-Export (CRC32, ohne externe Bibliothek) |
 | `assets/js/setup.js` | Browserzustand, Geräterollen, Navigation und Download |
 | `assets/axiom/catalogue.json` | Versioniertes, maschinenlesbares Agenten-/Skill-Inventar |
 | `CNAME` | Custom Domain für GitHub Pages |
@@ -369,11 +379,11 @@ Die Node-Tests sind keine ausgeführten Browser-End-to-End-Tests. **Echte Browse
 
 ## Projektstatus und Roadmap
 
-**Bereits umgesetzt:** Projektwebsite, Setup Wizard V1.2, Hardware-Mehrfachauswahl mit Geräterollen, Node-Testmatrix und GitHub Actions, kontextabhängige Kompatibilitätsregeln, vier auswählbare ChatGPT-App-/Plugin-Kategorien, lokale Rollen-/Skill-Auswahl, responsive Gestaltung sowie JSON- und Markdown-Export.
+**Bereits umgesetzt:** Projektwebsite, Setup Wizard V1.2, Hardware-Mehrfachauswahl mit Geräterollen, Node-Testmatrix und GitHub Actions, kontextabhängige Kompatibilitätsregeln, vier auswählbare ChatGPT-App-/Plugin-Kategorien, lokale Rollen-/Skill-Auswahl, responsive Gestaltung sowie JSON-, Markdown- und Offline-ZIP-Export.
 
 **Noch nicht fertig / öffentlich verfügbar:**
 
-- Vollständig implementierter ZIP-Generator und eine anhand der aktuellen ChatGPT-Plugin-Anforderungen verifizierte Importstrecke.
+- Eine anhand der aktuellen ChatGPT-Plugin-Anforderungen verifizierte automatische ChatGPT-Importstrecke (der ZIP-Generator ist umgesetzt).
 - Automatische Serverinstallation, MCP-Kopplung oder Berechtigungsfreigabe.
 - Vollständiger unabhängiger Axiom-KI-Client mit mitgeliefertem lokalem Modell.
 - Automatisierte Browser-End-to-End- und visuelle Responsive-Tests.

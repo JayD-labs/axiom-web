@@ -146,10 +146,12 @@
             <section class="wizard-result-section"><h4>Noch nicht öffentlich verfügbar</h4><ul id="wizard-result-unavailable"></ul></section>
             <section class="wizard-result-section"><h4>Offizielle Dokumentation</h4><ul id="wizard-result-docs"></ul></section>
             <div class="wizard-export-actions">
-              <button type="button" class="btn primary" id="wizard-json">JSON lokal exportieren ↓</button>
+              <button type="button" class="btn primary" id="wizard-zip">Komplettes Axiom-Paket (.zip) herunterladen ↓</button>
+              <button type="button" class="btn" id="wizard-json">JSON lokal exportieren ↓</button>
               <button type="button" class="btn" id="wizard-markdown">Markdown-Anleitung exportieren ↓</button>
             </div>
-            <p class="export-info">Beide Dateien werden ausschließlich auf deinen ausdrücklichen Klick hin lokal im Browser erzeugt. Es werden weder Konten verbunden noch Software installiert.</p>
+            <p id="wizard-zip-status" class="export-info" role="status" aria-live="polite">Das ZIP enthält alle 30 echten Axiom-Skills, Agenten-/Orchestrator-Dateien und deine Konfiguration. Die benötigten öffentlichen Dateien werden erst beim Klick von dieser Website geladen und lokal als ZIP zusammengesetzt.</p>
+            <p class="export-info">Diese Downloads richten keine Connectoren oder ChatGPT-Plugins ein und enthalten keine Anmeldedaten.</p>
           </div>
           <aside id="wizard-context" class="wizard-context" aria-label="Informationen zur aktuellen Auswahl">
             <div class="smalllabel">Zu deiner Auswahl</div>

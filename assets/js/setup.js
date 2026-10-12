@@ -268,6 +268,61 @@
     a.remove();
     setTimeout(function () { URL.revokeObjectURL(url); }, 1000);
   };
+
+  // The ZIP is built solely in the browser from versioned same-origin public files.
+  // Refuse partial downloads: every asset must be fetched and validated.
+  $("wizard-zip").addEventListener("click", async function () {
+    const button = $("wizard-zip");
+    const status = $("wizard-zip-status");
+    button.disabled = true;
+    status.textContent = "Axiom-Dateien werden von dieser Website geladen und lokal gepackt …";
+    try {
+      const indexResponse = await fetch("./assets/axiom/export-manifest.json", {cache:"no-store"});
+      if (!indexResponse.ok) throw new Error("Paket-Manifest nicht erreichbar (" + indexResponse.status + ").");
+      const manifest = await indexResponse.json();
+      if (manifest.format !== "axiom-web-offline-assets" || manifest.version !== 1 ||
+          !Array.isArray(manifest.files) || manifest.files.length < 42 || manifest.files.length > 300) {
+        throw new Error("Ungültiges oder unvollständiges Paket-Manifest.");
+      }
+      const assets = new Array(manifest.files.length);
+      const sources = new Set(), targets = new Set();
+      for (const item of manifest.files) {
+        if (!item || typeof item.source !== "string" || typeof item.target !== "string" ||
+            !(/^(assets\/axiom\/|axiom-orchestrator\.md$)/.test(item.source)) ||
+            !/^[A-Za-z0-9._/-]+$/.test(item.source) ||
+            !/^[A-Za-z0-9._/-]+$/.test(item.target) ||
+            item.source.split("/").includes("..") || item.target.split("/").includes("..") ||
+            sources.has(item.source) || targets.has(item.target)) {
+          throw new Error("Ungültiger oder doppelter Dateipfad im Paket-Manifest.");
+        }
+        sources.add(item.source); targets.add(item.target);
+      }
+      let next = 0;
+      async function loadWorker() {
+        while (next < manifest.files.length) {
+          const position = next++;
+          const item = manifest.files[position];
+          const response = await fetch("./" + item.source);
+          if (!response.ok) throw new Error("Paketdatei nicht erreichbar: " + item.source);
+          assets[position] = {target:item.target, content:await response.text()};
+        }
+      }
+      await Promise.all(Array.from({length:6}, loadWorker));
+      const guide = rules.buildGuide(getConfig(), catalogue);
+      const archive = window.AxiomWizardExport.zip(guide, assets);
+      const blob = new Blob([archive], {type:"application/zip"});
+      const url = URL.createObjectURL(blob);
+      const anchor = element("a");
+      anchor.href = url; anchor.download = "axiom-setup-v1.2.zip";
+      document.body.append(anchor); anchor.click(); anchor.remove();
+      setTimeout(function () {URL.revokeObjectURL(url);}, 1000);
+      status.textContent = "ZIP erstellt: 30 Skills, Agentendateien, Referenzen und deine Setup-Konfiguration.";
+    } catch (error) {
+      status.textContent = "ZIP konnte nicht erstellt werden: " + (error && error.message ? error.message : "Unbekannter Fehler.") + " Es wurde kein unvollständiges Archiv heruntergeladen.";
+    } finally {
+      button.disabled = false;
+    }
+  });
   $("wizard-json").addEventListener("click", function () { download("json"); });
   $("wizard-markdown").addEventListener("click", function () { download("md"); });
   refresh();

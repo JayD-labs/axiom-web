@@ -1,0 +1,39 @@
+schema_version: 1
+base_registry: capabilities.yaml
+# This is an additive/connector-mapping overlay. It never grants permissions.
+additions:
+  mail.folders.read:
+    domain: mail
+    action_class: READ
+    permission: mail:read
+    connectors: [outlook]
+    preference_order: [outlook]
+    runtimes: [chatgpt, hybrid]
+    verification: {required: true, method: result_set}
+    retry_policy: safe_read_retry
+    evidence_ttl_seconds: 300
+  mail.drafts.search:
+    domain: mail
+    action_class: READ
+    permission: mail:read
+    connectors: [outlook]
+    preference_order: [outlook]
+    runtimes: [chatgpt, hybrid]
+    verification: {required: true, method: result_set}
+    retry_policy: safe_read_retry
+    evidence_ttl_seconds: 300
+  automation.list:
+    domain: automation
+    action_class: READ
+    permission: automation:read
+    connectors: [chatgpt_automations]
+    preference_order: [chatgpt_automations]
+    runtimes: [chatgpt, hybrid, bridge]
+    verification: {required: true, method: result_set}
+    retry_policy: safe_read_retry
+    evidence_ttl_seconds: 300
+connector_mappings:
+  contacts.search:
+    connectors: [outlook_contacts, axiom_bridge_carddav]
+    preference_order: [outlook_contacts, axiom_bridge_carddav]
+    runtimes: [chatgpt, hybrid, bridge]

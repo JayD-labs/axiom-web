@@ -95,7 +95,7 @@ function createBrowser() {
     "wizard-integration-guides","wizard-integration-title","wizard-context",
     "wizard-context-title","wizard-context-detail","wizard-context-status",
     "wizard-context-notes","wizard-back","wizard-next","wizard-current",
-    "wizard-progress","wizard-json","wizard-markdown","wizard-step-markers"
+    "wizard-progress","wizard-json","wizard-markdown","wizard-zip","wizard-zip-status","wizard-step-markers"
   ];
   for (const id of ids) {
     const el = new Element("div"); el.id = id; doc.body.append(el);
