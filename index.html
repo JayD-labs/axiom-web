@@ -66,73 +66,97 @@
     <section id="setup" class="section">
       <div class="wrap">
         <div class="sectiontop setupintro">
-          <div class="eyebrow">Interaktiver Entwurf</div>
-          <h2>Finde dein Axiom-Setup.</h2>
-          <p>Wähle aus, was du nutzen möchtest. Deine Auswahl wird nur hier im Browser verarbeitet. Kein Login, kein Absenden an einen Server.</p>
+          <div class="eyebrow">Interaktiver Setup Wizard V1.0</div>
+          <h2>Richte Axiom nach deinen Möglichkeiten ein.</h2>
+          <p>Vier Entscheidungen, eine individuelle Anleitung. Alle Berechnungen bleiben in deinem Browser; es wird nichts übertragen.</p>
         </div>
-        <div class="setup setupgrid">
-          <div>
-            <label for="plan">Dein KI-Dienst oder ChatGPT-Plan</label>
-            <select id="plan">
-              <option value="free">ChatGPT Free</option>
-              <option value="plus" selected>ChatGPT Plus</option>
-              <option value="pro">ChatGPT Pro</option>
-              <option value="business">ChatGPT Business</option>
-              <option value="enterprise">ChatGPT Enterprise / Edu</option>
-              <option value="none">Ohne ChatGPT (anderer MCP-fähiger KI-Client)</option>
-            </select>
-            <label for="mode">Wie möchtest du Axiom verwenden?</label>
-            <select id="mode">
-              <option value="chatgpt">ChatGPT mit Apps/Plugins – ohne eigenen Server</option>
-              <option value="hybrid">Hybrid – ChatGPT mit Pi / NAS / eigenem PC</option>
-              <option value="bridge">Eigener MCP-Server – für Entwickler und Self-Hosting</option>
-            </select>
-            <label>Welche Integrationen möchtest du einrichten?</label>
-            <div class="checks">
-              <label class="check"><input type="checkbox" value="github"> GitHub</label>
-              <label class="check"><input type="checkbox" value="outlook"> Outlook E-Mail</label>
-              <label class="check"><input type="checkbox" value="calendar"> Kalender</label>
-              <label class="check"><input type="checkbox" value="remote-desktop"> Remote Desktop / Server</label>
+        <div class="setup wizard-shell">
+          <div class="wizard-top">
+            <div>
+              <div class="smalllabel">Axiom Setup Wizard V1.0</div>
+              <p id="wizard-current" class="wizard-current" aria-live="polite">Schritt 1 von 5 · KI / ChatGPT</p>
             </div>
-            <p class="subtle">Du kannst jede Auswahl jederzeit ändern. Die Anleitung wird direkt neu zusammengestellt – ohne Anmeldung oder Datenübertragung.</p>
+            <progress id="wizard-progress" max="5" value="1" aria-label="Fortschritt der Einrichtung"></progress>
           </div>
-          <div class="result" aria-live="polite" aria-atomic="true">
-            <small>Dein individuelles Setup</small>
-            <div><span id="setup-status" class="setup-status">Einsteigerweg</span></div>
-            <h3 id="result-title">Axiom Personal</h3>
-            <p id="result-description">Die Anleitung passt sich deiner Auswahl an.</p>
-            <ul id="result-steps" class="dynamic-list"></ul>
-            <p id="result-warning" class="subtle"></p>
-            <button class="btn primary" type="button" id="export">Konfiguration lokal herunterladen ↓</button>
-            <p class="export-info">Die JSON-Datei entsteht nur auf deinem Gerät. Der Export verbindet nichts automatisch.</p>
+          <ol id="wizard-step-markers" class="wizard-step-markers" aria-label="Einrichtungsschritte">
+            <li class="is-current" aria-current="step">1 · KI</li>
+            <li>2 · Hardware</li>
+            <li>3 · Betriebsart</li>
+            <li>4 · Integrationen</li>
+            <li>5 · Ergebnis</li>
+          </ol>
+          <div class="wizard-stage" data-stage="0" aria-labelledby="wizard-step-heading-0">
+            <h3 id="wizard-step-heading-0" tabindex="-1">Welche KI möchtest du verwenden?</h3>
+            <p class="subtle">Wähle deinen ChatGPT-Plan oder einen anderen MCP-fähigen KI-Client. Die tatsächliche Plugin-Verfügbarkeit prüfst du später in deinem Konto.</p>
+            <fieldset class="wizard-fieldset"><legend>KI-Dienst / ChatGPT-Plan</legend>
+              <div id="wizard-plans" class="wizard-choices" role="group" aria-label="ChatGPT-Plan auswählen"></div>
+            </fieldset>
           </div>
-          <div class="plan-info" aria-live="polite">
-            <strong id="plan-title"></strong>
-            <p id="plan-detail"></p>
-            <p><strong>Grenzen:</strong> <span id="plan-limits"></span></p>
-            <p><strong>Beispiel:</strong> <span id="plan-example"></span></p>
-            <p id="plan-note"></p>
+          <div class="wizard-stage" data-stage="1" aria-labelledby="wizard-step-heading-1" hidden>
+            <h3 id="wizard-step-heading-1" tabindex="-1">Welche Hardware steht dir zur Verfügung?</h3>
+            <p class="subtle">Keine Zusatzhardware ist für den einfachen ChatGPT-Modus nötig. Für Remote-Zugriff oder einen eigenen MCP-Server gibt es zusätzliche Anforderungen.</p>
+            <fieldset class="wizard-fieldset"><legend>Hardware</legend>
+              <div id="wizard-hardware" class="wizard-choices" role="group" aria-label="Hardware auswählen"></div>
+            </fieldset>
           </div>
-          <section class="mode-details" aria-labelledby="mode-heading">
-            <div class="smalllabel">So funktioniert dein gewählter Modus</div>
-            <h3 id="mode-heading"></h3>
-            <p id="mode-intro"></p>
-            <div id="mode-flow" class="mode-flow" aria-label="Technischer Ablauf"></div>
-            <div class="detail-grid">
-              <div><h4>Was du dafür brauchst</h4><ul id="mode-req"></ul></div>
-              <div><h4>Schritt-für-Schritt-Einrichtung</h4><ol id="mode-steps"></ol></div>
+          <div class="wizard-stage" data-stage="2" aria-labelledby="wizard-step-heading-2" hidden>
+            <h3 id="wizard-step-heading-2" tabindex="-1">Wie soll Axiom arbeiten?</h3>
+            <p class="subtle">ChatGPT-Plugins, ein bestehender Remote-Connector oder eigene MCP-Werkzeuge sind unterschiedliche technische Wege.</p>
+            <fieldset class="wizard-fieldset"><legend>Betriebsart</legend>
+              <div id="wizard-modes" class="wizard-choices" role="group" aria-label="Betriebsart auswählen"></div>
+            </fieldset>
+          </div>
+          <div class="wizard-stage" data-stage="3" aria-labelledby="wizard-step-heading-3" hidden>
+            <h3 id="wizard-step-heading-3" tabindex="-1">Welche Integrationen benötigst du?</h3>
+            <p class="subtle">Mehrfachauswahl möglich. Jede Anbindung braucht eine eigene Verfügbarkeit, Autorisierung und Berechtigungsprüfung.</p>
+            <fieldset class="wizard-fieldset"><legend>Optionale Integrationen</legend>
+              <div id="wizard-integrations" class="wizard-choices" role="group" aria-label="Integrationen auswählen"></div>
+            </fieldset>
+            <p class="subtle">Weitere Plugins werden ergänzt, sobald konkrete und dokumentierte Installationswege verfügbar sind.</p>
+          </div>
+          <div class="wizard-stage" data-stage="4" aria-labelledby="wizard-step-heading-4" hidden>
+            <div class="wizard-result-head">
+              <div>
+                <div class="smalllabel">Dein individueller Leitfaden</div>
+                <h3 id="wizard-step-heading-4" tabindex="-1">Dein Setup-Ergebnis</h3>
+                <span id="wizard-result-status" class="setup-status" role="status">Voraussetzungen prüfen</span>
+              </div>
+              <p id="wizard-result-summary" class="wizard-result-summary"></p>
             </div>
-            <div id="mode-context" class="notice"></div>
-            <p><strong>Technische Einordnung:</strong> <span id="mode-real"></span></p>
-            <p><strong>Dein Vorteil:</strong> <span id="mode-benefit"></span></p>
-            <p class="subtle">Zu eigenen MCP-Apps: <a class="doclink" href="https://help.openai.com/en/articles/12584461-developer-mode-and-mcp-apps-in-chatgpt" target="_blank" rel="noopener noreferrer">Offizielle Hinweise zu ChatGPT Developer Mode und MCP ↗</a></p>
-          </section>
-          <section class="integrations-guide" aria-labelledby="integration-header">
-            <h3 id="integration-header">Deine Integrationen</h3>
-            <p class="inline-note" id="integration-empty">Wähle oben GitHub, Outlook, Kalender oder Remote Desktop aus, um konkrete Anleitungen für deinen gewählten Modus zu erhalten.</p>
-            <div id="integration-guide" class="integration-grid"></div>
-          </section>
-          <p class="privacy-inline">🔐 Kein Axiom-Konto, keine Analytics, keine Speicherung deiner Auswahl. Die Seite läuft statisch auf GitHub Pages. Dein Browser verarbeitet die Auswahl lokal.</p>
+            <div id="wizard-result-issues" class="wizard-issues"></div>
+            <div id="wizard-result-specs" class="wizard-result-grid"></div>
+            <section class="wizard-result-section">
+              <h4>Schritt-für-Schritt-Einrichtung</h4>
+              <ol id="wizard-result-steps" class="wizard-instruction-list"></ol>
+            </section>
+            <section class="wizard-result-section" id="wizard-integration-title">
+              <h4>Installationshinweise zu deinen Integrationen</h4>
+              <div id="wizard-integration-guides" class="integration-grid"></div>
+            </section>
+            <div class="wizard-result-grid">
+              <section class="wizard-result-section"><h4>Sicherheitsmaßnahmen</h4><ul id="wizard-result-security"></ul></section>
+              <section class="wizard-result-section"><h4>Konkrete Tests</h4><ul id="wizard-result-tests"></ul></section>
+            </div>
+            <section class="wizard-result-section"><h4>Noch nicht öffentlich verfügbar</h4><ul id="wizard-result-unavailable"></ul></section>
+            <section class="wizard-result-section"><h4>Offizielle Dokumentation</h4><ul id="wizard-result-docs"></ul></section>
+            <div class="wizard-export-actions">
+              <button type="button" class="btn primary" id="wizard-json">JSON lokal exportieren ↓</button>
+              <button type="button" class="btn" id="wizard-markdown">Markdown-Anleitung exportieren ↓</button>
+            </div>
+            <p class="export-info">Beide Dateien werden ausschließlich auf deinen ausdrücklichen Klick hin lokal im Browser erzeugt. Es werden weder Konten verbunden noch Software installiert.</p>
+          </div>
+          <aside id="wizard-context" class="wizard-context" aria-label="Informationen zur aktuellen Auswahl">
+            <div class="smalllabel">Zu deiner Auswahl</div>
+            <h3 id="wizard-context-title"></h3>
+            <p id="wizard-context-detail"></p>
+            <span id="wizard-context-status" class="setup-status"></span>
+            <ul id="wizard-context-notes"></ul>
+          </aside>
+          <div class="wizard-actions">
+            <button type="button" class="btn" id="wizard-back" disabled>← Zurück</button>
+            <button type="button" class="btn primary" id="wizard-next">Weiter →</button>
+          </div>
+          <p class="privacy-inline">🔐 Keine Registrierung, keine Analytics, keine Browser-Speicherung und keine Übermittlung der Wizard-Auswahl. Hosting und freiwillig verbundene Dienste können eigene Verbindungsdaten verarbeiten.</p>
         </div>
       </div>
     </section>
@@ -161,6 +185,7 @@
     </div>
   </footer>
   <script src="./assets/js/setup-content.js" defer></script>
+  <script src="./assets/js/setup-wizard-data.js" defer></script>
   <script src="./assets/js/setup.js" defer></script>
 </body>
 </html>
