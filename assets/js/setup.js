@@ -27,6 +27,7 @@
       target.append(li);
     });
   };
+  // One plain-data snapshot for screen and both exports: never pass a Set to buildGuide.
   const getConfig = function () {
     return {plan: state.plan, hardware: Array.from(state.hardware), roles: {...state.roles}, mode: state.mode, integrations: Array.from(state.integrations)};
   };

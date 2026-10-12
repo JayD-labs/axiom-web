@@ -287,8 +287,10 @@ node --check tests/wizard.test.cjs
 node --test tests/*.test.cjs
 ```
 
-Die 11 Tests prüfen alle 64 gültigen Hardwareauswahlen (inklusive `none`), jede der sechs Rollen für alle sechs konkreten Geräte, fehlende Rollen, ungültige Eingaben, nicht unterstützte Konfigurationen, JSON/Markdown, Sicherheitsbedingungen und statische HTML/CSS-/Fokusanbindungen.
+Die 13 Tests prüfen alle 64 gültigen Hardwareauswahlen (inklusive `none`), jede der sechs Rollen für alle sechs konkreten Geräte, fehlende Rollen, ungültige Eingaben, nicht unterstützte Konfigurationen, JSON/Markdown, Sicherheitsbedingungen und statische HTML/CSS-/Fokusanbindungen.
 **Matrix:** 18.432 Kombinationen = 64 Hardwareauswahlen × 6 Pläne × 3 Betriebsarten × 16 Integrationsauswahlen.
+
+**Regressionstest für die Exporte:** `tests/wizard-export-ui.test.cjs` simuliert DOM-Eingaben, Zurück-/Weiter-Navigation und die echten JSON-/Markdown-Download-Handler für Plus + Raspberry Pi + macOS + Hybrid + GitHub. Sichtbare Zusammenfassung und Status werden mit beiden exportierten Dateien verglichen. Zusätzlich wird die exklusive Hardwareauswahl `none` geprüft. Der Test nutzt eine kleine DOM-Simulation, **keinen echten Browser**.
 
 ### GitHub Actions
 
