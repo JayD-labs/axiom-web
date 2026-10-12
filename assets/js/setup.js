@@ -1,4 +1,4 @@
-/* Axiom Web Setup Wizard V1.2 – keine Requests, keine Cookies, kein Storage.
+/* Axiom Web Setup Wizard V1.2 – nur Same-Origin-Ladevorgänge nach ZIP-Klick, keine Cookies/Storage.
  * Die Auswahl bleibt ausschließlich im Arbeitsspeicher des Browsers.
  */
 (function () {

@@ -153,9 +153,14 @@ test("HTML structure, script load order, focus hooks, responsive rules and priva
   assert.match(ui,/wizard-back/);
   assert.match(ui,/wizard-next/);
   assert.match(ui,/axiom-setup-v1\.2\.json/);
-  assert.match(html,/connect-src 'none'/);
+  assert.match(html,/connect-src 'self'/);
+  // ZIP assets are loaded on demand from our own static origin; no outbound
+  // requests, background upload, storage or external API are permitted.
+  assert.match(ui,/fetch\("\.\/assets\/axiom\/export-manifest\.json"/);
+  assert.match(ui,/fetch\("\.\/" \+ item\.source\)/);
+  assert.doesNotMatch(ui,/fetch\(['"`]https?:\/\//);
   for(const file of ["setup.js","setup-wizard-data.js","setup-export.js"]) {
     const data=source("assets/js/"+file);
-    assert.doesNotMatch(data,/\b(fetch|XMLHttpRequest|WebSocket|localStorage|sessionStorage|sendBeacon)\s*\(/);
+    assert.doesNotMatch(data,/\b(XMLHttpRequest|WebSocket|localStorage|sessionStorage|sendBeacon)\s*\(/);
   }
 });
