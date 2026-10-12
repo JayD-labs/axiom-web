@@ -71,6 +71,28 @@
     .result ul{padding-left:21px;color:var(--muted)}
     .result li{margin:8px 0}
     .result .btn{margin-top:10px;width:100%}
+    .learning-card{grid-column:1 / -1;background:#111e16;border:1px solid #47674d;border-radius:16px;padding:24px}
+    .learning-head{display:flex;flex-wrap:wrap;gap:12px;justify-content:space-between;align-items:center;margin-bottom:16px}
+    .learning-head h3{font-size:1.45rem;margin:0}
+    .learning-tag{font-size:.75rem;font-weight:800;letter-spacing:.07em;text-transform:uppercase;color:#b6e8c3;border:1px solid #476b50;border-radius:99px;padding:5px 11px}
+    .learning-flow{display:flex;flex-wrap:wrap;align-items:stretch;gap:9px;margin:17px 0 24px}
+    .learning-flow span{display:grid;place-items:center;min-height:49px;border-radius:10px;background:#223527;border:1px solid #3f5b45;padding:10px 14px;font-weight:700;text-align:center;flex:1 1 125px;font-size:.88rem}
+    .learning-flow b{align-self:center;color:var(--accent)}
+    .detail-grid{display:grid;grid-template-columns:1fr 1fr;gap:22px}
+    .detail-grid h4{color:var(--accent);font-size:.96rem;margin:9px 0}
+    .detail-grid ul,.detail-grid ol{padding-left:23px;margin:9px 0}
+    .detail-grid li{margin:9px 0;color:#c5d5c9}
+    .learning-card p{color:var(--muted)}
+    .mode-detail[hidden]{display:none}
+    .plan-info{grid-column:1 / -1;background:#1d3023;border:1px solid #49674f;border-radius:13px;padding:19px}
+    .plan-info strong{color:var(--accent)}
+    .plan-info p{color:var(--muted);margin:8px 0 0}
+    .notice{margin-top:16px;border-left:3px solid var(--accent);padding:8px 14px;background:#203026;border-radius:0 8px 8px 0;color:#d3e3d5}
+    .notice.warning{border-color:#ecbe72;background:#372d1f;color:#f4dfbf}
+    .doclink{color:var(--accent);text-underline-offset:3px}
+    .glossary{grid-column:1 / -1;margin:0;border-top:1px solid #435849;padding-top:16px;font-size:.9rem;color:var(--muted)}
+    .glossary strong{color:var(--text)}
+    @media(max-width:650px){.detail-grid{grid-template-columns:1fr}.learning-card{padding:18px}.learning-flow b{display:none}}
     .subtle{font-size:.85rem;color:var(--muted)}
     .privacy{display:grid;grid-template-columns:1fr 1fr;gap:30px;align-items:center}
     .privacybox{border:1px solid var(--line);background:var(--surface);border-radius:19px;padding:26px}
@@ -151,6 +173,7 @@
               <option value="pro">Pro</option>
               <option value="business">Business</option>
               <option value="enterprise">Enterprise / Edu</option>
+              <option value="none">Ohne ChatGPT (lokale KI oder anderer MCP-Client)</option>
             </select>
             <label for="mode">Gewünschte Betriebsart</label>
             <select id="mode">
@@ -165,7 +188,7 @@
               <label class="check"><input type="checkbox" value="calendar"> Kalender</label>
               <label class="check"><input type="checkbox" value="remote-desktop"> Remote Desktop</label>
             </div>
-            <p class="subtle">Dies ist ein Konfigurationsvorschlag, keine Kontoerkennung oder automatische Installation.</p>
+            <p class="subtle">Die Betriebsarten sind Alternativen für den Start, keine unterschiedlichen Axiom-Abonnements. Die benötigten Rechte hängen von deinem KI-Dienst und der konkreten Integration ab.</p>
           </div>
           <div class="result" aria-live="polite" aria-atomic="true">
             <small>Dein persönlicher Vorschlag</small>
@@ -179,6 +202,84 @@
             <button class="btn primary" type="button" id="export">Konfiguration lokal herunterladen ↓</button>
             <p class="subtle">Der Download entsteht nur auf deinem Gerät; es wird keine Datei an Axiom übertragen.</p>
           </div>
+          <div class="plan-info" aria-live="polite">
+            <strong id="plan-title">Was kann dein ChatGPT-Plan?</strong>
+            <p id="plan-detail"></p>
+          </div>
+          <section class="learning-card" id="mode-explainer" aria-labelledby="mode-explainer-title">
+            <div class="learning-head">
+              <h3 id="mode-explainer-title">So funktioniert deine Auswahl</h3>
+              <span class="learning-tag">Anleitung · kein Login</span>
+            </div>
+            <article class="mode-detail" data-mode="chatgpt">
+              <p><strong>Für den einfachen Einstieg:</strong> ChatGPT übernimmt das KI-Gespräch. Axiom stellt die Orchestrator- und Skill-Logik bereit und nutzt nur die Apps/Plugins, die dein Konto tatsächlich verwenden darf. Hier wird kein eigener Server betrieben.</p>
+              <div class="learning-flow" aria-label="Ablauf im ChatGPT-Modus">
+                <span>Du in ChatGPT</span><b aria-hidden="true">→</b><span>Axiom 🐸</span><b aria-hidden="true">→</b><span>Freigegebene Apps/Plugins</span>
+              </div>
+              <div class="detail-grid">
+                <div><h4>Das brauchst du</h4><ul>
+                  <li>Ein ChatGPT-Konto und Internetzugang.</li>
+                  <li>Das Axiom-Plugin, sobald es öffentlich verfügbar ist; bis dahin eine vorhandene private Installation.</li>
+                  <li>Nur bei Bedarf zusätzliche Apps/Plugins für GitHub, E-Mail, Kalender usw.</li>
+                  <li><strong>Keinen</strong> Raspberry Pi, keinen MCP-Server und kein lokales Sprachmodell.</li>
+                </ul></div>
+                <div><h4>So richtest du es ein</h4><ol>
+                  <li>In ChatGPT prüfen, welche Apps/Plugins verfügbar sind.</li>
+                  <li>Axiom installieren oder im privaten Testzugang öffnen, sofern freigegeben.</li>
+                  <li>Gewünschte Integrationen einzeln verbinden und Berechtigungen prüfen.</li>
+                  <li>Eine ungefährliche Leseabfrage ausprobieren.</li>
+                </ol></div>
+              </div>
+              <div class="notice">Beispiel: „Axiom, fasse meine nächsten Termine zusammen.“ Das funktioniert nur, wenn ein entsprechender Kalenderzugriff tatsächlich verbunden und autorisiert ist.</div>
+            </article>
+            <article class="mode-detail" data-mode="hybrid" hidden>
+              <p><strong>Für Nutzer mit eigener Hardware:</strong> ChatGPT bleibt die KI. Über einen geeigneten Connector, beispielsweise Remote Desktop Commander, kann Axiom auf <em>ausdrücklich freigegebene</em> Funktionen deines eigenen Rechners oder Servers zugreifen.</p>
+              <div class="learning-flow" aria-label="Ablauf im Hybrid-Modus">
+                <span>Du in ChatGPT</span><b aria-hidden="true">→</b><span>Axiom + Connector</span><b aria-hidden="true">→</b><span>Dein Pi / NAS / PC</span>
+              </div>
+              <div class="detail-grid">
+                <div><h4>Das brauchst du</h4><ul>
+                  <li>ChatGPT mit einem passenden, verfügbaren und autorisierten Connector.</li>
+                  <li><strong>Eigene Hardware:</strong> z. B. Raspberry Pi, Mini-PC, NAS, Linux-Server oder Desktop-PC.</li>
+                  <li>Eine sichere Verbindung zum Gerät, passende Zugriffsrechte und möglichst ein Backup.</li>
+                  <li>Das Gerät muss laufen, wenn du darauf zugreifen möchtest. Dauerbetrieb ist nur für dauerhafte Verfügbarkeit nötig.</li>
+                  <li><strong>Kein lokales LLM erforderlich.</strong></li>
+                </ul></div>
+                <div><h4>So funktioniert die Einrichtung</h4><ol>
+                  <li>Eigenes Gerät einrichten und die gewünschten Daten oder Dienste vorbereiten.</li>
+                  <li>Einen unterstützten Remote-Connector mit minimalen Rechten einrichten.</li>
+                  <li>In ChatGPT nur den tatsächlich benötigten Connector freigeben.</li>
+                  <li>Mit einer lesenden Status- oder Dateiabfrage beginnen; Schreibrechte später separat prüfen.</li>
+                </ol></div>
+              </div>
+              <div class="notice">Beispiel: „Axiom, zeige mir den Backup-Status meines Raspberry Pi.“ Hybrid heißt <strong>nicht</strong>, dass ChatGPT plötzlich direkt auf das Heimnetz zugreifen kann – das erledigt nur eine dafür eingerichtete Verbindung.</div>
+            </article>
+            <article class="mode-detail" data-mode="bridge" hidden>
+              <p><strong>Für Fortgeschrittene:</strong> MCP (Model Context Protocol) ist ein Standard, über den ein <strong>MCP-Server Werkzeuge</strong> bereitstellt, die ein <strong>MCP-fähiger KI-Client</strong> nutzen kann. Der MCP-Server ist nicht selbst das Sprachmodell.</p>
+              <div class="learning-flow" aria-label="Ablauf mit eigenem MCP-Server">
+                <span>ChatGPT mit Dev Mode <em>oder</em> lokaler KI-Client</span><b aria-hidden="true">→</b><span>MCP-Verbindung</span><b aria-hidden="true">→</b><span>Eigener MCP-Server</span>
+              </div>
+              <div class="detail-grid">
+                <div><h4>Das brauchst du</h4><ul>
+                  <li>Ein Gerät für den MCP-Server (Pi, Mini-PC, NAS, PC oder geeigneter Host).</li>
+                  <li>Einen <strong>MCP-fähigen Client</strong> als Gegenstelle.</li>
+                  <li><strong>Weg A:</strong> ChatGPT Pro mit Entwicklermodus (MCP lesen/abrufen) oder Business / Enterprise / Edu mit passenden Workspace-Freigaben (erweiterte MCP-Aktionen in Beta).</li>
+                  <li><strong>Weg B:</strong> Ein eigenes lokales Sprachmodell <em>mit</em> MCP-fähiger Client-Software – dafür wird kein ChatGPT-Abo benötigt.</li>
+                  <li>Für ChatGPT einen von ChatGPT erreichbaren Remote-MCP-Endpunkt; bei lokalem Server z. B. einen Secure MCP Tunnel.</li>
+                </ul></div>
+                <div><h4>So richtest du MCP ein</h4><ol>
+                  <li>KI-Client auswählen: ChatGPT mit unterstütztem Plan oder lokale KI mit MCP-Client.</li>
+                  <li>MCP-Server auf deiner Hardware installieren, die benötigten Tools definieren und absichern.</li>
+                  <li>Nur die benötigten Verbindungen und Berechtigungen einrichten; bei ChatGPT eine geeignete Remote-Verbindung nutzen.</li>
+                  <li>Im Client die MCP-Verbindung autorisieren und zunächst eine <strong>lesende</strong> Funktion testen.</li>
+                </ol></div>
+              </div>
+              <div class="notice warning">Wichtig: Bei ChatGPT Pro sind eigene MCP-Verbindungen im Entwicklermodus derzeit auf Lesen/Abrufen beschränkt. Erweiterte Schreibaktionen werden für Business, Enterprise und Edu in Beta bereitgestellt und benötigen passende Berechtigungen. Free und Plus bieten nicht automatisch einen frei konfigurierbaren eigenen MCP-Server in ChatGPT.</div>
+              <p class="subtle">Die lokale KI ist <strong>eine Alternative</strong> zu ChatGPT, keine zusätzliche Pflicht. Andere MCP-fähige Clients sind ebenfalls möglich. Ein lokaler Server ist für ChatGPT nicht unmittelbar erreichbar; ein gewöhnlicher privater VPN-Zugang allein verbindet die ChatGPT-Cloud nicht automatisch mit ihm.</p>
+              <p class="subtle">Offizielle Hinweise: <a class="doclink" href="https://help.openai.com/en/articles/12584461-developer-mode-and-mcp-apps-in-chatgpt" target="_blank" rel="noopener noreferrer">Developer Mode & MCP in ChatGPT ↗</a></p>
+            </article>
+            <p class="glossary"><strong>Begriffe kurz erklärt:</strong> Plugin/App = eine Integration in ChatGPT · Hybrid = ChatGPT und eigene Hardware über einen Connector · MCP = standardisierte Schnittstelle zwischen KI-Client und Werkzeugserver.</p>
+          </section>
         </div>
       </div>
     </section>
@@ -216,7 +317,18 @@
       const steps = document.getElementById('result-steps');
       const warning = document.getElementById('result-warning');
       const boxes = Array.from(document.querySelectorAll('.check input'));
-      const planNames = {free:'Basic',plus:'Personal',pro:'Developer',business:'Workspace',enterprise:'Organization'};
+      const detailPanels = Array.from(document.querySelectorAll('.mode-detail'));
+      const planTitle = document.getElementById('plan-title');
+      const planDetail = document.getElementById('plan-detail');
+      const planNames = {free:'Basic',plus:'Personal',pro:'Developer',business:'Workspace',enterprise:'Organization',none:'Standalone'};
+      const planHelp = {
+        free: 'Free: Der Einstieg funktioniert über die Apps/Plugins, die in deinem Konto tatsächlich verfügbar sind. Ein eigener frei konfigurierbarer MCP-Server ist in ChatGPT Free nicht automatisch nutzbar.',
+        plus: 'Plus: Nutze deine verfügbaren Apps/Plugins und bei passendem Connector den Hybrid-Modus. Ein frei konfigurierbarer eigener MCP-Server im ChatGPT-Entwicklermodus ist nicht automatisch enthalten.',
+        pro: 'Pro: Zusätzlich können im Entwicklermodus eigene MCP-Apps mit Lesen/Abrufen verbunden werden. Vollständige MCP-Schreibaktionen sind damit aktuell nicht allgemein verfügbar.',
+        business: 'Business: Eigene MCP-Apps mit erweiterten Aktionen sind in Beta möglich. Developer Mode und Veröffentlichung liegen bei den Admins/Ownern des Workspaces.',
+        enterprise: 'Enterprise / Edu: Eigene MCP-Apps mit erweiterten Aktionen sind in Beta möglich. Workspace-Freigaben, Rollen und Adminrechte bestimmen den Zugriff.',
+        none: 'Ohne ChatGPT: Du kannst einen MCP-fähigen KI-Client und bei Bedarf ein lokales Sprachmodell nutzen. Dann gelten die Voraussetzungen dieser Software; ChatGPT-Apps/Plugins stehen darüber nicht automatisch bereit.'
+      };
       const allowed = ['github','outlook','calendar','remote-desktop'];
 
       function config() {
@@ -239,15 +351,26 @@
         };
         description.textContent = descriptions[data.mode];
         const guidance = [
-          'Verfügbarkeit und Berechtigungen im eigenen Konto prüfen.',
-          'Nur die wirklich nötigen Integrationen autorisieren.',
-          'Keine privaten Zugangsdaten in öffentliche Konfigurationen schreiben.'
+          'Passende Betriebsart und Voraussetzungen weiter unten lesen.',
+          'Verfügbarkeit und Berechtigungen im eigenen KI-Client prüfen.',
+          'Nur die wirklich nötigen Integrationen autorisieren.'
         ];
         if (data.integrations.length) guidance.push('Gewählte Optionen: ' + data.integrations.join(', ') + '.');
         steps.replaceChildren(...guidance.map(message => {const item = document.createElement('li');item.textContent = message;return item;}));
-        warning.textContent = data.mode === 'bridge'
-          ? 'Hinweis: Direkte MCP-Funktionen und Schreibrechte sind plan- und workspaceabhängig. Ein Self-Hosting-Server allein schaltet sie nicht frei.'
-          : 'Hinweis: Die Auswahl erkennt keine vorhandenen Plugins, Verbindungen oder Kontorechte automatisch.';
+        planTitle.textContent = data.plan === 'none' ? 'Ohne ChatGPT – eigener KI-Client' : 'Dein ChatGPT-Plan: ' + plan.options[plan.selectedIndex].text;
+        planDetail.textContent = planHelp[data.plan];
+        detailPanels.forEach(panel => { panel.hidden = panel.dataset.mode !== data.mode; });
+        if (data.plan === 'none' && data.mode !== 'bridge') {
+          warning.textContent = 'Achtung: Dieser Modus setzt ChatGPT voraus. Ohne ChatGPT wähle einen MCP-fähigen eigenen KI-Client und den MCP-Modus.';
+        } else if (data.mode === 'bridge' && (data.plan === 'free' || data.plan === 'plus')) {
+          warning.textContent = 'Mit diesem Plan ist ein eigener benutzerdefinierter MCP-Server in ChatGPT nicht automatisch verfügbar. Nutze ggf. einen anderen MCP-Client oder ein Upgrade mit entsprechender Berechtigung.';
+        } else if (data.mode === 'bridge' && data.plan === 'pro') {
+          warning.textContent = 'Pro + Developer Mode: derzeit eigene MCP-Verbindungen zum Lesen/Abrufen, nicht für allgemeine Schreibaktionen.';
+        } else if (data.mode === 'bridge' && (data.plan === 'business' || data.plan === 'enterprise')) {
+          warning.textContent = 'MCP mit erweiterten Aktionen: Beta, abhängig von Workspace-Rollen und Adminfreigaben.';
+        } else {
+          warning.textContent = 'Dies ist eine lokale Planungshilfe. Verfügbarkeit, Rechte und Verbindungen werden nicht automatisch erkannt.';
+        }
       }
 
       function exportConfig() {
