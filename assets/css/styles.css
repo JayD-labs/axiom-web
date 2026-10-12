@@ -190,3 +190,18 @@
 @media(max-width:760px){.wizard-choices,.wizard-result-grid{grid-template-columns:1fr}.wizard-step-markers li{font-size:.73rem}.wizard-top{align-items:stretch}#wizard-progress{width:100%}}
 @media(max-width:460px){.wizard-step-markers{gap:3px}.wizard-step-markers li{padding:8px 1px;font-size:.64rem}.wizard-choice{padding:14px}.wizard-context,.wizard-result-section{padding:15px}.wizard-actions .btn,.wizard-export-actions .btn{padding:11px 13px;font-size:.88rem}.wizard-export-actions .btn{width:100%}}
 @media(prefers-reduced-motion:reduce){.wizard-choice{transition:none}}
+
+/* V1.1 device role controls, JD Design System preserved */
+#wizard-roles-panel[hidden],#wizard-role-error[hidden]{display:none!important}
+.wizard-roles-panel{border-top:1px solid var(--color-border-subtle);margin-top:20px;padding-top:20px}
+.wizard-roles-panel h4{margin:0 0 8px;color:var(--color-primary);font-size:1.1rem}
+.wizard-role-grid{display:grid;grid-template-columns:repeat(2,minmax(0,1fr));gap:14px;margin-top:15px}
+.wizard-role-card{border:1px solid var(--color-border-subtle);border-radius:var(--radius-lg);background:var(--color-surface);padding:17px;min-width:0}
+.wizard-role-label{display:block;font-weight:700;margin-bottom:10px}
+.wizard-role-card select{width:100%;max-width:100%;padding:12px;background:var(--color-surface-soft);color:var(--color-text);border:1px solid var(--color-border-control);border-radius:var(--radius-md);font:inherit}
+.wizard-role-card select:focus-visible{outline:3px solid var(--color-primary);outline-offset:3px}
+.wizard-role-card select[aria-invalid="true"]{border-color:var(--color-warning)}
+.wizard-role-card .subtle{font-size:.87rem;margin:10px 0 0;overflow-wrap:anywhere}
+.wizard-role-error{border-left:3px solid var(--color-warning);padding:10px 13px;margin-top:14px;background:var(--color-surface-soft);font-weight:700}
+@media(max-width:760px){.wizard-role-grid{grid-template-columns:1fr}}
+@media(max-width:460px){.wizard-role-card{padding:14px}}

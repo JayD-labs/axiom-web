@@ -66,14 +66,14 @@
     <section id="setup" class="section">
       <div class="wrap">
         <div class="sectiontop setupintro">
-          <div class="eyebrow">Interaktiver Setup Wizard V1.0</div>
+          <div class="eyebrow">Interaktiver Setup Wizard V1.1</div>
           <h2>Richte Axiom nach deinen Möglichkeiten ein.</h2>
           <p>Vier Entscheidungen, eine individuelle Anleitung. Alle Berechnungen bleiben in deinem Browser; es wird nichts übertragen.</p>
         </div>
         <div class="setup wizard-shell">
           <div class="wizard-top">
             <div>
-              <div class="smalllabel">Axiom Setup Wizard V1.0</div>
+              <div class="smalllabel">Axiom Setup Wizard V1.1</div>
               <p id="wizard-current" class="wizard-current" aria-live="polite">Schritt 1 von 5 · KI / ChatGPT</p>
             </div>
             <progress id="wizard-progress" max="5" value="1" aria-label="Fortschritt der Einrichtung"></progress>
@@ -98,6 +98,12 @@
             <fieldset class="wizard-fieldset"><legend>Verfügbare Hardware – Mehrfachauswahl</legend>
               <div id="wizard-hardware" class="wizard-choices" role="group" aria-label="Alle verfügbaren Geräte auswählen"></div>
             </fieldset>
+            <section id="wizard-roles-panel" class="wizard-roles-panel" aria-labelledby="wizard-roles-title" hidden>
+              <h4 id="wizard-roles-title">Aufgabe für jedes Gerät festlegen</h4>
+              <p class="subtle">Jedes Gerät benötigt eine primäre Rolle. Daraus entstehen passende Voraussetzungen und Schritte.</p>
+              <div id="wizard-device-roles" class="wizard-role-grid"></div>
+              <p id="wizard-role-error" class="wizard-role-error" role="alert" aria-live="assertive" hidden>Bitte weise jedem Gerät eine Rolle zu.</p>
+            </section>
           </div>
           <div class="wizard-stage" data-stage="2" aria-labelledby="wizard-step-heading-2" hidden>
             <h3 id="wizard-step-heading-2" tabindex="-1">Wie soll Axiom arbeiten?</h3>
@@ -186,6 +192,7 @@
   </footer>
   <script src="./assets/js/setup-content.js" defer></script>
   <script src="./assets/js/setup-wizard-data.js" defer></script>
+  <script src="./assets/js/setup-export.js" defer></script>
   <script src="./assets/js/setup.js" defer></script>
 </body>
 </html>

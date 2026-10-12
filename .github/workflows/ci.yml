@@ -1,0 +1,27 @@
+name: Setup Wizard CI
+on:
+  push:
+  pull_request:
+
+permissions:
+  contents: read
+
+jobs:
+  wizard-tests:
+    runs-on: ubuntu-latest
+    steps:
+      - name: Check out repository
+        uses: actions/checkout@v4
+      - name: Set up Node.js
+        uses: actions/setup-node@v4
+        with:
+          node-version: '22'
+      - name: Check JavaScript syntax
+        run: |
+          node --check assets/js/setup-content.js
+          node --check assets/js/setup-wizard-data.js
+          node --check assets/js/setup-export.js
+          node --check assets/js/setup.js
+          node --check tests/wizard.test.cjs
+      - name: Test hardware, roles, compatibility and exports
+        run: node --test tests/*.test.cjs

@@ -4,14 +4,14 @@
 
 [Axiom Web öffnen](https://axiom.jd-schuldt.de) · [GitHub-Repository](https://github.com/JayD-labs/axiom-web)
 
-Axiom Web ist die öffentliche Projektwebsite von **Axiom 🐸**, einem modular gedachten persönlichen KI-Assistenten. Der integrierte **Setup Wizard V1.0** hilft Besucherinnen und Besuchern, aus ihrem ChatGPT-/KI-Zugang, ihrer vorhandenen Hardware, der gewünschten Betriebsart und optionalen Integrationen eine individuelle Einrichtungsanleitung zusammenzustellen.
+Axiom Web ist die öffentliche Projektwebsite von **Axiom 🐸**, einem modular gedachten persönlichen KI-Assistenten. Der integrierte **Setup Wizard V1.1** hilft Besucherinnen und Besuchern, aus ihrem ChatGPT-/KI-Zugang, ihrer vorhandenen Hardware, der gewünschten Betriebsart und optionalen Integrationen eine individuelle Einrichtungsanleitung zusammenzustellen.
 
 > **Projektstatus (Oktober 2026):** Website und Wizard sind verfügbar. Ein für alle öffentlich installierbares Axiom-Plugin, ein Axiom-Installer und eine vollständige eigenständige Axiom-KI sind **noch nicht veröffentlicht**. Der Wizard installiert keine Software und stellt keine Verbindungen selbst her.
 
 ## Inhaltsverzeichnis
 
 - [Funktionsumfang](#funktionsumfang)
-- [Setup Wizard V1.0](#setup-wizard-v10)
+- [Setup Wizard V1.1](#setup-wizard-v10)
 - [Kompatibilitätsprüfung](#kompatibilitätsprüfung)
 - [Ergebnis und Export](#ergebnis-und-export)
 - [Projektarchitektur](#projektarchitektur)
@@ -33,7 +33,7 @@ Axiom Web ist die öffentliche Projektwebsite von **Axiom 🐸**, einem modular 
 - **Lokaler JSON- und Markdown-Export** nach explizitem Klick.
 - Bestehendes dunkles **JD Design System** mit responsiven Auswahlkarten und Fokus-Styling.
 
-## Setup Wizard V1.0
+## Setup Wizard V1.1
 
 Auf der Website **„Axiom einrichten“** auswählen und die fünf Schritte durchgehen.
 
@@ -68,7 +68,18 @@ Beispiel: **Raspberry Pi + Mini-PC / Linux-Server + macOS**.
 
 **Sonderregel:** „Keine eigene Hardware“ ist exklusiv. Bei Auswahl eines konkreten Geräts wird „Keine eigene Hardware“ abgewählt. Bei Auswahl von „Keine eigene Hardware“ werden andere Geräte abgewählt. Wird das letzte konkrete Gerät abgewählt, gilt wieder „Keine eigene Hardware“.
 
-Der Wizard erstellt für **jedes ausgewählte Gerät** eigene Hinweise zu Software, Voraussetzungen, Netzwerk, Serverbetrieb, möglichem lokalem LLM sowie Vorbereitungsschritten und, sofern definiert, Diagnosebefehlen. Die Geräte werden **nicht** automatisch verbunden oder mit Serverrollen belegt.
+Der Wizard erstellt für **jedes ausgewählte Gerät** eigene Hinweise zu Software, Voraussetzungen, Netzwerk, Serverbetrieb, möglichem lokalem LLM sowie Vorbereitungsschritten und, sofern definiert, Diagnosebefehlen. Für **jedes Gerät** wird genau **eine primäre Geräterolle** benötigt. Ohne Rolle erscheint eine Blockade und der Wizard verhindert das Weitergehen. Rollen erzeugen individuelle Voraussetzungen, Anleitungen und Tests; sie stellen keine automatische Verbindung her.
+
+| Rolle | Voraussetzungen |
+| --- | --- |
+| Remote-Ziel / Connector | Erreichbares Gerät, kompatibler Connector, Testpfad, Minimalrechte |
+| Eigener MCP-Server | Passende Runtime/Architektur und geschützter Transport |
+| KI-Client / lokales Modell | MCP-fähiger Client, Modellquelle, ggf. RAM/VRAM |
+| Dateien / NAS / Backup | Datentrennung, Wiederherstellungstest, Freigaberechte |
+| Entwicklung / Verwaltung | Authentifizierter Adminzugang, SSH/VPN, Updates |
+| Sonstige Aufgabe | Zweck und Zugriffsgrenzen individuell prüfen |
+
+Beispiel: Raspberry Pi → MCP-Server; Mini-PC → Backup; macOS → Entwicklung.
 
 ### Schritt 3 — Betriebsart
 
@@ -108,7 +119,7 @@ Das Ergebnis enthält:
 
 ## Kompatibilitätsprüfung
 
-Die Regel-Engine `buildGuide(config, catalogue)` in `assets/js/setup-wizard-data.js` bewertet die **Kombination aus allen vier Auswahldimensionen**.
+Die Regel-Engine `buildGuide(config, catalogue)` in `assets/js/setup-wizard-data.js` bewertet die **Kombination aus fünf Dimensionen (Plan, Hardware, Geräterollen, Betriebsart, Integrationen)**.
 
 | Interner Status | Anzeige | Bedeutung |
 | --- | --- | --- |
@@ -124,6 +135,9 @@ Beispiele der implementierten Logik:
 - **Business/Enterprise/Edu + eigener MCP-Server:** Workspace-/Admin-Freigaben und gegebenenfalls Rollenrechte erforderlich.
 - **Ohne ChatGPT + eigener MCP-Server:** Anderen MCP-fähigen Client und passendes Modell einrichten; Axiom Independent ist noch keine vollständige Distribution.
 - **Hybrid + keine eigene Hardware:** Blockiert, da ein Zielgerät fehlt.
+- **Hybrid ohne Remote-Ziel-Rolle:** Blockiert, Rolle zuweisen.
+- **Fehlende Geräterollen:** Blockiert und namentlich angezeigt.
+- **MCP auf NAS / anderer Plattform:** Nur nach Prüfung von Runtime und Transport.
 
 **Keine Erfolgsgarantie:** Ein Status „technisch geeignet“ bestätigt weder die Verfügbarkeit einer bestimmten App noch eine erfolgreiche Installation, Verbindung oder Freigabe. Externe Produktanforderungen können sich ändern.
 
@@ -141,21 +155,24 @@ Der Wizard berechnet die Anleitung im Browser und lädt **nur auf ausdrückliche
 
 | Dateiname | Inhalt |
 | --- | --- |
-| `axiom-setup-v1.json` | Auswahl, Kompatibilität, Hardware, Software, Connectoren, Schritte, Sicherheitsmaßnahmen und Tests |
-| `axiom-setup-v1.md` | Lesbare Markdown-Anleitung mit denselben thematischen Informationen |
+| `axiom-setup-v1.1.json` | Auswahl, Kompatibilität, Hardware, Software, Connectoren, Schritte, Sicherheitsmaßnahmen und Tests |
+| `axiom-setup-v1.1.md` | Lesbare Markdown-Anleitung mit denselben thematischen Informationen |
 
-Das aktuelle **JSON-Schema hat `schemaVersion: 2`**. Hardware wird als **Array** gespeichert, um mehrere Geräte zu unterstützen:
+Das aktuelle **JSON-Schema hat `schemaVersion: 3`**. Hardware wird als **Array** gespeichert, um mehrere Geräte zu unterstützen:
 
 ```json
 {
   "selection": {
     "plan": "plus",
     "hardware": ["pi", "linux", "mac"],
+    "hardwareRoles": {"pi":"mcp","linux":"storage","mac":"admin"},
     "mode": "hybrid",
     "integrations": ["github", "remote-desktop"]
   }
 }
 ```
+
+Geräterollen-IDs: `remote`, `mcp`, `client`, `storage`, `admin`, `other`. `selection.hardwareRoles` bildet Hardware-ID auf Rollen-ID ab. `hardware.assignments` enthält auch lesbare Namen. Anforderungen, Schritte und Kompatibilität berücksichtigen die Rollen. Alte V1.0-Schema-Exporte (2) besitzen keine Geräterollen.
 
 Dies zeigt **nur den Ausschnitt `selection`** und kein vollständiges Exportbeispiel. Die Auswahl enthält keine Zugangsdaten und weist keine Verbindung als erfolgreich aus.
 
@@ -174,7 +191,12 @@ axiom-web/
     └── js/
         ├── setup-content.js
         ├── setup-wizard-data.js
+        ├── setup-export.js
         └── setup.js
+├── tests/
+│   └── wizard.test.cjs
+└── .github/workflows/
+    └── ci.yml
 ```
 
 | Datei | Verantwortung |
@@ -184,7 +206,8 @@ axiom-web/
 | `assets/css/styles.css` | Seitendesign, Auswahlkarten, responsive Darstellung |
 | `assets/js/setup-content.js` | ChatGPT-Pläne, Betriebsarten, Integrations- und Kombinationstexte (`window.AxiomGuide`) |
 | `assets/js/setup-wizard-data.js` | Hardware-Daten, Kompatibilitätsprüfung und Leitfadenerzeugung (`window.AxiomWizardRules`) |
-| `assets/js/setup.js` | Lokaler Browser-Zustand, Navigation, Anzeige und Export |
+| `assets/js/setup-export.js` | Lokaler testbarer JSON- und Markdown-Export |
+| `assets/js/setup.js` | Browserzustand, Geräterollen, Navigation und Download |
 | `CNAME` | Custom Domain für GitHub Pages |
 
 **Datenfluss:**
@@ -203,7 +226,7 @@ Anzeige im Browser
 JSON- / Markdown-Download
 ```
 
-Die JavaScript-Dateien müssen in dieser Reihenfolge geladen werden: **`setup-content.js` → `setup-wizard-data.js` → `setup.js`**. Die JD-Design-Tokens bleiben die Grundlage der CSS-Farben.
+Die JavaScript-Dateien müssen in dieser Reihenfolge geladen werden: **`setup-content.js` → `setup-wizard-data.js` → `setup-export.js` → `setup.js`**. Die JD-Design-Tokens bleiben die Grundlage der CSS-Farben.
 
 ## Lokal starten
 
@@ -224,7 +247,9 @@ Für eine optionale JavaScript-Syntaxprüfung, falls Node.js vorhanden ist:
 ```bash
 node --check assets/js/setup-content.js
 node --check assets/js/setup-wizard-data.js
+node --check assets/js/setup-export.js
 node --check assets/js/setup.js
+node --test tests/*.test.cjs
 ```
 
 ## Datenschutz und Sicherheit
@@ -249,35 +274,49 @@ Für reale Integrationen empfehlen sich **Minimalberechtigungen**, reine Lesetes
 
 ## Tests und Qualitätssicherung
 
-Die folgende Liste dient zum manuellen Gegenprüfen. Sie ist **keine Behauptung über bereits ausgeführte Browser-End-to-End-Tests**.
+### Automatisiert ohne npm-Dependencies
 
-- [ ] Ein KI-/ChatGPT-Plan kann ausgewählt werden und passt die Hinweise an.
-- [ ] **Raspberry Pi + Mini-PC + macOS** können gleichzeitig ausgewählt werden.
-- [ ] Ein ausgewähltes Gerät hebt **„Keine eigene Hardware“** auf.
-- [ ] **„Keine eigene Hardware“** entfernt die Auswahl anderer Geräte.
-- [ ] Beim Abwählen des letzten Geräts wird wieder **„Keine eigene Hardware“** gewählt.
-- [ ] Die Anleitung enthält alle ausgewählten Geräte mit eigenen Vorbereitungsschritten.
-- [ ] JSON exportiert `selection.hardware` als Array.
-- [ ] Markdown listet alle ausgewählten Geräte und deren Anforderungen auf.
-- [ ] Hybrid ohne Gerät zeigt eine Blockade.
-- [ ] Free/Plus + eigener MCP-Server zeigt die planabhängige Einschränkung.
-- [ ] Pro + MCP weist auf Developer Mode und Aktionsrechte hin.
-- [ ] Mehrere Integrationen erzeugen passende Hinweise und Tests.
-- [ ] Navigation, Tastaturbedienung, Fokus und mobile Darstellung funktionieren.
-- [ ] Ohne Exportklick werden keine Konfigurationsdateien heruntergeladen.
+Node.js 22, ausschließlich eingebaute Module `node:test`, `node:vm`, `node:assert` und `node:fs`.
 
-**Prüfstand:** Nach dem Hardware-Fix wurden die geänderten Dateien und der Commit erneut auf GitHub geprüft. Ein vollständiger automatisierter Test im echten Browser ist noch offen.
+```bash
+node --check assets/js/setup-content.js
+node --check assets/js/setup-wizard-data.js
+node --check assets/js/setup-export.js
+node --check assets/js/setup.js
+node --check tests/wizard.test.cjs
+node --test tests/*.test.cjs
+```
+
+Die 11 Tests prüfen alle 64 gültigen Hardwareauswahlen (inklusive `none`), jede der sechs Rollen für alle sechs konkreten Geräte, fehlende Rollen, ungültige Eingaben, nicht unterstützte Konfigurationen, JSON/Markdown, Sicherheitsbedingungen und statische HTML/CSS-/Fokusanbindungen.
+**Matrix:** 18.432 Kombinationen = 64 Hardwareauswahlen × 6 Pläne × 3 Betriebsarten × 16 Integrationsauswahlen.
+
+### GitHub Actions
+
+`.github/workflows/ci.yml` läuft bei **Push und Pull Request** mit `ubuntu-latest`, Node.js 22 sowie `actions/checkout` und `actions/setup-node`. Geprüft werden Syntax, Regelwerk, Rollen, Exporte und Hardwarematrix. Keine Secrets oder externen Laufzeitbibliotheken.
+
+### Browser- und Accessibility-Prüfung
+
+Die Node-Tests sind keine ausgeführten Browser-End-to-End-Tests. **Echte Browserprüfungen auf Desktop, Tablet und Smartphone sowie visuelle Kontrast-/Layoutmessungen stehen noch aus.**
+
+- [ ] Desktop (ca. 1440px), Tablet (768px) und Smartphone (375px) ohne horizontales Überlaufen.
+- [ ] Tab/Shift+Tab erreicht Karten, Rollenauswahl, Navigation und Exportbuttons.
+- [ ] Fehlende Rolle: gut sichtbare Live-Meldung, `aria-invalid`, Fokus auf dem ersten offenen Rollenfeld.
+- [ ] Labels und Hinweise der Selects sind eindeutig; Status/Progress (1 bis 5) und Fokus nach Weiter/Zurück korrekt.
+- [ ] Exklusivität von „Keine eigene Hardware“, Entfernen alter Rollen und Beibehalten vorhandener Rollen prüfen.
+- [ ] JSON- und Markdown-Dateien sind per Klick herunterladbar; kein automatischer Download.
+
+**Grenzen:** Der Wizard prüft keine echten Workspace-Berechtigungen, laufende Systeme, Kontoangebote oder RAM/VRAM. Verfügbarkeit einzelner Apps und Plattformpakete ist nachzuprüfen. Es wird keine Installation oder Verbindung durchgeführt oder bestätigt.
 
 ## Projektstatus und Roadmap
 
-**Bereits umgesetzt:** Projektwebsite, Setup Wizard V1.0, Hardware-Mehrfachauswahl, kontextabhängige Kompatibilitätsregeln, vier Integrationskategorien, responsive Gestaltung sowie JSON- und Markdown-Export.
+**Bereits umgesetzt:** Projektwebsite, Setup Wizard V1.1, Hardware-Mehrfachauswahl mit Geräterollen, Node-Testmatrix und GitHub Actions, kontextabhängige Kompatibilitätsregeln, vier Integrationskategorien, responsive Gestaltung sowie JSON- und Markdown-Export.
 
 **Noch nicht fertig / öffentlich verfügbar:**
 
 - Öffentlich installierbare vollständige Axiom-Agenten-/Plugin-Distribution.
 - Automatische Serverinstallation, MCP-Kopplung oder Berechtigungsfreigabe.
 - Vollständiger unabhängiger Axiom-KI-Client mit mitgeliefertem lokalem Modell.
-- Automatisierte Browser-End-to-End- und Responsive-Tests.
+- Automatisierte Browser-End-to-End- und visuelle Responsive-Tests.
 - Zusätzliche Integrationen und verifizierte Installationsabläufe für weitere Plattformen.
 
 ## Mitwirken und Lizenz

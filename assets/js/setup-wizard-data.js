@@ -82,6 +82,45 @@
       llm: "Ein lokales Modell wird nur benötigt, wenn kein externer Modelldienst verwendet wird; Ressourcen vorher planen."
     }
   };
+  // Jede Hardware hat genau eine primäre Rolle im gewählten Setup.
+  const roles = Object.freeze({
+    remote: {
+      label: "Remote-Ziel / Connector",
+      detail: "Auf diesem Gerät läuft ein freigegebener Remote-Connector oder es stellt ein eingeschränktes Remote-Ziel bereit.",
+      prerequisites: ["Connector und Betriebssystem müssen nachweislich unterstützt sein","Testzugang, erreichbares Ziel und minimale Berechtigungen"],
+      steps: "Connector-Unterstützung prüfen, ausschließlich Testpfade freigeben und einen lesenden Zugriff testen."
+    },
+    mcp: {
+      label: "Eigener MCP-Server",
+      detail: "Dieses Gerät hostet die selbst gewählten MCP-Werkzeuge. Der MCP-Server ist kein Sprachmodell.",
+      prerequisites: ["Geeignete MCP-Server-Runtime und CPU-Architektur","Gesicherter Transport mit freigegebenem Endpunkt oder Tunnel"],
+      steps: "Geeignete Server-Runtime und sicheren MCP-Transport prüfen; nur lesende Testtools anbieten."
+    },
+    client: {
+      label: "KI-Client / Modell",
+      detail: "Dieses Gerät führt einen MCP-fähigen Client oder optional ein lokales Modell aus.",
+      prerequisites: ["MCP-fähiger Client und Modellquelle","Bei lokalem LLM RAM/VRAM, Modellformat und Leistung prüfen"],
+      steps: "MCP-Client, Modellquelle und gegebenenfalls RAM/VRAM auf Eignung prüfen. Lokales LLM ist optional."
+    },
+    storage: {
+      label: "Dateien / NAS / Backup",
+      detail: "Dieses Gerät speichert Daten oder Backups; dadurch erhält die KI nicht automatisch Zugriff.",
+      prerequisites: ["Getrenntes Backupziel und Wiederherstellungstest","Eingeschränkte Freigabe; kein automatischer KI-Dateizugriff"],
+      steps: "Testdaten/Backup separieren und Zugriffsrechte vor einer Freigabe einzeln prüfen."
+    },
+    admin: {
+      label: "Entwicklung / Verwaltung",
+      detail: "Dieses Gerät dient zur sicheren Administration oder Entwicklung.",
+      prerequisites: ["Authentifizierter Administrationsweg und Minimalrechte","Patchstand, SSH/VPN und sichere Anmeldedaten"],
+      steps: "Nur über einen eingeschränkten Administrationszugang auf andere Systeme zugreifen; SSH/VPN absichern."
+    },
+    other: {
+      label: "Sonstige Aufgabe",
+      detail: "Eine andere, noch nicht spezifizierte Aufgabe. Die Anleitung kann daraus keinen automatischen Einsatz ableiten.",
+      prerequisites: ["Zweck, Software und Zugriffsgrenzen einzeln festlegen"],
+      steps: "Zweck und Zugriffsgrenzen selbst dokumentieren; keine automatische Kompatibilitätszusage."
+    }
+  });
   const documentation = [
     {title: "Plugins in ChatGPT", url: "https://help.openai.com/en/articles/20001256-plugins-in-chatgpt"},
     {title: "Developer Mode & eigene MCP-Apps", url: "https://help.openai.com/en/articles/12584461-developer-mode-and-mcp-apps-in-chatgpt"},
@@ -111,15 +150,38 @@
     }
   };
   function unique(items) { return Array.from(new Set(items)); }
+  function validateConfig(config, catalogue) {
+    if (!config || typeof config !== "object" || Array.isArray(config)) throw new TypeError("Konfiguration muss ein Objekt sein.");
+    if (!catalogue || !catalogue.plans || !catalogue.modes || !catalogue.integrations) throw new TypeError("Katalog fehlt.");
+    if (!Object.hasOwn(catalogue.plans, config.plan)) throw new RangeError("Unbekannter ChatGPT-Plan.");
+    if (!Object.hasOwn(catalogue.modes, config.mode)) throw new RangeError("Unbekannte Betriebsart.");
+    if (!Array.isArray(config.hardware) || !config.hardware.length || config.hardware.some(id => typeof id !== "string" || !Object.hasOwn(hardware, id))) throw new RangeError("Hardwareauswahl enthält unbekannte oder fehlende Geräte.");
+    if (new Set(config.hardware).size !== config.hardware.length) throw new RangeError("Hardware darf nicht doppelt ausgewählt werden.");
+    if (config.hardware.includes("none") && config.hardware.length > 1) throw new RangeError("Keine eigene Hardware schließt andere Geräte aus.");
+    if (!Array.isArray(config.integrations) || config.integrations.some(id => typeof id !== "string" || !Object.hasOwn(special, id) || !Object.hasOwn(catalogue.integrations, id))) throw new RangeError("Unbekannte Integration.");
+    if (new Set(config.integrations).size !== config.integrations.length) throw new RangeError("Integrationen dürfen nicht doppelt ausgewählt werden.");
+    const assigned = config.roles === undefined ? {} : config.roles;
+    if (!assigned || typeof assigned !== "object" || Array.isArray(assigned)) throw new TypeError("Geräterollen müssen ein Objekt sein.");
+    Object.keys(assigned).forEach(id => {
+      if (!config.hardware.includes(id) || id === "none") throw new RangeError("Rolle für nicht ausgewähltes Gerät: " + id);
+      if (!Object.hasOwn(roles, assigned[id])) throw new RangeError("Unbekannte Geräterolle für " + id);
+    });
+    return config;
+  }
   function buildGuide(config, catalogue) {
+    validateConfig(config, catalogue);
     const p = catalogue.plans[config.plan];
     const m = catalogue.modes[config.mode];
     if (!p || !m) throw new Error("Ungültige Auswahl");
-    const requestedHardware = Array.isArray(config.hardware) ? config.hardware : [config.hardware];
-    const hardwareIds = unique(requestedHardware.filter(function (id) { return Object.hasOwn(hardware, id); }));
-    if (hardwareIds.length === 0) hardwareIds.push("none");
-    if (hardwareIds.length > 1 && hardwareIds.includes("none")) hardwareIds.splice(hardwareIds.indexOf("none"), 1);
+    const hardwareIds = config.hardware.slice();
     const devices = hardwareIds.map(function (id) { return hardware[id]; });
+    const providedRoles = config.roles || {};
+    const roleIds = {};
+    if (!hardwareIds.includes("none")) hardwareIds.forEach(function (id) {
+      roleIds[id] = Object.hasOwn(roles, providedRoles[id]) ? providedRoles[id] : null;
+    });
+    const assignedDevices = hardwareIds.filter(function (id) { return id !== "none"; });
+    const roleOf = function (id) { return roleIds[id]; };
     const h = {
       label: devices.map(function (device) { return device.label; }).join(" + "),
       software: unique(devices.flatMap(function (device) { return device.software.map(function (item) { return device.label + ": " + item; }); })),
@@ -128,7 +190,7 @@
       network: devices.map(function (device) { return device.label + ": " + device.network; }).join(" "),
       llm: devices.map(function (device) { return device.label + ": " + device.llm; }).join(" ")
     };
-    const ids = unique((config.integrations || []).filter(function (id) { return Object.hasOwn(special, id); }));
+    const ids = config.integrations.slice();
     const blockers = [], conditions = [], warnings = [];
     const steps = [], tests = [], needed = [], connectors = [], security = [
       "Nur vertrauenswürdige Plugins/Apps/Server verbinden und jede Berechtigung vor Freigabe prüfen.",
@@ -141,6 +203,21 @@
     const isMcp = config.mode === "bridge";
     if (!usesChatGPT && config.mode !== "bridge") blockers.push("Ohne ChatGPT funktionieren die Betriebsarten „Axiom ChatGPT“ und „Axiom Hybrid“ nicht. Wähle „Eigener MCP-Server“ mit einem anderen KI-Client.");
     if (config.mode === "hybrid" && hardwareIds.includes("none")) blockers.push("Hybrid benötigt ein erreichbares eigenes Gerät. Wähle Hardware oder wechsle zur reinen ChatGPT-Betriebsart.");
+    const missingRoles = assignedDevices.filter(function (id) { return !roleOf(id); });
+    if (missingRoles.length) blockers.push("Rolle fehlt für: " + missingRoles.map(function (id) { return hardware[id].label; }).join(", ") + ". Weise jedem ausgewählten Gerät eine Aufgabe zu (Schritt 2).");
+    if (config.mode === "hybrid" && assignedDevices.length && !assignedDevices.some(function (id) { return roleOf(id) === "remote"; })) blockers.push("Hybrid benötigt mindestens ein Gerät mit der Rolle „Remote-Ziel / Connector“. Weise einem erreichbaren Gerät diese Rolle zu oder wähle eine andere Betriebsart.");
+    assignedDevices.forEach(function (id) {
+      const role = roleOf(id);
+      if (!role) return;
+      if (role === "other") conditions.push(hardware[id].label + ": Den Zweck, die Software und den Zugriffsweg einzeln prüfen.");
+      if (role === "client" && (id === "pi" || id === "nas")) conditions.push(hardware[id].label + ": RAM/Leistung, Architektur und MCP-Client-Kompatibilität ausdrücklich prüfen.");
+      if (role === "mcp" && (id === "nas" || id === "other")) conditions.push(hardware[id].label + ": MCP-Laufzeit und Transport müssen auf diesem Gerät geprüft werden.");
+      if (role === "remote" && (id === "nas" || id === "other")) conditions.push(hardware[id].label + ": Kompatibler Remote-Connector nicht zugesichert; Herstellerunterstützung prüfen.");
+    });
+    if (isMcp && assignedDevices.length && !assignedDevices.some(function (id) { return roleOf(id) === "mcp"; })) conditions.push("Kein ausgewähltes Gerät übernimmt die Rolle „Eigener MCP-Server“. Für diese Betriebsart musst du einen zusätzlichen MCP-Server-Host wählen oder eine solche Rolle zuweisen.");
+    if (config.plan === "none" && config.mode === "bridge" && assignedDevices.length && !assignedDevices.some(function (id) { return roleOf(id) === "client"; })) conditions.push("Noch kein Gerät als „KI-Client / Modell“ vorgesehen. Du benötigst einen separaten MCP-fähigen KI-Client und eine Modellquelle.");
+    if (config.mode === "chatgpt" && assignedDevices.some(function (id) { return roleOf(id) === "remote" || roleOf(id) === "mcp"; })) warnings.push("Remote-/MCP-Geräterollen verbinden sich nicht automatisch mit der reinen ChatGPT-Betriebsart. Dafür Hybrid oder den eigenen MCP-Modus auswählen.");
+    if (config.mode === "hybrid" && assignedDevices.some(function (id) { return roleOf(id) === "mcp"; })) warnings.push("Ein zusätzlich eingetragener MCP-Server wird nicht automatisch über den Hybrid-Connector angesprochen.");
     if (isMcp && usesChatGPT && (config.plan === "free" || config.plan === "plus")) blockers.push("Der direkte eigene Remote-MCP-Zugang über ChatGPT Developer Mode ist für diesen Plan nicht allgemein freigegeben. Alternative: unterstützte Apps oder ein separater MCP-fähiger Client; lokale MCP-Apps über ChatGPT-Desktop-Plugins sind ein eigener, geräteabhängiger Weg.");
     if (isMcp && config.plan === "pro") conditions.push("Pro-Developer-Mode: eigene Remote-MCP-Apps derzeit nur für Lesen/Abrufen. Keine allgemeinen Schreib-/Änderungsrechte versprechen.");
     if (isMcp && (config.plan === "business" || config.plan === "enterprise")) conditions.push("Eigene MCP-Apps und Schreibfunktionen sind Beta und abhängig von Admin-/Owner-Freigabe; Enterprise/Edu zusätzlich RBAC und zulässige Tool-Aktionen.");
@@ -153,11 +230,16 @@
       conditions.push("Remote Desktop / Server ohne eigenes Zielgerät lässt sich nicht testen. Für diesen Teil wird Hardware benötigt.");
     }
     if (ids.includes("remote-desktop") && config.mode === "chatgpt") conditions.push("Remote Desktop / Server benötigt zusätzlich einen autorisierten Remote-Connector und ein Zielgerät; dafür den Hybrid-Modus wählen.");
+    if (ids.includes("remote-desktop") && config.mode === "bridge") conditions.push("Remote Desktop / Server im MCP-Modus erfordert explizit implementierte, eingeschränkte Remote-Tools.");
     add("Verfügbarkeit prüfen", usesChatGPT
       ? "ChatGPT öffnen und unter Plugins bzw. Apps die für Plan, Gerät und Workspace tatsächlich angebotenen Integrationen prüfen. Axiom selbst ist noch nicht allgemein veröffentlicht."
       : "Einen MCP-fähigen KI-Client und die Modellquelle auswählen; prüfen, ob Tool-Aufrufe und der gewünschte MCP-Transport unterstützt werden.");
-    devices.forEach(function (device) {
-      add("Hardware vorbereiten: " + device.label, device.steps.join(" "));
+    hardwareIds.forEach(function (id) {
+      const device = hardware[id];
+      const role = roleOf(id);
+      add("Hardware vorbereiten: " + device.label, device.steps.join(" ") + (role ? " Zugewiesene Rolle: " + roles[role].label + ". " + roles[role].steps : ""));
+      if (role) add("Rolle einrichten: " + device.label + " → " + roles[role].label, "Voraussetzungen: " + roles[role].prerequisites.join("; ") + ". Einrichtung: " + roles[role].steps);
+      if (role) tests.push(device.label + " [" + roles[role].label + "]: " + roles[role].detail);
     });
     if (config.mode === "chatgpt") {
       needed.push("ChatGPT-Web/App", "Ausgewählte freigegebene Plugins/Apps");
@@ -208,13 +290,17 @@
     ];
     const compatibility = blockers.length ? "blocked" : conditions.length ? "conditional" : "supported";
     return {
-      schemaVersion: 2,
-      selection: {plan: config.plan, hardware: hardwareIds, mode: config.mode, integrations: ids},
+      schemaVersion: 3,
+      selection: {plan: config.plan, hardware: hardwareIds, hardwareRoles: roleIds, mode: config.mode, integrations: ids},
       labels: {plan: p.name, hardware: devices.map(function (device) { return device.label; }), mode: m.name, integrations: ids.map(function (id) {return catalogue.integrations[id].name;})},
       compatibility: {status: compatibility, blockers: blockers, conditions: conditions, warnings: warnings},
       summary: p.name + " · " + h.label + " · " + m.name,
       plan: {requirements: p.needs, limits: p.limits, description: p.intro},
-      hardware: {selected: hardwareIds, software: h.software, prerequisites: h.prerequisites, network: h.network, server: h.server, llm: h.llm},
+      hardware: {
+        selected: hardwareIds,
+        assignments: assignedDevices.map(function (id) { return {id: id, label: hardware[id].label, role: roleOf(id), roleLabel: roleOf(id) ? roles[roleOf(id)].label : "Noch keine Rolle zugewiesen"}; }),
+        software: h.software, prerequisites: h.prerequisites.concat(assignedDevices.flatMap(function (id) { return roleOf(id) ? roles[roleOf(id)].prerequisites.map(function (need) { return hardware[id].label + " [" + roles[roleOf(id)].label + "]: " + need; }) : []; })), network: h.network, server: h.server, llm: h.llm
+      },
       software: unique(needed.concat(h.software)),
       connectors: unique(connectors),
       steps: steps,
@@ -225,5 +311,5 @@
       notice: "Konfigurationsleitfaden, keine erfolgreiche Installation, Freigabe oder Verbindung bestätigt. Stand: Oktober 2026."
     };
   }
-  window.AxiomWizardRules = Object.freeze({hardware: hardware, documentation: documentation, special: special, buildGuide: buildGuide});
+  window.AxiomWizardRules = Object.freeze({hardware: hardware, roles: roles, documentation: documentation, special: special, validateConfig: validateConfig, buildGuide: buildGuide});
 })();

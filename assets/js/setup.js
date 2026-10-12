@@ -1,4 +1,4 @@
-/* Axiom Web Setup Wizard V1.0 – keine Requests, keine Cookies, kein Storage.
+/* Axiom Web Setup Wizard V1.1 – keine Requests, keine Cookies, kein Storage.
  * Die Auswahl bleibt ausschließlich im Arbeitsspeicher des Browsers.
  */
 (function () {
@@ -8,7 +8,7 @@
   if (!catalogue || !rules) return;
   const $ = function (id) { return document.getElementById(id); };
   const stageLabels = ["KI / ChatGPT", "Hardware", "Betriebsart", "Integrationen", "Deine Anleitung"];
-  const state = {plan: "plus", hardware: new Set(["none"]), mode: "chatgpt", integrations: new Set()};
+  const state = {plan: "plus", hardware: new Set(["none"]), roles: {}, mode: "chatgpt", integrations: new Set()};
   let step = 0;
   const element = function (tag, text, cls) {
     const el = document.createElement(tag);
@@ -25,6 +25,50 @@
         li.append(element("strong", item.title + " – "), document.createTextNode(item.detail));
       }
       target.append(li);
+    });
+  };
+  const getConfig = function () {
+    return {plan: state.plan, hardware: Array.from(state.hardware), roles: {...state.roles}, mode: state.mode, integrations: Array.from(state.integrations)};
+  };
+  const renderRoles = function () {
+    const target = $("wizard-device-roles");
+    target.replaceChildren();
+    const devices = Array.from(state.hardware).filter(function (id) { return id !== "none"; });
+    $("wizard-roles-panel").hidden = devices.length === 0;
+    $("wizard-role-error").hidden = true;
+    Object.keys(state.roles).forEach(function (id) {
+      if (!state.hardware.has(id)) delete state.roles[id];
+    });
+    devices.forEach(function (id) {
+      const wrapper = element("div", null, "wizard-role-card");
+      const label = element("label", "Aufgabe für " + rules.hardware[id].label, "wizard-role-label");
+      const select = element("select");
+      select.id = "wizard-role-" + id;
+      select.name = "role-" + id;
+      select.required = true;
+      select.setAttribute("aria-describedby", "wizard-role-hint-" + id + " wizard-role-error");
+      label.htmlFor = select.id;
+      const empty = element("option", "Bitte eine Rolle zuweisen");
+      empty.value = "";
+      select.append(empty);
+      Object.entries(rules.roles).forEach(function (entry) {
+        const option = element("option", entry[1].label);
+        option.value = entry[0];
+        select.append(option);
+      });
+      select.value = state.roles[id] || "";
+      const hint = element("p", state.roles[id] ? rules.roles[state.roles[id]].detail : "Wähle bewusst, welche Aufgabe dieses Gerät übernimmt.", "subtle");
+      hint.id = "wizard-role-hint-" + id;
+      select.addEventListener("change", function () {
+        if (select.value) state.roles[id] = select.value;
+        else delete state.roles[id];
+        hint.textContent = select.value ? rules.roles[select.value].detail : "Bitte eine Rolle zuweisen.";
+        $("wizard-role-error").hidden = true;
+        select.removeAttribute("aria-invalid");
+        refresh();
+      });
+      wrapper.append(label, select, hint);
+      target.append(wrapper);
     });
   };
   const makeChoices = function (target, group, values, multi) {
@@ -50,6 +94,7 @@
           if (input.checked && id === "none") {
             state.hardware.clear();
             state.hardware.add("none");
+            state.roles = {};
           } else if (input.checked) {
             state.hardware.delete("none");
             state.hardware.add(id);
@@ -57,6 +102,7 @@
             state.hardware.delete(id);
             if (state.hardware.size === 0) state.hardware.add("none");
           }
+          renderRoles();
         } else if (multi) {
           if (input.checked) state.integrations.add(id);
           else state.integrations.delete(id);
@@ -67,6 +113,7 @@
   };
   makeChoices($("wizard-plans"), "plan", catalogue.plans, false);
   makeChoices($("wizard-hardware"), "hardware", rules.hardware, true);
+  renderRoles();
   makeChoices($("wizard-modes"), "mode", catalogue.modes, false);
   makeChoices($("wizard-integrations"), "integrations", catalogue.integrations, true);
 
@@ -90,6 +137,9 @@
     if (guide.compatibility.warnings.length) textList(issues, guide.compatibility.warnings, "Zusätzliche Hinweise");
     const specs = $("wizard-result-specs");
     specs.replaceChildren();
+    textList(specs, guide.hardware.assignments.length ? guide.hardware.assignments.map(function (item) {
+      return item.label + " → " + item.roleLabel;
+    }) : ["Keine eigene Hardware ausgewählt."], "Deine Geräterollen");
     textList(specs, [guide.plan.requirements, guide.plan.limits], "ChatGPT / KI-Voraussetzungen");
     textList(specs, guide.hardware.prerequisites.concat([guide.hardware.server, guide.hardware.network, guide.hardware.llm]), "Hardware & Netzwerk");
     textList(specs, guide.software, "Benötigte Software");
@@ -131,7 +181,7 @@
     $("wizard-integration-title").hidden = guide.selection.integrations.length === 0;
   };
   const refresh = function () {
-    const cfg = {plan: state.plan, hardware: Array.from(state.hardware), mode: state.mode, integrations: Array.from(state.integrations)};
+    const cfg = getConfig();
     const guide = rules.buildGuide(cfg, catalogue);
     document.querySelectorAll(".wizard-choice").forEach(function (label) {
       const input = label.querySelector("input");
@@ -141,6 +191,7 @@
     });
     const p = catalogue.plans[state.plan], devices = Array.from(state.hardware, function (id) { return rules.hardware[id]; }), m = catalogue.modes[state.mode];
     const hardwareNames = devices.map(function (device) { return device.label; }).join(" + ");
+    const chosenRoles = Array.from(state.hardware).filter(function (id) { return id !== "none"; }).map(function (id) { return rules.hardware[id].label + ": " + (state.roles[id] ? rules.roles[state.roles[id]].label : "Rolle offen"); });
     const titles = [
       p.name + " · " + p.tagline,
       hardwareNames + " · Voraussetzungen",
@@ -149,7 +200,7 @@
     ];
     const descriptions = [
       p.intro + " Grenzen: " + p.limits + " " + p.note,
-      devices.map(function (device) { return device.label + ": " + device.summary + " Serverbetrieb: " + device.server + " Netzwerk: " + device.network + " Lokales LLM: " + device.llm; }).join(" "),
+      devices.map(function (device) { return device.label + ": " + device.summary + " Serverbetrieb: " + device.server + " Netzwerk: " + device.network + " Lokales LLM: " + device.llm; }).join(" ") + (chosenRoles.length ? " Rollen: " + chosenRoles.join("; ") : ""),
       catalogue.combinations[state.mode][state.plan].message + " " + m.introduction,
       state.integrations.size
         ? Array.from(state.integrations).map(function (id) { return catalogue.integrations[id].name; }).join(", ") + ". Jede Verbindung benötigt eigene Freigaben und einen erfolgreichen Test."
@@ -181,6 +232,17 @@
     });
   };
   const move = function (next) {
+    if (step === 1 && next > step) {
+      const missing = Array.from(state.hardware).filter(function (id) { return id !== "none" && !state.roles[id]; });
+      if (missing.length) {
+        const feedback = $("wizard-role-error");
+        feedback.textContent = "Bitte weise jedem gewählten Gerät eine Aufgabe zu, bevor du fortfährst.";
+        feedback.hidden = false;
+        const first = $("wizard-role-" + missing[0]);
+        if (first) { first.setAttribute("aria-invalid", "true"); first.focus(); }
+        return;
+      }
+    }
     step = Math.max(0, Math.min(4, next));
     refresh();
     const heading = $("wizard-step-heading-" + step);
@@ -189,40 +251,14 @@
   };
   $("wizard-back").addEventListener("click", function () { move(step - 1); });
   $("wizard-next").addEventListener("click", function () { move(step + 1); });
-  const markdown = function (guide) {
-    const lines = ["# Axiom 🐸 – Setup-Anleitung", "", "**" + guide.summary + "**", "",
-      "Status: " + ({blocked:"Nicht direkt unterstützt",conditional:"Nur unter Voraussetzungen",supported:"Technisch geeignet"}[guide.compatibility.status]), "",
-      "> " + guide.notice, ""];
-    const section = function (title, texts) {
-      lines.push("## " + title, "");
-      texts.forEach(function (t) { lines.push("- " + t); });
-      lines.push("");
-    };
-    section("Auswahl", [guide.labels.plan].concat(guide.labels.hardware, [guide.labels.mode], guide.labels.integrations));
-    section("Kompatibilität / Blockaden", guide.compatibility.blockers.concat(guide.compatibility.conditions, guide.compatibility.warnings));
-    section("ChatGPT / KI", [guide.plan.description, guide.plan.requirements, guide.plan.limits]);
-    section("Hardware & Netzwerk", guide.hardware.prerequisites.concat([guide.hardware.network, guide.hardware.server, guide.hardware.llm]));
-    section("Software", guide.software);
-    section("Connectoren", guide.connectors);
-    lines.push("## Schritt-für-Schritt-Installation", "");
-    guide.steps.forEach(function (s, i) { lines.push((i + 1) + ". **" + s.title + "** – " + s.detail); });
-    lines.push("");
-    section("Sicherheit", guide.security);
-    section("Tests", guide.tests);
-    section("Noch nicht verfügbar", guide.unavailable);
-    lines.push("## Offizielle Dokumentation", "");
-    guide.docs.forEach(function (d) { lines.push("- [" + d.title + "](" + d.url + ")"); });
-    lines.push("", "Stand: Oktober 2026. Keine Installation oder Verbindung wurde durchgeführt.", "");
-    return lines.join("\n");
-  };
   const download = function (type) {
-    const guide = rules.buildGuide({plan:state.plan,hardware:state.hardware,mode:state.mode,integrations:Array.from(state.integrations)},catalogue);
-    const data = type === "json" ? JSON.stringify(guide, null, 2) + "\n" : markdown(guide);
+    const guide = rules.buildGuide(getConfig(), catalogue);
+    const data = type === "json" ? window.AxiomWizardExport.json(guide) : window.AxiomWizardExport.markdown(guide);
     const blob = new Blob([data], {type: type === "json" ? "application/json;charset=utf-8" : "text/markdown;charset=utf-8"});
     const url = URL.createObjectURL(blob);
     const a = element("a");
     a.href = url;
-    a.download = type === "json" ? "axiom-setup-v1.json" : "axiom-setup-v1.md";
+    a.download = type === "json" ? "axiom-setup-v1.1.json" : "axiom-setup-v1.1.md";
     document.body.append(a);
     a.click();
     a.remove();
