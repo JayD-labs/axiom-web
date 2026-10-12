@@ -8,7 +8,7 @@
   if (!catalogue || !rules) return;
   const $ = function (id) { return document.getElementById(id); };
   const stageLabels = ["KI / ChatGPT", "Hardware", "Betriebsart", "Integrationen", "Deine Anleitung"];
-  const state = {plan: "plus", hardware: "none", mode: "chatgpt", integrations: new Set()};
+  const state = {plan: "plus", hardware: new Set(["none"]), mode: "chatgpt", integrations: new Set()};
   let step = 0;
   const element = function (tag, text, cls) {
     const el = document.createElement(tag);
@@ -36,7 +36,7 @@
       input.type = multi ? "checkbox" : "radio";
       input.name = group;
       input.value = id;
-      input.checked = multi ? state.integrations.has(id) : state[group] === id;
+      input.checked = multi ? (group === "hardware" ? state.hardware.has(id) : state.integrations.has(id)) : state[group] === id;
       const copy = element("span", null, "wizard-choice-copy");
       const name = data.name || data.label;
       copy.append(element("strong", (data.icon ? data.icon + " " : "") + name));
@@ -46,7 +46,18 @@
       label.append(input, copy);
       target.append(label);
       input.addEventListener("change", function () {
-        if (multi) {
+        if (multi && group === "hardware") {
+          if (input.checked && id === "none") {
+            state.hardware.clear();
+            state.hardware.add("none");
+          } else if (input.checked) {
+            state.hardware.delete("none");
+            state.hardware.add(id);
+          } else {
+            state.hardware.delete(id);
+            if (state.hardware.size === 0) state.hardware.add("none");
+          }
+        } else if (multi) {
           if (input.checked) state.integrations.add(id);
           else state.integrations.delete(id);
         } else state[group] = id;
@@ -55,7 +66,7 @@
     });
   };
   makeChoices($("wizard-plans"), "plan", catalogue.plans, false);
-  makeChoices($("wizard-hardware"), "hardware", rules.hardware, false);
+  makeChoices($("wizard-hardware"), "hardware", rules.hardware, true);
   makeChoices($("wizard-modes"), "mode", catalogue.modes, false);
   makeChoices($("wizard-integrations"), "integrations", catalogue.integrations, true);
 
@@ -120,24 +131,25 @@
     $("wizard-integration-title").hidden = guide.selection.integrations.length === 0;
   };
   const refresh = function () {
-    const cfg = {plan: state.plan, hardware: state.hardware, mode: state.mode, integrations: Array.from(state.integrations)};
+    const cfg = {plan: state.plan, hardware: Array.from(state.hardware), mode: state.mode, integrations: Array.from(state.integrations)};
     const guide = rules.buildGuide(cfg, catalogue);
     document.querySelectorAll(".wizard-choice").forEach(function (label) {
       const input = label.querySelector("input");
-      const selected = input.type === "checkbox" ? state.integrations.has(input.value) : state[input.name] === input.value;
+      const selected = input.type === "checkbox" ? (input.name === "hardware" ? state.hardware.has(input.value) : state.integrations.has(input.value)) : state[input.name] === input.value;
       input.checked = selected;
       label.classList.toggle("is-selected", selected);
     });
-    const p = catalogue.plans[state.plan], h = rules.hardware[state.hardware], m = catalogue.modes[state.mode];
+    const p = catalogue.plans[state.plan], devices = Array.from(state.hardware, function (id) { return rules.hardware[id]; }), m = catalogue.modes[state.mode];
+    const hardwareNames = devices.map(function (device) { return device.label; }).join(" + ");
     const titles = [
       p.name + " · " + p.tagline,
-      h.label + " · Voraussetzungen",
+      hardwareNames + " · Voraussetzungen",
       m.name + " · " + m.slogan,
       state.integrations.size + " Integration(en) gewählt"
     ];
     const descriptions = [
       p.intro + " Grenzen: " + p.limits + " " + p.note,
-      h.summary + " Serverbetrieb: " + h.server + " Netzwerk: " + h.network + " Lokales LLM: " + h.llm,
+      devices.map(function (device) { return device.label + ": " + device.summary + " Serverbetrieb: " + device.server + " Netzwerk: " + device.network + " Lokales LLM: " + device.llm; }).join(" "),
       catalogue.combinations[state.mode][state.plan].message + " " + m.introduction,
       state.integrations.size
         ? Array.from(state.integrations).map(function (id) { return catalogue.integrations[id].name; }).join(", ") + ". Jede Verbindung benötigt eigene Freigaben und einen erfolgreichen Test."
@@ -186,7 +198,7 @@
       texts.forEach(function (t) { lines.push("- " + t); });
       lines.push("");
     };
-    section("Auswahl", [guide.labels.plan, guide.labels.hardware, guide.labels.mode].concat(guide.labels.integrations));
+    section("Auswahl", [guide.labels.plan].concat(guide.labels.hardware, [guide.labels.mode], guide.labels.integrations));
     section("Kompatibilität / Blockaden", guide.compatibility.blockers.concat(guide.compatibility.conditions, guide.compatibility.warnings));
     section("ChatGPT / KI", [guide.plan.description, guide.plan.requirements, guide.plan.limits]);
     section("Hardware & Netzwerk", guide.hardware.prerequisites.concat([guide.hardware.network, guide.hardware.server, guide.hardware.llm]));

@@ -114,8 +114,20 @@
   function buildGuide(config, catalogue) {
     const p = catalogue.plans[config.plan];
     const m = catalogue.modes[config.mode];
-    const h = hardware[config.hardware];
-    if (!p || !m || !h) throw new Error("Ungültige Auswahl");
+    if (!p || !m) throw new Error("Ungültige Auswahl");
+    const requestedHardware = Array.isArray(config.hardware) ? config.hardware : [config.hardware];
+    const hardwareIds = unique(requestedHardware.filter(function (id) { return Object.hasOwn(hardware, id); }));
+    if (hardwareIds.length === 0) hardwareIds.push("none");
+    if (hardwareIds.length > 1 && hardwareIds.includes("none")) hardwareIds.splice(hardwareIds.indexOf("none"), 1);
+    const devices = hardwareIds.map(function (id) { return hardware[id]; });
+    const h = {
+      label: devices.map(function (device) { return device.label; }).join(" + "),
+      software: unique(devices.flatMap(function (device) { return device.software.map(function (item) { return device.label + ": " + item; }); })),
+      prerequisites: unique(devices.flatMap(function (device) { return device.prerequisites.map(function (item) { return device.label + ": " + item; }); })),
+      server: devices.map(function (device) { return device.label + ": " + device.server; }).join(" "),
+      network: devices.map(function (device) { return device.label + ": " + device.network; }).join(" "),
+      llm: devices.map(function (device) { return device.label + ": " + device.llm; }).join(" ")
+    };
     const ids = unique((config.integrations || []).filter(function (id) { return Object.hasOwn(special, id); }));
     const blockers = [], conditions = [], warnings = [];
     const steps = [], tests = [], needed = [], connectors = [], security = [
@@ -128,23 +140,25 @@
     const usesChatGPT = config.plan !== "none";
     const isMcp = config.mode === "bridge";
     if (!usesChatGPT && config.mode !== "bridge") blockers.push("Ohne ChatGPT funktionieren die Betriebsarten „Axiom ChatGPT“ und „Axiom Hybrid“ nicht. Wähle „Eigener MCP-Server“ mit einem anderen KI-Client.");
-    if (config.mode === "hybrid" && config.hardware === "none") blockers.push("Hybrid benötigt ein erreichbares eigenes Gerät. Wähle Hardware oder wechsle zur reinen ChatGPT-Betriebsart.");
+    if (config.mode === "hybrid" && hardwareIds.includes("none")) blockers.push("Hybrid benötigt ein erreichbares eigenes Gerät. Wähle Hardware oder wechsle zur reinen ChatGPT-Betriebsart.");
     if (isMcp && usesChatGPT && (config.plan === "free" || config.plan === "plus")) blockers.push("Der direkte eigene Remote-MCP-Zugang über ChatGPT Developer Mode ist für diesen Plan nicht allgemein freigegeben. Alternative: unterstützte Apps oder ein separater MCP-fähiger Client; lokale MCP-Apps über ChatGPT-Desktop-Plugins sind ein eigener, geräteabhängiger Weg.");
     if (isMcp && config.plan === "pro") conditions.push("Pro-Developer-Mode: eigene Remote-MCP-Apps derzeit nur für Lesen/Abrufen. Keine allgemeinen Schreib-/Änderungsrechte versprechen.");
     if (isMcp && (config.plan === "business" || config.plan === "enterprise")) conditions.push("Eigene MCP-Apps und Schreibfunktionen sind Beta und abhängig von Admin-/Owner-Freigabe; Enterprise/Edu zusätzlich RBAC und zulässige Tool-Aktionen.");
     if (isMcp && config.plan === "none") conditions.push("Ein anderer MCP-fähiger KI-Client und ein kompatibles Modell müssen separat gewählt und eingerichtet werden; die eigenständige Axiom-KI ist noch nicht veröffentlicht.");
-    if (isMcp && config.hardware === "none") conditions.push("Kein eigener Rechner gewählt: eigener MCP-Server nur über gesondert bereitgestellten Host/Cloud möglich; die Website stellt keinen Server bereit.");
+    if (isMcp && hardwareIds.includes("none")) conditions.push("Kein eigener Rechner gewählt: eigener MCP-Server nur über gesondert bereitgestellten Host/Cloud möglich; die Website stellt keinen Server bereit.");
     if (config.mode === "hybrid") conditions.push("Hybrid funktioniert nur, wenn ein geeigneter Remote-Connector für dein Konto und das Zielsystem tatsächlich verfügbar und autorisiert ist.");
-    if (config.mode === "chatgpt" && config.hardware !== "none") warnings.push("Die gewählte Hardware ist im reinen ChatGPT-Modus optional und wird nicht automatisch angebunden.");
+    if (config.mode === "chatgpt" && !hardwareIds.includes("none")) warnings.push("Die gewählte Hardware ist im reinen ChatGPT-Modus optional und wird nicht automatisch angebunden.");
     if (usesChatGPT) conditions.push("Plugin-/App-Verfügbarkeit, Konto-Limits und Workspace-Policies müssen im konkreten ChatGPT-Konto geprüft werden.");
-    if (ids.includes("remote-desktop") && config.hardware === "none") {
+    if (ids.includes("remote-desktop") && hardwareIds.includes("none")) {
       conditions.push("Remote Desktop / Server ohne eigenes Zielgerät lässt sich nicht testen. Für diesen Teil wird Hardware benötigt.");
     }
     if (ids.includes("remote-desktop") && config.mode === "chatgpt") conditions.push("Remote Desktop / Server benötigt zusätzlich einen autorisierten Remote-Connector und ein Zielgerät; dafür den Hybrid-Modus wählen.");
     add("Verfügbarkeit prüfen", usesChatGPT
       ? "ChatGPT öffnen und unter Plugins bzw. Apps die für Plan, Gerät und Workspace tatsächlich angebotenen Integrationen prüfen. Axiom selbst ist noch nicht allgemein veröffentlicht."
       : "Einen MCP-fähigen KI-Client und die Modellquelle auswählen; prüfen, ob Tool-Aufrufe und der gewünschte MCP-Transport unterstützt werden.");
-    add("Hardware vorbereiten", h.steps.join(" "));
+    devices.forEach(function (device) {
+      add("Hardware vorbereiten: " + device.label, device.steps.join(" "));
+    });
     if (config.mode === "chatgpt") {
       needed.push("ChatGPT-Web/App", "Ausgewählte freigegebene Plugins/Apps");
       add("Axiom als Arbeitsweise nutzen", "Axiom ist öffentlich noch nicht als fertiges Plugin installierbar. Bis dahin passende vorhandene ChatGPT-Apps einzeln installieren bzw. verbinden und den Assistenten mit eigenen Anweisungen organisieren.");
@@ -184,7 +198,9 @@
       : config.mode === "hybrid"
         ? "Hybrid: „Zeige nur lesend den Status des ausdrücklich freigegebenen Testsystems.“"
         : "MCP: „Liste die verfügbaren Tools auf und rufe nur das vereinbarte Status-Lesetool auf.“");
-    if (config.mode !== "chatgpt" && h.commands.length) tests.push("Lokale, harmlose Diagnosebefehle (" + h.label + "): " + h.commands.join(" | "));
+    if (config.mode !== "chatgpt") devices.forEach(function (device) {
+      if (device.commands.length) tests.push("Lokale, harmlose Diagnosebefehle (" + device.label + "): " + device.commands.join(" | "));
+    });
     const availability = [
       "Der öffentliche Axiom-Plugin-/Agenten-Installer ist noch nicht verfügbar; eine private Installation ist kein öffentliches Produkt.",
       "Der Wizard installiert keine Programme, verbindet keine Konten und bestätigt keine erfolgreichen Tests.",
@@ -192,13 +208,13 @@
     ];
     const compatibility = blockers.length ? "blocked" : conditions.length ? "conditional" : "supported";
     return {
-      schemaVersion: 1,
-      selection: {plan: config.plan, hardware: config.hardware, mode: config.mode, integrations: ids},
-      labels: {plan: p.name, hardware: h.label, mode: m.name, integrations: ids.map(function (id) {return catalogue.integrations[id].name;})},
+      schemaVersion: 2,
+      selection: {plan: config.plan, hardware: hardwareIds, mode: config.mode, integrations: ids},
+      labels: {plan: p.name, hardware: devices.map(function (device) { return device.label; }), mode: m.name, integrations: ids.map(function (id) {return catalogue.integrations[id].name;})},
       compatibility: {status: compatibility, blockers: blockers, conditions: conditions, warnings: warnings},
       summary: p.name + " · " + h.label + " · " + m.name,
       plan: {requirements: p.needs, limits: p.limits, description: p.intro},
-      hardware: {software: h.software, prerequisites: h.prerequisites, network: h.network, server: h.server, llm: h.llm},
+      hardware: {selected: hardwareIds, software: h.software, prerequisites: h.prerequisites, network: h.network, server: h.server, llm: h.llm},
       software: unique(needed.concat(h.software)),
       connectors: unique(connectors),
       steps: steps,
