@@ -3,29 +3,271 @@
 <head>
   <meta charset="UTF-8">
   <meta name="viewport" content="width=device-width, initial-scale=1">
-  <meta name="description" content="Axiom – Your AI. Your Tools. Your Data.">
-  <title>Axiom 🐸 – Coming Soon</title>
+  <meta name="description" content="Axiom 🐸 – Dein persönlicher KI-Assistent. Your AI. Your Tools. Your Data. Privacy-first Setup ohne Anmeldung.">
+  <meta name="theme-color" content="#101712">
+  <meta name="referrer" content="no-referrer">
+  <meta http-equiv="Content-Security-Policy" content="default-src 'none'; script-src 'self' 'unsafe-inline'; style-src 'self' 'unsafe-inline'; img-src 'self' data:; connect-src 'none'; object-src 'none'; base-uri 'none'; form-action 'none'; upgrade-insecure-requests">
+  <title>Axiom 🐸 | Your AI. Your Tools. Your Data.</title>
   <style>
-    :root { color-scheme: dark; font-family: system-ui, -apple-system, sans-serif; }
-    * { box-sizing: border-box; }
-    body { min-height: 100vh; margin: 0; display: grid; place-items: center; padding: 2rem; background: #121713; color: #f2f5f2; }
-    main { max-width: 42rem; text-align: center; }
-    .mark { font-size: 4rem; margin: 0 0 1rem; }
-    h1 { font-size: clamp(2.5rem, 8vw, 5rem); color: #89d39a; margin: 0; }
-    h2 { font-size: clamp(1.2rem, 4vw, 1.7rem); font-weight: 500; }
-    p { color: #acbeb0; line-height: 1.7; }
-    a { color: #a4e4b1; }
-    footer { margin-top: 3rem; font-size: .85rem; color: #819487; }
+    :root{color-scheme:dark;--bg:#101712;--surface:#17231b;--surface2:#1d2d22;--line:#304335;--text:#f1f8f2;--muted:#b1c3b5;--accent:#8bdda2;--accent-dark:#163c25;font-family:ui-sans-serif,system-ui,-apple-system,BlinkMacSystemFont,"Segoe UI",sans-serif}
+    *{box-sizing:border-box}
+    html{scroll-behavior:smooth}
+    body{margin:0;background:var(--bg);color:var(--text);line-height:1.55}
+    a{color:inherit}
+    button,select{font:inherit}
+    button{cursor:pointer}
+    a:focus-visible,button:focus-visible,select:focus-visible,input:focus-visible{outline:3px solid var(--accent);outline-offset:3px}
+    .wrap{width:min(1100px,calc(100% - 40px));margin:auto}
+    header{border-bottom:1px solid var(--line);background:#101712eb;position:sticky;top:0;z-index:10;backdrop-filter:blur(16px)}
+    .topbar{min-height:74px;display:flex;align-items:center;justify-content:space-between;gap:18px}
+    .logo{display:inline-flex;align-items:center;gap:10px;font-size:1.16rem;font-weight:850;letter-spacing:.025em;text-decoration:none}
+    .logo span{font-size:1.65rem}
+    nav{display:flex;align-items:center;gap:25px}
+    nav a{text-decoration:none;color:var(--muted);font-size:.95rem}
+    nav a:hover,.footer a:hover{color:var(--accent)}
+    .navcta{border:1px solid #436c4e;padding:9px 17px;border-radius:12px;color:var(--text)}
+    main section{scroll-margin-top:90px}
+    .hero{padding:106px 0 90px;display:grid;grid-template-columns:1.2fr .8fr;align-items:center;gap:42px}
+    .eyebrow{color:var(--accent);font-weight:750;letter-spacing:.13em;text-transform:uppercase;font-size:.78rem}
+    h1{font-size:clamp(3.2rem,7.2vw,5.8rem);line-height:1.05;letter-spacing:-.06em;margin:18px 0}
+    h1 span{color:var(--accent)}
+    h2{font-size:clamp(2rem,4vw,3.1rem);letter-spacing:-.045em;line-height:1.14;margin:9px 0 16px}
+    h3{margin:0 0 10px;font-size:1.14rem}
+    .lead{font-size:1.12rem;max-width:570px;color:var(--muted)}
+    .actions{display:flex;flex-wrap:wrap;gap:12px;margin-top:29px}
+    .btn{display:inline-flex;gap:10px;align-items:center;justify-content:center;border-radius:12px;padding:13px 21px;border:1px solid var(--line);background:transparent;color:var(--text);text-decoration:none;font-weight:750}
+    .btn:hover{border-color:var(--accent)}
+    .btn.primary{color:#0c2313;background:var(--accent);border-color:var(--accent)}
+    .btn.primary:hover{background:#aaf1bd}
+    .hero-panel{padding:24px;border:1px solid #396a47;background:radial-gradient(circle at 50% 0,#235e34 0,#19271d 56%,#142018 100%);border-radius:24px;box-shadow:0 22px 80px #0004}
+    .panelhead{display:flex;justify-content:space-between;align-items:center;gap:15px;color:#cce9d4;font-size:.85rem}
+    .status{display:inline-flex;align-items:center;gap:7px}
+    .status:before{content:"";background:var(--accent);height:7px;width:7px;border-radius:50%}
+    .avatar{font-size:5rem;text-align:center;margin:38px 0 10px}
+    .paneltitle{text-align:center;font-size:2rem;font-weight:850;letter-spacing:.08em}
+    .paneldesc{text-align:center;color:var(--muted);margin:8px 0 35px}
+    .panelrows{display:grid;grid-template-columns:1fr 1fr;gap:10px}
+    .panelrows div{border:1px solid #41634a;border-radius:11px;padding:13px;background:#122218aa;font-size:.85rem}
+    .panelrows strong{display:block;margin-bottom:4px;color:var(--accent)}
+    .hint{margin-top:18px;color:var(--muted);font-size:.79rem}
+    .section{padding:70px 0}
+    .sectiontop{max-width:690px;margin-bottom:28px}
+    .sectiontop p,.card p,.setupintro p,.note{color:var(--muted)}
+    .cards{display:grid;grid-template-columns:repeat(3,minmax(0,1fr));gap:15px}
+    .card{padding:24px;border:1px solid var(--line);background:var(--surface);border-radius:18px}
+    .card .symbol{font-size:1.75rem;display:block;margin-bottom:24px}
+    .card p{margin:0}
+    .setup{border:1px solid #3c5944;background:linear-gradient(135deg,#192b20,#131e17);border-radius:24px;padding:32px}
+    .setupgrid{display:grid;grid-template-columns:1fr 1fr;gap:24px}
+    label{display:block;color:var(--muted);font-weight:700;margin:18px 0 9px}
+    select{width:100%;background:#111c15;border:1px solid #577160;color:var(--text);border-radius:12px;padding:14px}
+    .checks{display:grid;grid-template-columns:1fr 1fr;gap:10px;margin-top:12px}
+    .check{display:flex;gap:10px;align-items:center;padding:11px;border:1px solid #405746;border-radius:11px;margin:0;font-weight:500;color:var(--text);cursor:pointer}
+    .check input{accent-color:#8bdda2;width:17px;height:17px}
+    .result{background:#102017;border:1px solid #3f654a;border-radius:17px;padding:23px}
+    .result small{color:var(--accent);text-transform:uppercase;letter-spacing:.1em;font-weight:800}
+    .result h3{font-size:1.55rem;margin:13px 0 8px}
+    .result p{color:var(--muted)}
+    .result ul{padding-left:21px;color:var(--muted)}
+    .result li{margin:8px 0}
+    .result .btn{margin-top:10px;width:100%}
+    .subtle{font-size:.85rem;color:var(--muted)}
+    .privacy{display:grid;grid-template-columns:1fr 1fr;gap:30px;align-items:center}
+    .privacybox{border:1px solid var(--line);background:var(--surface);border-radius:19px;padding:26px}
+    .privacybox div{padding:10px 0;border-bottom:1px solid var(--line)}
+    .privacybox div:last-child{border-bottom:none}
+    .privacybox strong{color:var(--accent)}
+    footer{border-top:1px solid var(--line);padding:26px 0;color:var(--muted);font-size:.9rem}
+    .footer{display:flex;justify-content:space-between;gap:20px;flex-wrap:wrap}
+    .footer a{color:var(--muted);margin-left:15px}
+    @media(max-width:800px){.hero,.privacy,.setupgrid{grid-template-columns:1fr}.hero{padding:75px 0 55px}.cards{grid-template-columns:1fr}.hero-panel{max-width:470px;width:100%}nav a:not(.navcta){display:none}.section{padding:48px 0}}
+    @media(max-width:460px){.wrap{width:min(100% - 28px,1100px)}.setup{padding:19px}.checks{grid-template-columns:1fr}.panelrows{grid-template-columns:1fr}nav{gap:8px}.navcta{padding:8px 11px;font-size:.85rem}}
+    @media(prefers-reduced-motion:reduce){html{scroll-behavior:auto}}
   </style>
 </head>
 <body>
+  <header>
+    <div class="wrap topbar">
+      <a class="logo" href="#start" aria-label="Axiom Startseite"><span aria-hidden="true">🐸</span> AXIOM</a>
+      <nav aria-label="Hauptnavigation">
+        <a href="#funktionen">Funktionen</a>
+        <a href="#datenschutz">Datenschutz</a>
+        <a class="navcta" href="#setup">Axiom einrichten ↗</a>
+      </nav>
+    </div>
+  </header>
   <main>
-    <div class="mark" aria-hidden="true">🐸</div>
-    <h1>AXIOM</h1>
-    <h2>Your AI. Your Tools. Your Data.</h2>
-    <p>Eine datenschutzorientierte Plattform für deinen persönlichen KI-Assistenten. Wir bauen gerade das öffentliche Projektportal.</p>
-    <p><a href="https://github.com/JayD-labs/axiom-web">Projekt auf GitHub ansehen ↗</a></p>
-    <footer>Axiom Web · Coming Soon</footer>
+    <section id="start" class="wrap hero">
+      <div>
+        <div class="eyebrow">Personal AI · Privacy First · Open Development</div>
+        <h1>Your AI.<br>Your Tools.<br><span>Your Data.</span></h1>
+        <p class="lead">Ein persönlicher KI-Assistent, der sich an deine Möglichkeiten anpasst – nicht umgekehrt. Ohne Axiom-Konto, ohne zentrale Datensammlung und mit voller Kontrolle über deine Konfiguration.</p>
+        <div class="actions">
+          <a class="btn primary" href="#setup">Setup starten <span aria-hidden="true">↗</span></a>
+          <a class="btn" href="https://github.com/JayD-labs/axiom-web" target="_blank" rel="noopener noreferrer">Auf GitHub ansehen <span aria-hidden="true">↗</span></a>
+        </div>
+        <p class="hint">Axiom Web v0.1 · Öffentliches Projektportal im Aufbau</p>
+      </div>
+      <div class="hero-panel" aria-label="Vorschau auf das Axiom Control Center">
+        <div class="panelhead"><span>AXIOM / CONTROL CENTER</span><span class="status">Konzept</span></div>
+        <div class="avatar" aria-hidden="true">🐸</div>
+        <div class="paneltitle">AXIOM</div>
+        <div class="paneldesc">Ein Assistent. Deine Entscheidung.</div>
+        <div class="panelrows">
+          <div><strong>ChatGPT</strong>Als KI-Oberfläche</div>
+          <div><strong>Connectoren</strong>Nach Verfügbarkeit</div>
+          <div><strong>Eigene Daten</strong>Bei dir verwaltet</div>
+          <div><strong>Self-Hosting</strong>Optionaler Ausbau</div>
+        </div>
+      </div>
+    </section>
+    <section id="funktionen" class="section">
+      <div class="wrap">
+        <div class="sectiontop">
+          <div class="eyebrow">Warum Axiom?</div>
+          <h2>Einfach für Menschen.<br>Offen für Technik.</h2>
+          <p>Axiom hilft dir dabei, passende Integrationen und Betriebsarten zu wählen. Die KI-Funktionen bleiben an die jeweiligen Dienste und deren Berechtigungen gebunden.</p>
+        </div>
+        <div class="cards">
+          <article class="card"><span class="symbol" aria-hidden="true">🧠</span><h3>Ein zentraler Assistent</h3><p>Skills und spezialisierte Rollen helfen bei Code, Dokumenten, Organisation und vielen weiteren Aufgaben.</p></article>
+          <article class="card"><span class="symbol" aria-hidden="true">🔌</span><h3>Flexible Integrationen</h3><p>ChatGPT-Plugins und optional eigene Infrastruktur – abhängig davon, welche Funktionen dein Konto tatsächlich bietet.</p></article>
+          <article class="card"><span class="symbol" aria-hidden="true">🛡️</span><h3>Datensparsam gedacht</h3><p>Kein Axiom-Nutzerkonto für dieses Portal. Deine Auswahl wird hier weder hochgeladen noch gespeichert.</p></article>
+        </div>
+      </div>
+    </section>
+    <section id="setup" class="section">
+      <div class="wrap">
+        <div class="sectiontop setupintro">
+          <div class="eyebrow">Interaktiver Entwurf</div>
+          <h2>Finde dein Axiom-Setup.</h2>
+          <p>Wähle aus, was du nutzen möchtest. Deine Auswahl wird nur hier im Browser verarbeitet. Kein Login, kein Absenden an einen Server.</p>
+        </div>
+        <div class="setup setupgrid">
+          <div>
+            <label for="plan">Dein ChatGPT-Plan</label>
+            <select id="plan">
+              <option value="free">Free</option>
+              <option value="plus" selected>Plus</option>
+              <option value="pro">Pro</option>
+              <option value="business">Business</option>
+              <option value="enterprise">Enterprise / Edu</option>
+            </select>
+            <label for="mode">Gewünschte Betriebsart</label>
+            <select id="mode">
+              <option value="chatgpt">ChatGPT + verfügbare Plugins</option>
+              <option value="hybrid">Hybrid mit eigener Infrastruktur</option>
+              <option value="bridge">Eigener MCP-Server (Advanced)</option>
+            </select>
+            <label>Interessante Integrationen (optional)</label>
+            <div class="checks">
+              <label class="check"><input type="checkbox" value="github"> GitHub</label>
+              <label class="check"><input type="checkbox" value="outlook"> Outlook</label>
+              <label class="check"><input type="checkbox" value="calendar"> Kalender</label>
+              <label class="check"><input type="checkbox" value="remote-desktop"> Remote Desktop</label>
+            </div>
+            <p class="subtle">Dies ist ein Konfigurationsvorschlag, keine Kontoerkennung oder automatische Installation.</p>
+          </div>
+          <div class="result" aria-live="polite" aria-atomic="true">
+            <small>Dein persönlicher Vorschlag</small>
+            <h3 id="result-title">Axiom Personal</h3>
+            <p id="result-description">ChatGPT bleibt deine KI-Oberfläche.</p>
+            <ul id="result-steps">
+              <li>Verfügbare Plugins prüfen</li>
+              <li>Nur benötigte Zugriffe erlauben</li>
+            </ul>
+            <p id="result-warning" class="subtle"></p>
+            <button class="btn primary" type="button" id="export">Konfiguration lokal herunterladen ↓</button>
+            <p class="subtle">Der Download entsteht nur auf deinem Gerät; es wird keine Datei an Axiom übertragen.</p>
+          </div>
+        </div>
+      </div>
+    </section>
+    <section id="datenschutz" class="section">
+      <div class="wrap privacy">
+        <div>
+          <div class="eyebrow">Privacy by Design</div>
+          <h2>Deine Daten bleiben deine Entscheidung.</h2>
+          <p class="lead">Axiom Web verlangt keine Registrierung und sammelt keine Setup-Eingaben. Du kannst eine Konfiguration freiwillig als Datei auf dein eigenes Gerät herunterladen.</p>
+          <p class="note">Transparent wichtig: Diese öffentliche Seite wird von GitHub Pages ausgeliefert. Dabei können technisch notwendige Verbindungsdaten beim Hoster verarbeitet werden. Wer externe KI-Dienste oder Connectoren verwendet, unterliegt zusätzlich deren Datenschutzbedingungen. Axiom Web überträgt deine Setup-Auswahl nicht an diese Dienste.</p>
+        </div>
+        <div class="privacybox">
+          <div><strong>✓</strong> Kein Benutzerkonto</div>
+          <div><strong>✓</strong> Keine Analytics- oder Tracking-Skripte</div>
+          <div><strong>✓</strong> Keine externen Schriftarten oder CDNs</div>
+          <div><strong>✓</strong> Keine Speicherung der Auswahl im Browser</div>
+          <div><strong>✓</strong> Export nur auf ausdrücklichen Klick</div>
+        </div>
+      </div>
+    </section>
   </main>
+  <footer>
+    <div class="wrap footer">
+      <span>© Axiom 🐸 · Your AI. Your Tools. Your Data.</span>
+      <span><a href="#datenschutz">Datenschutz</a><a href="https://github.com/JayD-labs/axiom-web" rel="noopener noreferrer" target="_blank">Quellcode ↗</a></span>
+    </div>
+  </footer>
+  <script>
+    (() => {
+      'use strict';
+      const plan = document.getElementById('plan');
+      const mode = document.getElementById('mode');
+      const title = document.getElementById('result-title');
+      const description = document.getElementById('result-description');
+      const steps = document.getElementById('result-steps');
+      const warning = document.getElementById('result-warning');
+      const boxes = Array.from(document.querySelectorAll('.check input'));
+      const planNames = {free:'Basic',plus:'Personal',pro:'Developer',business:'Workspace',enterprise:'Organization'};
+      const allowed = ['github','outlook','calendar','remote-desktop'];
+
+      function config() {
+        return {
+          schemaVersion: 1,
+          plan: plan.value,
+          mode: mode.value,
+          integrations: boxes.filter(box => box.checked && allowed.includes(box.value)).map(box => box.value),
+          note: 'Lokaler Konfigurationsentwurf. Keine automatische Verbindung, Freigabe oder Installation.'
+        };
+      }
+
+      function render() {
+        const data = config();
+        title.textContent = 'Axiom ' + planNames[data.plan];
+        const descriptions = {
+          chatgpt: 'Nutze ChatGPT als KI-Oberfläche mit deinen tatsächlich verfügbaren Plugins.',
+          hybrid: 'Kombiniere ChatGPT mit deiner eigenen Infrastruktur, soweit die erforderlichen Connectoren verfügbar sind.',
+          bridge: 'Plane einen selbstverwalteten MCP-Server. Die konkreten Möglichkeiten hängen von deinem ChatGPT-Plan und den Freigaben ab.'
+        };
+        description.textContent = descriptions[data.mode];
+        const guidance = [
+          'Verfügbarkeit und Berechtigungen im eigenen Konto prüfen.',
+          'Nur die wirklich nötigen Integrationen autorisieren.',
+          'Keine privaten Zugangsdaten in öffentliche Konfigurationen schreiben.'
+        ];
+        if (data.integrations.length) guidance.push('Gewählte Optionen: ' + data.integrations.join(', ') + '.');
+        steps.replaceChildren(...guidance.map(message => {const item = document.createElement('li');item.textContent = message;return item;}));
+        warning.textContent = data.mode === 'bridge'
+          ? 'Hinweis: Direkte MCP-Funktionen und Schreibrechte sind plan- und workspaceabhängig. Ein Self-Hosting-Server allein schaltet sie nicht frei.'
+          : 'Hinweis: Die Auswahl erkennt keine vorhandenen Plugins, Verbindungen oder Kontorechte automatisch.';
+      }
+
+      function exportConfig() {
+        const blob = new Blob([JSON.stringify(config(),null,2) + '\n'], {type:'application/json'});
+        const url = URL.createObjectURL(blob);
+        const link = document.createElement('a');
+        link.href = url;
+        link.download = 'axiom-konfiguration.json';
+        document.body.appendChild(link);
+        link.click();
+        link.remove();
+        setTimeout(() => URL.revokeObjectURL(url), 1000);
+      }
+
+      plan.addEventListener('change', render);
+      mode.addEventListener('change', render);
+      boxes.forEach(box => box.addEventListener('change', render));
+      document.getElementById('export').addEventListener('click', exportConfig);
+      render();
+    })();
+  </script>
 </body>
 </html>
