@@ -116,7 +116,7 @@ function createBrowser() {
   const ctx = vm.createContext({
     window:{},document:doc,Blob,URL:api,setTimeout() {}
   });
-  for (const name of ["assets/js/setup-content.js","assets/js/setup-wizard-data.js","assets/js/setup-export.js","assets/js/setup.js"]) vm.runInContext(read(name),ctx,{filename:name});
+  for (const name of ["assets/js/setup-content.js","assets/js/agent-catalogue.js","assets/js/setup-wizard-data.js","assets/js/setup-export.js","assets/js/setup.js"]) vm.runInContext(read(name),ctx,{filename:name});
   function choose(group,value) {
     const labels = doc.getElementById("wizard-"+group).querySelectorAll(".wizard-choice");
     const input = labels.map(label=>label.querySelector("input")).find(input=>input.value===value);
@@ -163,6 +163,7 @@ test("Regression: displayed multi-device selection and compatibility match JSON 
   assert.deepEqual(data.selection.integrations,["github"]);
   assert.equal(data.selection.mode,"hybrid");
   assert.equal(data.compatibility.status,"conditional");
+  assert.deepEqual(data.agentPackage.agentIds,["orchestrator","infrastructure","code"]);
   assert.equal(data.summary,summary);
   assert.equal(data.hardware.assignments.length,2);
   assert.ok(data.hardware.prerequisites.some(s=>s.includes("Raspberry Pi [Remote-Ziel")));
@@ -174,6 +175,7 @@ test("Regression: displayed multi-device selection and compatibility match JSON 
   assert.ok(markdown.contents.includes(summary));
   assert.match(markdown.contents,/Status: Nur unter Voraussetzungen/);
   assert.match(markdown.contents,/## Hardware & Netzwerk/);
+  assert.match(markdown.contents,/## Ausgewählte Axiom-Rollen/);
   assert.match(markdown.contents,/Raspberry Pi \[Remote-Ziel/);
   assert.match(markdown.contents,/macOS \[Entwicklung/);
 });

@@ -1,4 +1,4 @@
-/* Axiom Setup Wizard V1.0 – ausschließlich lokale, deterministische Regeln.
+/* Axiom Setup Wizard V1.2 – ausschließlich lokale, deterministische Regeln.
  * Offizielle Produktvorgaben: siehe documentation; Verfügbarkeit immer im Konto prüfen.
  */
 (function () {
@@ -288,9 +288,12 @@
       "Der Wizard installiert keine Programme, verbindet keine Konten und bestätigt keine erfolgreichen Tests.",
       "Axiom Independent mit mitgeliefertem KI-Modell, vollständiger MCP-Server-Distribution und automatischem Deployment ist noch nicht veröffentlicht."
     ];
+    const agentCatalogue = window.AxiomAgentCatalogue;
+    if (!agentCatalogue || typeof agentCatalogue.resolve !== "function") throw new Error("Axiom-Agentenkatalog fehlt.");
+    const agentPackage = agentCatalogue.resolve({mode: config.mode, integrations: ids});
     const compatibility = blockers.length ? "blocked" : conditions.length ? "conditional" : "supported";
     return {
-      schemaVersion: 3,
+      schemaVersion: 4,
       selection: {plan: config.plan, hardware: hardwareIds, hardwareRoles: roleIds, mode: config.mode, integrations: ids},
       labels: {plan: p.name, hardware: devices.map(function (device) { return device.label; }), mode: m.name, integrations: ids.map(function (id) {return catalogue.integrations[id].name;})},
       compatibility: {status: compatibility, blockers: blockers, conditions: conditions, warnings: warnings},
@@ -303,12 +306,13 @@
       },
       software: unique(needed.concat(h.software)),
       connectors: unique(connectors),
+      agentPackage: agentPackage,
       steps: steps,
       security: unique(security),
       tests: tests,
       unavailable: availability,
       docs: documentation,
-      notice: "Konfigurationsleitfaden, keine erfolgreiche Installation, Freigabe oder Verbindung bestätigt. Stand: Oktober 2026."
+      notice: "Konfigurationsleitfaden inklusive Agenten-/Skill-Auswahl, keine erfolgreiche Installation, Freigabe oder Verbindung bestätigt. Stand: Oktober 2026."
     };
   }
   window.AxiomWizardRules = Object.freeze({hardware: hardware, roles: roles, documentation: documentation, special: special, validateConfig: validateConfig, buildGuide: buildGuide});

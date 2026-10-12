@@ -19,9 +19,10 @@ jobs:
       - name: Check JavaScript syntax
         run: |
           node --check assets/js/setup-content.js
+          node --check assets/js/agent-catalogue.js
           node --check assets/js/setup-wizard-data.js
           node --check assets/js/setup-export.js
           node --check assets/js/setup.js
           node --check tests/wizard.test.cjs
-      - name: Test hardware, roles, compatibility and exports
+      - name: Test wizard, agents, skills, security and exports
         run: node --test tests/*.test.cjs

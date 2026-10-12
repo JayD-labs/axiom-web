@@ -4,14 +4,15 @@
 
 [Axiom Web öffnen](https://axiom.jd-schuldt.de) · [GitHub-Repository](https://github.com/JayD-labs/axiom-web)
 
-Axiom Web ist die öffentliche Projektwebsite von **Axiom 🐸**, einem modular gedachten persönlichen KI-Assistenten. Der integrierte **Setup Wizard V1.1** hilft Besucherinnen und Besuchern, aus ihrem ChatGPT-/KI-Zugang, ihrer vorhandenen Hardware, der gewünschten Betriebsart und optionalen Integrationen eine individuelle Einrichtungsanleitung zusammenzustellen.
+Axiom Web ist die öffentliche Projektwebsite von **Axiom 🐸**, einem modular gedachten persönlichen KI-Assistenten. Der integrierte **Setup Wizard V1.2** hilft Besucherinnen und Besuchern, aus ihrem ChatGPT-/KI-Zugang, ihrer vorhandenen Hardware, der gewünschten Betriebsart und optionalen ChatGPT-Apps/Plugins eine individuelle Einrichtungsanleitung zusammenzustellen.
 
 > **Projektstatus (Oktober 2026):** Website und Wizard sind verfügbar. Ein für alle öffentlich installierbares Axiom-Plugin, ein Axiom-Installer und eine vollständige eigenständige Axiom-KI sind **noch nicht veröffentlicht**. Der Wizard installiert keine Software und stellt keine Verbindungen selbst her.
 
 ## Inhaltsverzeichnis
 
 - [Funktionsumfang](#funktionsumfang)
-- [Setup Wizard V1.1](#setup-wizard-v10)
+- [Setup Wizard V1.2](#setup-wizard-v12)
+- [Axiom Agents & Skills V1.2](#axiom-agents--skills-v12)
 - [Kompatibilitätsprüfung](#kompatibilitätsprüfung)
 - [Ergebnis und Export](#ergebnis-und-export)
 - [Projektarchitektur](#projektarchitektur)
@@ -33,7 +34,7 @@ Axiom Web ist die öffentliche Projektwebsite von **Axiom 🐸**, einem modular 
 - **Lokaler JSON- und Markdown-Export** nach explizitem Klick.
 - Bestehendes dunkles **JD Design System** mit responsiven Auswahlkarten und Fokus-Styling.
 
-## Setup Wizard V1.1
+## Setup Wizard V1.2
 
 Auf der Website **„Axiom einrichten“** auswählen und die fünf Schritte durchgehen.
 
@@ -91,7 +92,7 @@ Beispiel: Raspberry Pi → MCP-Server; Mini-PC → Backup; macOS → Entwicklung
 
 Ein **MCP-Server stellt Werkzeuge bereit, ersetzt aber kein Sprachmodell**. Bei ChatGPT als Modell ist ein lokales LLM nicht erforderlich. Wer unabhängig von ChatGPT sein möchte, benötigt einen eigenen MCP-fähigen KI-Client und eine passende Modellquelle.
 
-### Schritt 4 — Integrationen (Mehrfachauswahl)
+### Schritt 4 — ChatGPT-Apps/Plugins (Mehrfachauswahl)
 
 Aktuell dokumentierte Optionen:
 
@@ -100,9 +101,9 @@ Aktuell dokumentierte Optionen:
 | GitHub | Repository, Issues und Commits lesen | Repository-Freigaben; Schreiben gesondert autorisieren |
 | Outlook E-Mail | Betreffzeilen oder relevante E-Mails lesen | Microsoft-Berechtigungen; Versand ist eine separate Aktion |
 | Kalender | Nächste Termine abrufen | Kalender-Zugriff und Zeitzonen |
-| Remote Desktop / Server | Erlaubtes Testsystem lesend prüfen | Erreichbares Gerät, Connector, enge Datei-/Tool-Rechte |
+| Remote Desktop Commander / Server | Erlaubtes Testsystem lesend prüfen | Erreichbares Gerät, Connector, enge Datei-/Tool-Rechte |
 
-Für jede ausgewählte Integration erscheinen Anleitungen und Testfragen passend zur Betriebsart. Weitere Apps/Plugins sind eine spätere Erweiterung und nicht als bereits verfügbar zu verstehen.
+Für jede ausgewählte App erscheinen Anleitungen und Testfragen passend zur Betriebsart. Die Auswahl bedeutet nicht, dass eine App installiert, im Konto verfügbar oder verbunden ist. Remote Desktop Commander bleibt als typische Hybrid-Option enthalten, aber nur soweit es für Konto und Zielsystem tatsächlich angeboten wird.
 
 ### Schritt 5 — Individuelle Anleitung
 
@@ -116,6 +117,8 @@ Das Ergebnis enthält:
 6. Berechtigungshinweise, Sicherheitsmaßnahmen und möglichst ungefährliche Lesetests.
 7. Noch nicht öffentlich verfügbare Axiom-Funktionen.
 8. Links zu weiterführender Dokumentation und lokale Export-Schaltflächen.
+
+Zusätzlich ermittelt V1.2 aus Betriebsart und App-Auswahl passende Axiom-Rollen und Skills. Diese Auswahl ist eine lokale, exportierbare Konfigurationsgrundlage und erstellt keine Tools oder Berechtigungen.
 
 ## Kompatibilitätsprüfung
 
@@ -155,10 +158,10 @@ Der Wizard berechnet die Anleitung im Browser und lädt **nur auf ausdrückliche
 
 | Dateiname | Inhalt |
 | --- | --- |
-| `axiom-setup-v1.1.json` | Auswahl, Kompatibilität, Hardware, Software, Connectoren, Schritte, Sicherheitsmaßnahmen und Tests |
-| `axiom-setup-v1.1.md` | Lesbare Markdown-Anleitung mit denselben thematischen Informationen |
+| `axiom-setup-v1.2.json` | Auswahl, Kompatibilität, Hardware, Software, Connectoren, Rollen, Skills, Schritte, Sicherheitsmaßnahmen und Tests |
+| `axiom-setup-v1.2.md` | Lesbare Markdown-Anleitung mit denselben thematischen Informationen |
 
-Das aktuelle **JSON-Schema hat `schemaVersion: 3`**. Hardware wird als **Array** gespeichert, um mehrere Geräte zu unterstützen:
+Das aktuelle **JSON-Schema hat `schemaVersion: 4`**. Hardware wird als **Array** gespeichert, um mehrere Geräte zu unterstützen. Neu ist `agentPackage`: die lokal berechnete Rollen-/Skill-Auswahl.
 
 ```json
 {
@@ -176,6 +179,48 @@ Geräterollen-IDs: `remote`, `mcp`, `client`, `storage`, `admin`, `other`. `sele
 
 Dies zeigt **nur den Ausschnitt `selection`** und kein vollständiges Exportbeispiel. Die Auswahl enthält keine Zugangsdaten und weist keine Verbindung als erfolgreich aus.
 
+## Axiom Agents & Skills V1.2
+
+| Begriff | Bedeutung in Axiom Web |
+| --- | --- |
+| Agentenrolle | Zuständigkeit, Übergaben und Grenzen für einen Aufgabenbereich |
+| Markdown-Anweisung | Lesbare Arbeitsregel; führt selbst keinen Code aus |
+| Skill | Versionierte, wiederverwendbare Instruktion mit Aktivierung und Sicherheitsgrenzen |
+| MCP-Tool / Connector | Technische Fähigkeit eines externen, tatsächlich verbundenen Systems; nicht Teil dieses Exports |
+
+Der zentrale Katalog [`assets/axiom/catalogue.json`](assets/axiom/catalogue.json) enthält **12 Agentenrollen** und das vollständige **30-Skill-Inventar** des Axiom-Plugins. Der Browser verwendet nur die deterministischen Auswahlregeln in `assets/js/agent-catalogue.js`; er lädt keine Katalogdaten nach und verbindet nichts.
+
+| Agent | Verwendete Skills |
+| --- | --- |
+| Axiom Orchestrator | Orchestrator, Actions, Capabilities, Runtime, Settings, State, Verification, Workflows |
+| Brain | Brain, Documents, Contacts |
+| Code | Code, Project Manager, Research |
+| Security | Security, Auth, Connectors, Connect |
+| Design | Design |
+| Mail | Mail, Notifications |
+| Calendar | Calendar, Automation |
+| Finance | Finance |
+| Infrastructure | Infrastructure, Maintenance |
+| Learning | Learning, Career |
+| Health | Health |
+| Onboarding | Onboarding |
+
+Die Skillmatrix steht in [`assets/axiom/skills.md`](assets/axiom/skills.md), die Agentendefinitionen in `assets/axiom/agents/` und die dauerhafte Hauptchat-/Arbeitschat-Regel in [`axiom-orchestrator.md`](axiom-orchestrator.md).
+
+### Neuen Agenten oder Skill ergänzen
+
+1. Eindeutige, kleingeschriebene ID im Katalog anlegen (`axiom-…` für Skills).
+2. Zweck, Aktivierung, Sicherheitsgrenzen und Ausführungsmodell dokumentieren.
+3. Bei Agenten eine Markdown-Definition ergänzen und nur bekannte Skill-IDs zuordnen.
+4. Für eine automatische Wizard-Auswahl die Regel in `assets/js/agent-catalogue.js` ergänzen.
+5. Tests aktualisieren und ausführen. Keine Tool-, Connector- oder Installationsbehauptung ohne reale Integration hinzufügen.
+
+### Geplanter privater Plugin-Export
+
+V1.2 erstellt **noch keine ZIP-Datei**. `assets/axiom/plugin-package.schema.json` ist ein bewusst als Entwurf markierter, Axiom-eigener Vertrag für einen späteren lokalen Export. Er ist **kein ChatGPT-Manifest** und wird nicht als ChatGPT-importierbar ausgegeben.
+
+Ein künftiger Generator darf nur die gewählten Markdown-Anweisungen, Skill-IDs und secret-freie Einstellungen bündeln. Ob, wie und für welches Konto daraus ein privates ChatGPT-Plugin/App-Paket entsteht, wird erst anhand des dann aktuellen ChatGPT Plugin Creators, der Kontoberechtigungen und der offiziellen Dokumentation implementiert. MCP-Verbindungen, OAuth, Tunnel und API-Schlüssel bleiben außerhalb der ZIP und werden separat minimalberechtigt eingerichtet.
+
 ## Projektarchitektur
 
 Axiom Web ist eine **statische Website** ohne erforderliches Backend, Nutzerdatenbank oder Build-Tool.
@@ -185,16 +230,24 @@ axiom-web/
 ├── CNAME
 ├── index.html
 └── assets/
+    ├── axiom/
+    │   ├── agents/              # Versionierte Rollenbeschreibungen
+    │   ├── catalogue.json       # Maschinenlesbare 12 Rollen / 30 Skills
+    │   ├── skills.md            # Lesbare Skillmatrix
+    │   └── plugin-package.schema.json
     ├── css/
     │   ├── jd-design-tokens.css
     │   └── styles.css
     └── js/
         ├── setup-content.js
+        ├── agent-catalogue.js   # Lokale Rollen-/Skill-Auswahl
         ├── setup-wizard-data.js
         ├── setup-export.js
         └── setup.js
 ├── tests/
+│   ├── agent-catalogue.test.cjs
 │   └── wizard.test.cjs
+├── axiom-orchestrator.md
 └── .github/workflows/
     └── ci.yml
 ```
@@ -205,9 +258,11 @@ axiom-web/
 | `assets/css/jd-design-tokens.css` | Gemeinsame JD-Farb-, Fokus- und Design-Tokens |
 | `assets/css/styles.css` | Seitendesign, Auswahlkarten, responsive Darstellung |
 | `assets/js/setup-content.js` | ChatGPT-Pläne, Betriebsarten, Integrations- und Kombinationstexte (`window.AxiomGuide`) |
+| `assets/js/agent-catalogue.js` | Lokale Regelauflösung Betriebsart/App → Rollen und Skills |
 | `assets/js/setup-wizard-data.js` | Hardware-Daten, Kompatibilitätsprüfung und Leitfadenerzeugung (`window.AxiomWizardRules`) |
 | `assets/js/setup-export.js` | Lokaler testbarer JSON- und Markdown-Export |
 | `assets/js/setup.js` | Browserzustand, Geräterollen, Navigation und Download |
+| `assets/axiom/catalogue.json` | Versioniertes, maschinenlesbares Agenten-/Skill-Inventar |
 | `CNAME` | Custom Domain für GitHub Pages |
 
 **Datenfluss:**
@@ -226,7 +281,7 @@ Anzeige im Browser
 JSON- / Markdown-Download
 ```
 
-Die JavaScript-Dateien müssen in dieser Reihenfolge geladen werden: **`setup-content.js` → `setup-wizard-data.js` → `setup-export.js` → `setup.js`**. Die JD-Design-Tokens bleiben die Grundlage der CSS-Farben.
+Die JavaScript-Dateien müssen in dieser Reihenfolge geladen werden: **`setup-content.js` → `agent-catalogue.js` → `setup-wizard-data.js` → `setup-export.js` → `setup.js`**. Die JD-Design-Tokens bleiben die Grundlage der CSS-Farben.
 
 ## Lokal starten
 
@@ -246,6 +301,7 @@ Für eine optionale JavaScript-Syntaxprüfung, falls Node.js vorhanden ist:
 
 ```bash
 node --check assets/js/setup-content.js
+node --check assets/js/agent-catalogue.js
 node --check assets/js/setup-wizard-data.js
 node --check assets/js/setup-export.js
 node --check assets/js/setup.js
@@ -263,6 +319,7 @@ Der Setup Wizard folgt einem **Local-first-Prinzip**:
 - Berechnung und Anzeige erfolgen im lokalen JavaScript.
 - Keine fremden CDNs; CSS und JavaScript werden aus der Website ausgeliefert.
 - Kein automatisches Verbinden von Apps, keine Ausführung von Installationen und kein verdeckter Schreibzugriff.
+- Agenten-/Skill-Auswahl rein lokal; keine Profile, Prompts oder Konfigurationen an Axiom übertragen.
 - Lokaler Export nur bei aktivem Klick.
 - Zugangsdaten, Tokens oder Secrets niemals in öffentliches Git oder JSON/Markdown-Exporte eintragen.
 
@@ -280,6 +337,7 @@ Node.js 22, ausschließlich eingebaute Module `node:test`, `node:vm`, `node:asse
 
 ```bash
 node --check assets/js/setup-content.js
+node --check assets/js/agent-catalogue.js
 node --check assets/js/setup-wizard-data.js
 node --check assets/js/setup-export.js
 node --check assets/js/setup.js
@@ -287,7 +345,7 @@ node --check tests/wizard.test.cjs
 node --test tests/*.test.cjs
 ```
 
-Die 13 Tests prüfen alle 64 gültigen Hardwareauswahlen (inklusive `none`), jede der sechs Rollen für alle sechs konkreten Geräte, fehlende Rollen, ungültige Eingaben, nicht unterstützte Konfigurationen, JSON/Markdown, Sicherheitsbedingungen und statische HTML/CSS-/Fokusanbindungen.
+Die Tests prüfen alle 64 gültigen Hardwareauswahlen (inklusive `none`), jede der sechs Rollen für alle sechs konkreten Geräte, fehlende Rollen, ungültige Eingaben, nicht unterstützte Konfigurationen, JSON/Markdown, Sicherheitsbedingungen und statische HTML/CSS-/Fokusanbindungen. Zusätzlich prüfen sie das vollständige 30-Skill-Inventar, eindeutige IDs, Agent-zu-Skill-Zuordnungen, fehlende Agentendateien, ungültige Rollenauflösung und die secret-freie, ausdrücklich nicht importierbare Paketgrundlage.
 **Matrix:** 18.432 Kombinationen = 64 Hardwareauswahlen × 6 Pläne × 3 Betriebsarten × 16 Integrationsauswahlen.
 
 **Regressionstest für die Exporte:** `tests/wizard-export-ui.test.cjs` simuliert DOM-Eingaben, Zurück-/Weiter-Navigation und die echten JSON-/Markdown-Download-Handler für Plus + Raspberry Pi + macOS + Hybrid + GitHub. Sichtbare Zusammenfassung und Status werden mit beiden exportierten Dateien verglichen. Zusätzlich wird die exklusive Hardwareauswahl `none` geprüft. Der Test nutzt eine kleine DOM-Simulation, **keinen echten Browser**.
@@ -311,11 +369,11 @@ Die Node-Tests sind keine ausgeführten Browser-End-to-End-Tests. **Echte Browse
 
 ## Projektstatus und Roadmap
 
-**Bereits umgesetzt:** Projektwebsite, Setup Wizard V1.1, Hardware-Mehrfachauswahl mit Geräterollen, Node-Testmatrix und GitHub Actions, kontextabhängige Kompatibilitätsregeln, vier Integrationskategorien, responsive Gestaltung sowie JSON- und Markdown-Export.
+**Bereits umgesetzt:** Projektwebsite, Setup Wizard V1.2, Hardware-Mehrfachauswahl mit Geräterollen, Node-Testmatrix und GitHub Actions, kontextabhängige Kompatibilitätsregeln, vier auswählbare ChatGPT-App-/Plugin-Kategorien, lokale Rollen-/Skill-Auswahl, responsive Gestaltung sowie JSON- und Markdown-Export.
 
 **Noch nicht fertig / öffentlich verfügbar:**
 
-- Öffentlich installierbare vollständige Axiom-Agenten-/Plugin-Distribution.
+- Vollständig implementierter ZIP-Generator und eine anhand der aktuellen ChatGPT-Plugin-Anforderungen verifizierte Importstrecke.
 - Automatische Serverinstallation, MCP-Kopplung oder Berechtigungsfreigabe.
 - Vollständiger unabhängiger Axiom-KI-Client mit mitgeliefertem lokalem Modell.
 - Automatisierte Browser-End-to-End- und visuelle Responsive-Tests.

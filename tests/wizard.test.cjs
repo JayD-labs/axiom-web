@@ -7,7 +7,7 @@ const vm = require("node:vm");
 const root = path.resolve(__dirname, "..");
 const source = name => fs.readFileSync(path.join(root, name), "utf8");
 const sandbox = {window: {}};
-for (const name of ["assets/js/setup-content.js","assets/js/setup-wizard-data.js","assets/js/setup-export.js"]) {
+for (const name of ["assets/js/setup-content.js","assets/js/agent-catalogue.js","assets/js/setup-wizard-data.js","assets/js/setup-export.js"]) {
   vm.runInNewContext(source(name), sandbox, {filename:name});
 }
 const catalogue=sandbox.window.AxiomGuide;
@@ -113,15 +113,17 @@ test("Invalid objects, input types, role and integration identifiers are rejecte
     cfg({hardware:["none"],roles:{none:"admin"}})
   ]) assert.throws(()=>guide(invalid));
 });
-test("JSON export uses schemaVersion 3 and preserves device-role mapping",()=>{
+test("JSON export uses schemaVersion 4 and preserves device-role mapping plus agents",()=>{
   const c=cfg({plan:"pro",mode:"bridge",hardware:["pi","linux","mac"],roles:{pi:"mcp",linux:"storage",mac:"admin"},integrations:["github","calendar"]});
   const before=JSON.stringify(c);
   const value=exporter.json(guide(c));
   const data=JSON.parse(value);
-  assert.equal(data.schemaVersion,3);
+  assert.equal(data.schemaVersion,4);
   assert.equal(JSON.stringify(data.selection.hardwareRoles),JSON.stringify(c.roles));
   assert.equal(JSON.stringify(data.selection.hardware),JSON.stringify(c.hardware));
   assert.equal(data.hardware.assignments.length,3);
+  assert.deepEqual(data.agentPackage.agentIds,["orchestrator","infrastructure","security","code","calendar"]);
+  assert.ok(data.agentPackage.skillIds.includes("axiom-security"));
   assert.ok(value.endsWith("\n"));
   assert.equal(JSON.stringify(c),before);
 });
@@ -133,6 +135,7 @@ test("Markdown export includes roles, requirements, steps, status and safety not
   assert.match(md,/Raspberry Pi: Eigener MCP-Server/);
   assert.match(md,/macOS: Entwicklung/);
   assert.match(md,/## Schritt-für-Schritt-Einrichtung/);
+  assert.match(md,/## Ausgewählte Axiom-Rollen/);
   assert.match(md,/## Kompatibilität/);
   assert.match(md,/Keine Installation, Berechtigung oder Verbindung wurde/);
 });
@@ -140,7 +143,7 @@ test("HTML structure, script load order, focus hooks, responsive rules and priva
   const html=source("index.html"), css=source("assets/css/styles.css"), ui=source("assets/js/setup.js");
   for(const id of ["wizard-device-roles","wizard-roles-panel","wizard-role-error","wizard-progress","wizard-back","wizard-next",
     ...Array.from({length:5},(_,i)=>"wizard-step-heading-"+i)]) assert.ok(html.includes('id="'+id+'"'),id);
-  const scripts=["setup-content.js","setup-wizard-data.js","setup-export.js","setup.js"];
+  const scripts=["setup-content.js","agent-catalogue.js","setup-wizard-data.js","setup-export.js","setup.js"];
   for(let i=1;i<scripts.length;i++) assert.ok(html.indexOf('src="./assets/js/'+scripts[i-1]+'"')<html.indexOf('src="./assets/js/'+scripts[i]+'"'));
   assert.match(html,/aria-live="assertive"/);
   assert.match(html,/tabindex="-1"/);
@@ -149,7 +152,7 @@ test("HTML structure, script load order, focus hooks, responsive rules and priva
   assert.match(ui,/\.focus\(\)/);
   assert.match(ui,/wizard-back/);
   assert.match(ui,/wizard-next/);
-  assert.match(ui,/axiom-setup-v1\.1\.json/);
+  assert.match(ui,/axiom-setup-v1\.2\.json/);
   assert.match(html,/connect-src 'none'/);
   for(const file of ["setup.js","setup-wizard-data.js","setup-export.js"]) {
     const data=source("assets/js/"+file);

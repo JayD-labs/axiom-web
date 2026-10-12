@@ -1,4 +1,4 @@
-/* Axiom Web Setup Wizard V1.1 – keine Requests, keine Cookies, kein Storage.
+/* Axiom Web Setup Wizard V1.2 – keine Requests, keine Cookies, kein Storage.
  * Die Auswahl bleibt ausschließlich im Arbeitsspeicher des Browsers.
  */
 (function () {
@@ -7,7 +7,7 @@
   const rules = window.AxiomWizardRules;
   if (!catalogue || !rules) return;
   const $ = function (id) { return document.getElementById(id); };
-  const stageLabels = ["KI / ChatGPT", "Hardware", "Betriebsart", "Integrationen", "Deine Anleitung"];
+  const stageLabels = ["KI / ChatGPT", "Hardware", "Betriebsart", "Apps / Plugins", "Deine Anleitung"];
   const state = {plan: "plus", hardware: new Set(["none"]), roles: {}, mode: "chatgpt", integrations: new Set()};
   let step = 0;
   const element = function (tag, text, cls) {
@@ -145,6 +145,9 @@
     textList(specs, guide.hardware.prerequisites.concat([guide.hardware.server, guide.hardware.network, guide.hardware.llm]), "Hardware & Netzwerk");
     textList(specs, guide.software, "Benötigte Software");
     textList(specs, guide.connectors.length ? guide.connectors : ["Keine weiteren Connectoren ausgewählt."], "Benötigte Connectoren");
+    textList(specs, guide.agentPackage.agents.map(function (agent) {
+      return agent.name + " → " + agent.skills.join(", ");
+    }), "Vorgeschlagene Axiom-Rollen & Skills");
     appendList($("wizard-result-steps"), guide.steps, true);
     appendList($("wizard-result-security"), guide.security);
     appendList($("wizard-result-tests"), guide.tests);
@@ -197,7 +200,7 @@
       p.name + " · " + p.tagline,
       hardwareNames + " · Voraussetzungen",
       m.name + " · " + m.slogan,
-      state.integrations.size + " Integration(en) gewählt"
+      state.integrations.size + " App(s) / Plugin(s) gewählt"
     ];
     const descriptions = [
       p.intro + " Grenzen: " + p.limits + " " + p.note,
@@ -205,7 +208,7 @@
       catalogue.combinations[state.mode][state.plan].message + " " + m.introduction,
       state.integrations.size
         ? Array.from(state.integrations).map(function (id) { return catalogue.integrations[id].name; }).join(", ") + ". Jede Verbindung benötigt eigene Freigaben und einen erfolgreichen Test."
-        : "Integrationen sind optional. Du kannst auch ohne zusätzliche Apps fortfahren."
+        : "Apps/Plugins sind optional. Du kannst auch ohne zusätzliche Verbindungen fortfahren."
     ];
     if (step < 4) {
       $("wizard-context").hidden = false;
@@ -259,7 +262,7 @@
     const url = URL.createObjectURL(blob);
     const a = element("a");
     a.href = url;
-    a.download = type === "json" ? "axiom-setup-v1.1.json" : "axiom-setup-v1.1.md";
+    a.download = type === "json" ? "axiom-setup-v1.2.json" : "axiom-setup-v1.2.md";
     document.body.append(a);
     a.click();
     a.remove();

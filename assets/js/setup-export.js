@@ -1,4 +1,4 @@
-/* Axiom Setup Wizard V1.1 – lokale, separat testbare Export-Serialisierung. */
+/* Axiom Setup Wizard V1.2 – lokale, separat testbare Export-Serialisierung. */
 (function () {
   "use strict";
   function markdown(guide) {
@@ -20,6 +20,9 @@
     section("Hardware & Netzwerk", guide.hardware.prerequisites.concat([guide.hardware.network, guide.hardware.server, guide.hardware.llm]));
     section("Software", guide.software);
     section("Connectoren", guide.connectors);
+    section("Ausgewählte Axiom-Rollen", guide.agentPackage.agents.map(function (agent) {
+      return agent.name + " (" + agent.skills.join(", ") + ")";
+    }));
     lines.push("## Schritt-für-Schritt-Einrichtung", "");
     guide.steps.forEach(function (item, i) { lines.push((i + 1) + ". **" + item.title + "** – " + item.detail); });
     lines.push("");
@@ -28,7 +31,7 @@
     section("Noch nicht verfügbar", guide.unavailable);
     lines.push("## Dokumentation", "");
     guide.docs.forEach(function (doc) { lines.push("- [" + doc.title + "](" + doc.url + ")"); });
-    lines.push("", "Keine Installation, Berechtigung oder Verbindung wurde durch diese Datei bestätigt.", "");
+    lines.push("", "Die Rollen und Skills sind exportierbare Anweisungen, keine installierten Tools. Keine Installation, Berechtigung oder Verbindung wurde durch diese Datei bestätigt.", "");
     return lines.join("\n");
   }
   function json(guide) { return JSON.stringify(guide, null, 2) + "\n"; }

@@ -309,7 +309,7 @@ window.AxiomGuide = Object.freeze({
       }
     },
     "remote-desktop": {
-      name: "Remote Desktop / Server", icon: "🖥️",
+      name: "Remote Desktop Commander / Server", icon: "🖥️",
       chatgpt: {
         description: "Ohne eigenen Rechner gibt es hier nichts fernzusteuern. Sobald du einen Pi, NAS oder Desktop einbindest, entspricht die Nutzung dem Hybrid-Modus.",
         needs: "Ein tatsächlich erreichbarer eigener Rechner und ein autorisierter Remote-Connector.",
@@ -317,7 +317,7 @@ window.AxiomGuide = Object.freeze({
         test: "„Zeige den Status meines Raspberry Pi.“"
       },
       hybrid: {
-        description: "Das ist die typische Hybrid-Integration: ein Connector vermittelt zwischen ChatGPT und deinem eigenen Pi, Mini-PC, NAS oder Desktop.",
+        description: "Das ist die typische Hybrid-Integration: ein Connector wie Remote Desktop Commander vermittelt zwischen ChatGPT und deinem eigenen Pi, Mini-PC, NAS oder Desktop – sofern er für dein Konto und Zielsystem verfügbar ist.",
         needs: "Eigenes Zielgerät, unterstützter Remote-Connector, Netzverbindung und minimal erforderliche Rechte.",
         steps: ["Connector auf dem autorisierten System einrichten.", "Pfade und zulässige Operationen explizit begrenzen.", "Per Lesezugriff Benutzer und Zielpfad prüfen; Änderungen separat freigeben."],
         test: "„Lies die Statusdatei auf meinem Server, ohne etwas zu verändern.“"
