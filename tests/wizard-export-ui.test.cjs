@@ -36,6 +36,7 @@ function createBrowser() {
         if (typeof child === "string") {
           this.append(new Element("#text", child));
         } else {
+          if (child.parent) child.parent.children.splice(child.parent.children.indexOf(child), 1);
           child.parent = this;
           this.children.push(child);
         }
@@ -88,10 +89,10 @@ function createBrowser() {
   };
   const ids = [
     "setup","wizard-device-roles","wizard-roles-panel","wizard-role-error",
-    "wizard-plans","wizard-hardware","wizard-modes","wizard-integrations",
+    "wizard-plans","wizard-hardware","wizard-modes","wizard-purposes","wizard-integrations","wizard-plugin-hint",
     "wizard-result-status","wizard-result-summary","wizard-result-issues",
     "wizard-result-specs","wizard-result-steps","wizard-result-security",
-    "wizard-result-tests","wizard-result-unavailable","wizard-result-docs",
+    "wizard-result-tests","wizard-result-unavailable","wizard-result-docs","wizard-result-connector-status","wizard-result-installation",
     "wizard-integration-guides","wizard-integration-title","wizard-context",
     "wizard-context-title","wizard-context-detail","wizard-context-status",
     "wizard-context-notes","wizard-back","wizard-next","wizard-current",
@@ -144,6 +145,7 @@ test("Regression: displayed multi-device selection and compatibility match JSON 
   app.role("pi","remote");
   app.role("mac","admin");
   app.choose("modes","hybrid");
+  app.choose("purposes","code");
   app.choose("integrations","github");
   // Drive the same Back/Next callbacks that an end user invokes.
   for(let i=0;i<4;i++) app.doc.getElementById("wizard-next").click();
@@ -161,6 +163,10 @@ test("Regression: displayed multi-device selection and compatibility match JSON 
   assert.deepEqual(data.selection.hardware,["pi","mac"]);
   assert.deepEqual(data.selection.hardwareRoles,{pi:"remote",mac:"admin"});
   assert.deepEqual(data.selection.integrations,["github"]);
+  assert.deepEqual(data.selection.purposes,["code"]);
+  assert.equal(data.schemaVersion,5);
+  assert.equal(data.installation.chatgptZipImportSupported,false);
+  assert.equal(data.integrationRequirements[0].status.connected,"unverified");
   assert.equal(data.selection.mode,"hybrid");
   assert.equal(data.compatibility.status,"conditional");
   assert.deepEqual(data.agentPackage.agentIds,["orchestrator","infrastructure","code"]);
@@ -176,6 +182,8 @@ test("Regression: displayed multi-device selection and compatibility match JSON 
   assert.match(markdown.contents,/Status: Nur unter Voraussetzungen/);
   assert.match(markdown.contents,/## Hardware & Netzwerk/);
   assert.match(markdown.contents,/## Ausgewählte Axiom-Rollen/);
+  assert.match(markdown.contents,/## Installation und manuelle Konfiguration/);
+  assert.match(markdown.contents,/nicht verbunden oder verifiziert/);
   assert.match(markdown.contents,/Raspberry Pi \[Remote-Ziel/);
   assert.match(markdown.contents,/macOS \[Entwicklung/);
 });
@@ -195,4 +203,18 @@ test("Regression: no-device selection remains exclusive in display and both expo
   const md=(await app.exportFile("markdown")).contents;
   assert.match(md,/Keine eigene Hardware/);
   assert.doesNotMatch(md,/Rolle einrichten: Raspberry Pi/);
+});
+
+test("V1.3 purpose recommendation never auto-connects a plugin",async()=>{
+  const app=createBrowser();
+  app.choose("purposes","files");
+  const hint=app.doc.getElementById("wizard-plugin-hint").textContent;
+  assert.match(hint,/Datei- \/ Serverintegration/);
+  assert.match(hint,/keine Installation/);
+  const config=JSON.parse((await app.exportFile("json")).contents);
+  assert.deepEqual(config.selection.purposes,["files"]);
+  assert.deepEqual(config.selection.integrations,[]);
+  assert.ok(config.agentPackage.agentIds.includes("brain"));
+  assert.equal(config.integrationRequirements.length,0);
+  assert.equal(config.installation.chatgptZipImportSupported,false);
 });
