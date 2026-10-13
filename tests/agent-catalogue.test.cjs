@@ -50,7 +50,7 @@ test("Browser selection selects valid roles and skills deterministically", () =>
     const declared = catalogue.agents.find(item => item.id === agent.id);
     assert.deepEqual(Array.from(agent.skills), declared.skills, agent.id + " keeps the central skill mapping");
   }
-  assert.deepEqual(Object.keys(resolver.profiles).sort(), agents.slice().sort());
+  assert.deepEqual(Object.keys(resolver.profiles).sort(), catalogue.agents.map(a=>a.id).sort());
   const all=resolver.resolve({mode:"chatgpt", integrations:[], purposes:["code","mail","calendar","server","files","finance","learning","design"]});
   assert.ok(all.agentIds.includes("health"));
   assert.ok(all.agentIds.includes("finance"));
