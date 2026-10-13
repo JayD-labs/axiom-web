@@ -122,7 +122,7 @@ test("JSON export uses schemaVersion 5 and preserves device-role mapping plus ag
   assert.equal(JSON.stringify(data.selection.hardwareRoles),JSON.stringify(c.roles));
   assert.equal(JSON.stringify(data.selection.hardware),JSON.stringify(c.hardware));
   assert.equal(data.hardware.assignments.length,3);
-  assert.deepEqual(data.agentPackage.agentIds,["orchestrator","infrastructure","security","code","calendar"]);
+  assert.deepEqual(data.agentPackage.agentIds,["orchestrator","onboarding","infrastructure","security","code","calendar"]);
   assert.ok(data.agentPackage.skillIds.includes("axiom-security"));
   assert.ok(value.endsWith("\n"));
   assert.equal(JSON.stringify(c),before);
@@ -177,6 +177,8 @@ test("V1.3 purpose selection maps to verified instruction-only agent description
   assert.equal(selected.integrationCatalogue.kind,"static-curated");
   assert.equal(selected.integrationRequirements.length,2);
   for(const requirement of selected.integrationRequirements){
+    assert.equal(requirement.status.selected,true);
+    assert.equal(requirement.status.configured,false);
     assert.equal(requirement.status.available,"unverified");
     assert.equal(requirement.status.installed,"unverified");
     assert.equal(requirement.status.connected,"unverified");
