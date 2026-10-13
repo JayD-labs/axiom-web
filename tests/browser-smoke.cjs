@@ -7,7 +7,7 @@ const root = path.resolve(__dirname,"..");
 const names = [process.env.CHROME_BIN,"google-chrome","chromium","chromium-browser"].filter(Boolean);
 const chrome = names.find(n=>spawnSync("sh",["-c",'command -v "$1"',"sh",n]).status===0);
 if(!chrome){console.log("SKIP: No Chrome/Chromium on CI runner");process.exit(0);}
-const smokePage = \`<!DOCTYPE html><html lang="de"><meta charset="utf-8"><title>Axiom Browser Smoke</title><body>
+const smokePage = `<!DOCTYPE html><html lang="de"><meta charset="utf-8"><title>Axiom Browser Smoke</title><body>
 <div id="smoke-result">WAITING</div><iframe id="site" src="/" style="width:1440px;height:850px;border:0"></iframe>
 <script>
 (function(){
@@ -55,7 +55,7 @@ const smokePage = \`<!DOCTYPE html><html lang="de"><meta charset="utf-8"><title>
     }catch(error){result.textContent='AXIOM_BROWSER_SMOKE_'+'FAIL: '+error.message;}
   },{once:true});
 })();
-</script></body></html>\`;
+</script></body></html>`;
 const server=http.createServer((req,res)=>{
   let pathname;
   try{pathname=decodeURIComponent(new URL(req.url,"http://localhost").pathname);}
@@ -76,7 +76,7 @@ server.listen(0,"127.0.0.1",()=>{
   const port=server.address().port;
   const args=["--headless=new","--no-sandbox","--disable-gpu","--disable-dev-shm-usage",
     "--no-first-run","--disable-background-networking","--virtual-time-budget=5000",
-    "--window-size=1560,950","--dump-dom",\`http://127.0.0.1:\${port}/__axiom_browser_smoke__\`];
+    "--window-size=1560,950","--dump-dom",`http://127.0.0.1:${port}/__axiom_browser_smoke__`];
   const child=spawn(chrome,args,{stdio:["ignore","pipe","pipe"]});
   let stdout="",stderr="";
   child.stdout.on("data",d=>{stdout+=d.toString();});
