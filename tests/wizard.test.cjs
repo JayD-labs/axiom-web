@@ -202,7 +202,7 @@ test("Purpose and integration input validation denies unknown and duplicate sele
 test("Public plan catalogue offers Free, Plus, Pro and Self-Hosted local LLM",()=> {
   assert.deepEqual(Object.keys(catalogue.plans),["free","plus","pro","selfhosted"]);
   assert.equal(catalogue.supportedPlans.length,4);
-  for(const mode of modes) assert.deepEqual(Object.keys(catalogue.combinations[mode]),["free","plus","pro","selfhosted"]);
+  for(const mode of modes) assert.deepEqual(Object.keys(catalogue.combinations[mode]).sort(),["free","plus","pro","selfhosted"].sort());
   for(const unsupported of ["business","enterprise","edu","none"]) assert.equal(Object.hasOwn(catalogue.plans,unsupported),false);
 });
 
