@@ -17,6 +17,9 @@ const smokePage = `<!DOCTYPE html><html lang="de"><meta charset="utf-8"><title>A
   frame.addEventListener('load',function(){
     try {
       const doc=frame.contentDocument, app=frame.contentWindow;
+      const favicon=doc.querySelector('link[rel="icon"]');
+      check(favicon && favicon.href.endsWith('/assets/favicon.svg'),'Axiom favicon missing');
+      check(Object.keys(app.AxiomGuide.plans).join(',')==='free,plus,pro','plan scope');
       const choice=(group,value)=>{
         const input=doc.querySelector('#wizard-'+group+' input[value="'+value+'"]');
         check(!!input,'missing '+group+'/'+value);input.click();
