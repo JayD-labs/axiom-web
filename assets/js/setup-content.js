@@ -244,6 +244,31 @@ window.AxiomGuide = Object.freeze({
       }
     }
   },
+  // Statischer, versionierter Katalog: NICHT der Live-Status eines ChatGPT-Kontos.
+  integrationCatalogue: {
+    version: "2026-10-13",
+    kind: "static-curated",
+    checkedInAccount: false,
+    note: "Kuratierte Vorschläge, keine Live-Suche. Verfügbarkeit und bereits verbundene Apps ausschließlich in ChatGPT prüfen."
+  },
+  purposes: {
+    code: {name:"Programmieren & Git", detail:"Repos, Issues und Code prüfen", integrations:["github"]},
+    mail: {name:"E-Mails organisieren", detail:"Posteingang, Suche und Entwürfe", integrations:["outlook"]},
+    calendar: {name:"Termine planen", detail:"Kalender und Verfügbarkeiten", integrations:["calendar"]},
+    server: {name:"Server verwalten", detail:"Status und sichere Diagnose", integrations:["remote-desktop","files"]},
+    files: {name:"Dateien & Second Brain", detail:"Freigegebene Dateien lesen und ordnen", integrations:["files","remote-desktop"]},
+    finance: {name:"Finanzen verstehen", detail:"Rollenhilfe ohne automatische Kontoverbindung", integrations:[]},
+    learning: {name:"Lernen", detail:"Wissen und Übungen ohne Zusatz-App", integrations:[]},
+    design: {name:"Design & Websites", detail:"Designrolle ohne notwendige Drittanbieter", integrations:[]},
+    research: {name:"Recherche", detail:"Quellen prüfen; weitere Tools nur nach Bedarf", integrations:["github"]}
+  },
+  integrationMeta: {
+    github: {provider:"GitHub / OpenAI-App", data:"Repository-Metadaten und ggf. Quellcode", permissions:"Repository-spezifischer Lesezugriff; Push nur nach separater Genehmigung", privacy:"Daten verlassen ggf. ChatGPT Richtung GitHub; Provider-Bedingungen prüfen", purpose:"Code & Projekte"},
+    outlook: {provider:"Microsoft / ChatGPT-App", data:"E-Mail-Inhalte und Metadaten", permissions:"Lesen bevorzugen; Entwürfe nur falls freigegeben; niemals selbst senden/weiterleiten/löschen", privacy:"Verarbeitung über ChatGPT und Microsoft; persönliche Kommunikation", purpose:"E-Mail"},
+    calendar: {provider:"Microsoft Outlook Calendar / ChatGPT-App", data:"Termine, Teilnehmer und Zeitzonen", permissions:"Kalender lesend; Termine ändern nur mit konkretem Auftrag", privacy:"Kalenderdaten über ChatGPT und Microsoft", purpose:"Planung"},
+    "remote-desktop": {provider:"Remote Desktop Commander (Drittanbieter)", data:"Freigegebene Dateien und Systeminformationen", permissions:"Testordner lesend; Shell/Root und pauschale Freigaben vermeiden", privacy:"Remote-Connector als zusätzlicher Datenverarbeiter: Dokumentation prüfen", purpose:"Eigene Geräte"},
+    files: {provider:"Eigener MCP-Dateiserver oder verfügbarer Dateiconnector", data:"Ausdrücklich freigegebene lokale Dateien", permissions:"Nur festgelegtes Testverzeichnis; keine pauschale Schreibfreigabe", privacy:"Local-first möglich, bei Cloud-Connector zusätzliche Datenübertragung", purpose:"Second Brain"}
+  },
   integrations: {
     github: {
       name: "GitHub", icon: "💻",
@@ -327,6 +352,27 @@ window.AxiomGuide = Object.freeze({
         needs: "MCP-Server mit sicheren Datei- oder Status-Tools, erreichbarer MCP-Client und eng begrenzten Rechten.",
         steps: ["Nur bestimmte Status-, Datei- oder Diagnosefunktionen anbieten.", "Keine Shell mit uneingeschränkten Rechten veröffentlichen.", "Read-only-Test durchführen und Logausgaben auf sensible Inhalte prüfen."],
         test: "„Rufe das freigegebene MCP-Tool server.status auf.“"
+      }
+    },
+    files: {
+      name: "Datei- / Serverintegration", icon: "📂",
+      chatgpt: {
+        description: "Dateien sind nur über eine von ChatGPT unterstützte, autorisierte App zugänglich; eine Markdown-Skill-Datei schaltet keinen Dateizugriff frei.",
+        needs: "Tatsächlich angebotene Datei-App oder alternativ ein eigener unterstützter MCP-Zugang.",
+        steps: ["In ChatGPT nach einer passenden Datei-App suchen und deren Anbieter prüfen.", "Nur den benötigten Ordner bzw. die Datenquelle freigeben.", "Mit dem Anzeigen eines harmlosen Testdokuments beginnen."],
+        test: "„Lies nur test.txt im freigegebenen Testordner.“"
+      },
+      hybrid: {
+        description: "Ein eingeschränkter Remote-Connector darf ausgewählte lokale Dateien lesen, sofern er mit ChatGPT verbunden ist.",
+        needs: "Erreichbares eigenes Zielgerät, geeigneter Remote-Connector und eng begrenzte Dateirechte.",
+        steps: ["Read-only-Testordner mit harmloser Datei einrichten.", "Connector-Berechtigung auf diesen Pfad beschränken.", "Testdatei lesen und Zugriff auf andere Verzeichnisse ausdrücklich verneinen."],
+        test: "„Zeige den Inhalt einer harmlosen Datei im Testordner, ohne Änderungen.“"
+      },
+      bridge: {
+        description: "Ein separater MCP-Server kann explizite Datei-Lesetools bereitstellen. Dieses Portal liefert nur die Anleitung, keinen fertigen MCP-Dateiserver.",
+        needs: "Eigene MCP-Implementierung, Pfad-Whitelist, Berechtigungsprüfung und abgesicherter Transport.",
+        steps: ["Einen konkreten Datei-MCP-Server auswählen und dessen Quellcode sowie Rechte prüfen.", "Nur einen dedizierten Testpfad erlauben.", "Mit einem Read-only-Tool die Testdatei lesen; Pfad-Traversal-Tests durchführen."],
+        test: "„Rufe nur das freigegebene Datei-Lesetool für test.txt auf.“"
       }
     }
   },
