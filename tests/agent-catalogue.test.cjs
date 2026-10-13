@@ -12,8 +12,8 @@ const sandbox = {window:{}};
 vm.runInNewContext(read("assets/js/agent-catalogue.js"), sandbox, {filename:"assets/js/agent-catalogue.js"});
 const resolver = sandbox.window.AxiomAgentCatalogue;
 
-test("V1.2 catalogue contains 30 unique valid instruction-only skills", () => {
-  assert.equal(catalogue.catalogueVersion, "1.2.0");
+test("V1.3 catalogue contains 30 unique valid instruction-only skills", () => {
+  assert.equal(catalogue.catalogueVersion, "1.3.0");
   assert.equal(catalogue.executionModel, "instruction-only");
   assert.equal(catalogue.skills.length, 30);
   const ids = catalogue.skills.map(skill => skill.id);
@@ -30,6 +30,7 @@ test("V1.2 catalogue contains 30 unique valid instruction-only skills", () => {
 test("Every agent has a valid unique ID, definition and declared skills", () => {
   const ids = new Set(catalogue.skills.map(skill => skill.id));
   const agents = catalogue.agents.map(agent => agent.id);
+  assert.equal(agents.length,12);
   assert.equal(new Set(agents).size, agents.length);
   assert.equal(new Set(catalogue.agents.map(agent => agent.definition)).size, catalogue.agents.length, "no duplicate agent definitions");
   for (const agent of catalogue.agents) {
@@ -49,6 +50,12 @@ test("Browser selection selects valid roles and skills deterministically", () =>
     const declared = catalogue.agents.find(item => item.id === agent.id);
     assert.deepEqual(Array.from(agent.skills), declared.skills, agent.id + " keeps the central skill mapping");
   }
+  assert.deepEqual(Object.keys(resolver.profiles).sort(), agents.slice().sort());
+  const all=resolver.resolve({mode:"chatgpt", integrations:[], purposes:["code","mail","calendar","server","files","finance","learning","design"]});
+  assert.ok(all.agentIds.includes("health"));
+  assert.ok(all.agentIds.includes("finance"));
+  assert.ok(all.agentIds.includes("brain"));
+  assert.ok(all.agentIds.includes("design"));
   assert.throws(() => resolver.resolve({mode:"wrong", integrations:[]}), /Betriebsart/);
   assert.throws(() => resolver.resolve({mode:"chatgpt", integrations:["wrong"]}), /Integration/);
 });
