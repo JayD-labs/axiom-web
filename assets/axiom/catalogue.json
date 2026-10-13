@@ -1,24 +1,28 @@
 {
   "$schema": "./plugin-package.schema.json",
-  "catalogueVersion": "1.3.0",
+  "catalogueVersion": "1.4.0",
   "generatedAt": "2026-10-13",
-  "source": "Axiom plugin skill inventory",
+  "source": "Axiom private plugin 2.2.0, 14 orchestrator agent references, 30 skill source files (content checked 2026-10-13)",
   "executionModel": "instruction-only",
-  "notice": "Versioniertes Inventar mit 12 fachlichen Rollen und 30 Skill-Anweisungen. Keine dieser Dateien installiert Connectoren, Tools, Berechtigungen oder ein ChatGPT-Plugin. Live-Verfügbarkeit ist unbekannt.",
+  "notice": "14 tatsächliche Fach-Agentendefinitionen aus dem privaten Plugin, 30 inhaltlich geprüfte Skills. System-Skills (Orchestrator, Onboarding, Health) sind zusätzlich vorhanden, aber keine weiteren Agentendefinitionen. Kein Plugin wird durch diese Dateien installiert oder verbunden.",
   "agents": [
     {
-      "id": "orchestrator",
-      "name": "Axiom Orchestrator",
-      "definition": "/axiom-orchestrator.md",
+      "id": "auth",
+      "name": "Auth Agent",
+      "definition": "/assets/axiom/agents/agent-auth.md",
       "skills": [
-        "axiom-orchestrator",
-        "axiom-actions",
-        "axiom-capabilities",
-        "axiom-runtime",
-        "axiom-settings",
-        "axiom-state",
-        "axiom-verification",
-        "axiom-workflows"
+        "axiom-auth",
+        "axiom-security"
+      ]
+    },
+    {
+      "id": "automation",
+      "name": "Automation Agent",
+      "definition": "/assets/axiom/agents/agent-automation.md",
+      "skills": [
+        "axiom-automation",
+        "axiom-workflows",
+        "axiom-notifications"
       ]
     },
     {
@@ -32,24 +36,28 @@
       ]
     },
     {
+      "id": "calendar",
+      "name": "Calendar Agent",
+      "definition": "/assets/axiom/agents/agent-calendar.md",
+      "skills": [
+        "axiom-calendar",
+        "axiom-automation"
+      ]
+    },
+    {
+      "id": "career",
+      "name": "Career Agent",
+      "definition": "/assets/axiom/agents/agent-career.md",
+      "skills": [
+        "axiom-career"
+      ]
+    },
+    {
       "id": "code",
       "name": "Code Agent",
       "definition": "/assets/axiom/agents/agent-code.md",
       "skills": [
-        "axiom-code",
-        "axiom-project-manager",
-        "axiom-research"
-      ]
-    },
-    {
-      "id": "security",
-      "name": "Security Agent",
-      "definition": "/assets/axiom/agents/agent-security.md",
-      "skills": [
-        "axiom-security",
-        "axiom-auth",
-        "axiom-connectors",
-        "axiom-connect"
+        "axiom-code"
       ]
     },
     {
@@ -58,24 +66,6 @@
       "definition": "/assets/axiom/agents/agent-design.md",
       "skills": [
         "axiom-design"
-      ]
-    },
-    {
-      "id": "mail",
-      "name": "Mail Agent",
-      "definition": "/assets/axiom/agents/agent-mail.md",
-      "skills": [
-        "axiom-mail",
-        "axiom-notifications"
-      ]
-    },
-    {
-      "id": "calendar",
-      "name": "Calendar Agent",
-      "definition": "/assets/axiom/agents/agent-calendar.md",
-      "skills": [
-        "axiom-calendar",
-        "axiom-automation"
       ]
     },
     {
@@ -92,7 +82,8 @@
       "definition": "/assets/axiom/agents/agent-infrastructure.md",
       "skills": [
         "axiom-infrastructure",
-        "axiom-maintenance"
+        "axiom-maintenance",
+        "axiom-health"
       ]
     },
     {
@@ -100,24 +91,44 @@
       "name": "Learning Agent",
       "definition": "/assets/axiom/agents/agent-learning.md",
       "skills": [
-        "axiom-learning",
-        "axiom-career"
+        "axiom-learning"
       ]
     },
     {
-      "id": "health",
-      "name": "Health Agent",
-      "definition": "/assets/axiom/agents/agent-health.md",
+      "id": "mail",
+      "name": "Mail Agent",
+      "definition": "/assets/axiom/agents/agent-mail.md",
       "skills": [
-        "axiom-health"
+        "axiom-mail",
+        "axiom-notifications"
       ]
     },
     {
-      "id": "onboarding",
-      "name": "Onboarding Agent",
-      "definition": "/assets/axiom/agents/agent-onboarding.md",
+      "id": "project-manager",
+      "name": "Project Manager Agent",
+      "definition": "/assets/axiom/agents/agent-project-manager.md",
       "skills": [
-        "axiom-onboarding"
+        "axiom-project-manager",
+        "axiom-workflows"
+      ]
+    },
+    {
+      "id": "research",
+      "name": "Research Agent",
+      "definition": "/assets/axiom/agents/agent-research.md",
+      "skills": [
+        "axiom-research"
+      ]
+    },
+    {
+      "id": "security",
+      "name": "Security Agent",
+      "definition": "/assets/axiom/agents/agent-security.md",
+      "skills": [
+        "axiom-security",
+        "axiom-auth",
+        "axiom-connectors",
+        "axiom-connect"
       ]
     }
   ],

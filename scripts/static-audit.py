@@ -93,7 +93,7 @@ def run():
     catalogue = json.loads((ROOT / "assets/axiom/catalogue.json").read_text(encoding="utf-8"))
     manifest = json.loads((ROOT / "assets/axiom/export-manifest.json").read_text(encoding="utf-8"))
     check(len(catalogue.get("skills", [])) == 30, "Expected exactly 30 skills")
-    check(len(catalogue.get("agents", [])) == 12, "Expected exactly 12 agent roles")
+    check(len(catalogue.get("agents", [])) == 14, "Expected exactly 14 plugin agent references")
     files = manifest["files"]
     check(len(files) > 60, "Manifest too small for complete offline package")
     seen_src, seen_dest = set(), set()
@@ -149,7 +149,7 @@ def run():
     check("@media(max-width:760px)" in css, "Responsive breakpoint missing")
     check(not re.search(r"@import\s+url\s*\(\s*['\"]?https?://", css),
           "Remote CSS import breaks local-first")
-    print("Static checks: assets, links, anchors, favicon XML, CSP, plan-agnostic manifest, 30 skills, 12 agents, path traversal patterns, JS sinks and secret signatures")
+    print("Static checks: assets, links, anchors, favicon XML, CSP, plan-agnostic manifest, 30 skills, 14 agents, path traversal patterns, JS sinks and secret signatures")
     for message in WARNINGS:
         print("WARN: " + message)
     for message in ERRORS:

@@ -72,7 +72,7 @@ test("Security: manifest covers every versioned skill and agent exactly once",()
   assert.equal(src.size,manifest.files.length);
   assert.equal(dest.size,manifest.files.length);
   assert.equal(catalogue.skills.length,30);
-  assert.equal(catalogue.agents.length,12);
+  assert.equal(catalogue.agents.length,14);
   for(const skill of catalogue.skills)assert.ok(dest.has("skills/"+skill.id+"/SKILL.md"));
   for(const agent of catalogue.agents)assert.ok(src.has(agent.definition.slice(1)));
 });

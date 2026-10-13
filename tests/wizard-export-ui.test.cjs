@@ -164,12 +164,12 @@ test("Regression: displayed multi-device selection and compatibility match JSON 
   assert.deepEqual(data.selection.hardwareRoles,{pi:"remote",mac:"admin"});
   assert.deepEqual(data.selection.integrations,["github"]);
   assert.deepEqual(data.selection.purposes,["code"]);
-  assert.equal(data.schemaVersion,5);
+  assert.equal(data.schemaVersion,6);
   assert.equal(data.installation.chatgptZipImportSupported,false);
   assert.equal(data.integrationRequirements[0].status.connected,"unverified");
   assert.equal(data.selection.mode,"hybrid");
   assert.equal(data.compatibility.status,"conditional");
-  assert.deepEqual(data.agentPackage.agentIds,["orchestrator","onboarding","infrastructure","code"]);
+  assert.deepEqual(data.agentPackage.agentIds,["brain","infrastructure","code","project-manager"]);
   assert.equal(data.summary,summary);
   assert.equal(data.hardware.assignments.length,2);
   assert.ok(data.hardware.prerequisites.some(s=>s.includes("Raspberry Pi [Remote-Ziel")));
@@ -205,7 +205,7 @@ test("Regression: no-device selection remains exclusive in display and both expo
   assert.doesNotMatch(md,/Rolle einrichten: Raspberry Pi/);
 });
 
-test("V1.3 purpose recommendation never auto-connects a plugin",async()=>{
+test("V1.4 purpose recommendation never auto-connects a plugin",async()=>{
   const app=createBrowser();
   app.choose("purposes","files");
   const hint=app.doc.getElementById("wizard-plugin-hint").textContent;

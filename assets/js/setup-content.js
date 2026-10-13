@@ -43,14 +43,14 @@ window.AxiomGuide = Object.freeze({
       introduction: "Die Gespräche und die KI-Auswertung finden innerhalb von ChatGPT statt. Axiom organisiert die Aufgaben. Apps/Plugins können externe Dienste nur nutzen, wenn du diese zuvor verbindest und autorisierst.",
       requirements: [
         "Ein unterstütztes ChatGPT-Konto und Internet.",
-        "Das Axiom-Plugin, sobald es öffentlich erhältlich ist; derzeit existiert eine private Version.",
+        "Für das private Axiom-Plugin: Zugriff als Eigentümer oder ausdrücklich berechtigter Nutzer. Plugin Creator kann bestehende Plugins aktualisieren.",
         "Nur die zusätzlichen Apps, die du tatsächlich verwenden möchtest.",
         "Kein eigener Raspberry Pi, kein Server und kein lokal laufendes Sprachmodell erforderlich."
       ],
       steps: [
-        "Öffne ChatGPT und prüfe die angebotenen Apps/Plugins.",
+        "Öffne ChatGPT → Plugins und prüfe deine installierbaren oder selbst erstellten Plugins.",
         "Verbinde die für deine Aufgabe benötigten Dienste und prüfe die Berechtigungen.",
-        "Nutze Axiom, sobald eine Installation oder Freigabe für dein Konto besteht.",
+        "Wenn du Zugriff auf das private Axiom hast, starte es in ChatGPT mit @Axiom. Sonst kannst du mit Plugin Creator ein eigenes Plugin erstellen.",
         "Teste zuerst eine einfache, lesende Aufgabe und überprüfe die Antwort."
       ],
       flow: ["Du in ChatGPT", "Axiom 🐸", "Autorisierte Apps/Plugins"],

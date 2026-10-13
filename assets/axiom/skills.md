@@ -1,4 +1,4 @@
-# Axiom-Skills V1.2
+# Axiom-Skills V1.4
 
 Dies ist die lesbare Fassung des maschinenlesbaren Katalogs. Alle 30 Einträge sind **Instruktions-Skills**, nicht selbstständig ausführbare Tools. Ein Skill darf nur Fähigkeiten verwenden, die zur Laufzeit wirklich verfügbar und autorisiert sind.
 

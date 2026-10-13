@@ -1,4 +1,4 @@
-/* Axiom Setup Wizard V1.3 – lokale, separat testbare Export-Serialisierung. */
+/* Axiom Setup Wizard V1.4 – lokale, separat testbare Export-Serialisierung. */
 (function () {
   "use strict";
   function markdown(guide) {
@@ -50,7 +50,7 @@
     if (!catalogueAsset) throw new Error("Der Skill-Katalog fehlt.");
     const catalogue = JSON.parse(catalogueAsset.content);
     if (!Array.isArray(catalogue.skills) || catalogue.skills.length !== 30) throw new Error("Unvollständiger Skill-Katalog.");
-    if (!Array.isArray(catalogue.agents) || catalogue.agents.length !== 12) throw new Error("Unvollständiger Agenten-Katalog.");
+    if (!Array.isArray(catalogue.agents) || catalogue.agents.length !== 14) throw new Error("Unvollständiger Agenten-Katalog.");
     const required = catalogue.skills.map(skill => "skills/" + skill.id + "/SKILL.md");
     required.push("axiom-orchestrator.md");
     catalogue.agents.forEach(function (agent) {
@@ -75,6 +75,7 @@
       "4. Unterstützende Dateien liegen in den jeweiligen skills/*/references/ und scripts/.", "",
       "## Sicherheits- und Produktgrenze", "",
       "Ein ZIP installiert **keine** ChatGPT-Plugins, KI-Modelle oder MCP-Tools.",
+      "Für ChatGPT: Plugins öffnen, vorhandenes Plugin auswählen oder Plugin Creator nutzen; erforderliche Apps getrennt autorisieren.",
        "Das ZIP ist nicht direkt als ChatGPT-Plugin importierbar.",
        "Alternativen: Projektanweisungen übernehmen, Apps einzeln verbinden oder MCP separat einrichten.",
       "Es aktiviert keine Connectoren, Berechtigungen, Tunnel oder Automationen.",

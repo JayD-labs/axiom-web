@@ -1,7 +1,7 @@
 {
   "$schema": "https://json-schema.org/draft/2020-12/schema",
-  "title": "Axiom Web private package (draft)",
-  "description": "Internal export contract only. This is not a ChatGPT manifest and is not installable by ChatGPT.",
+  "title": "Axiom Web V1.4 offline contract (draft)",
+  "description": "Offline instruction export contract only. This is not a ChatGPT manifest and is not installable by ChatGPT.",
   "type": "object",
   "required": ["format", "formatVersion", "agents", "skills", "settings"],
   "properties": {

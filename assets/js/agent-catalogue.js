@@ -1,20 +1,23 @@
-/* Axiom Web V1.3 – deterministic, instruction-only role/skill routing.
- * Mirrors assets/axiom/catalogue.json; nothing here installs or runs tools.
+/* Axiom Web V1.4 – routing for 14 verified plugin role definitions.
+ * System skills are always available as instructions, never as executable agents.
+ * Mirrors assets/axiom/catalogue.json; zero automatic authorization/install.
  */
 (function () {
   "use strict";
   const profiles = Object.freeze({
-  "orchestrator": {
-    "name": "Axiom Orchestrator",
+  "auth": {
+    "name": "Auth Agent",
     "skills": [
-      "axiom-orchestrator",
-      "axiom-actions",
-      "axiom-capabilities",
-      "axiom-runtime",
-      "axiom-settings",
-      "axiom-state",
-      "axiom-verification",
-      "axiom-workflows"
+      "axiom-auth",
+      "axiom-security"
+    ]
+  },
+  "automation": {
+    "name": "Automation Agent",
+    "skills": [
+      "axiom-automation",
+      "axiom-workflows",
+      "axiom-notifications"
     ]
   },
   "brain": {
@@ -25,41 +28,29 @@
       "axiom-contacts"
     ]
   },
+  "calendar": {
+    "name": "Calendar Agent",
+    "skills": [
+      "axiom-calendar",
+      "axiom-automation"
+    ]
+  },
+  "career": {
+    "name": "Career Agent",
+    "skills": [
+      "axiom-career"
+    ]
+  },
   "code": {
     "name": "Code Agent",
     "skills": [
-      "axiom-code",
-      "axiom-project-manager",
-      "axiom-research"
-    ]
-  },
-  "security": {
-    "name": "Security Agent",
-    "skills": [
-      "axiom-security",
-      "axiom-auth",
-      "axiom-connectors",
-      "axiom-connect"
+      "axiom-code"
     ]
   },
   "design": {
     "name": "Design Agent",
     "skills": [
       "axiom-design"
-    ]
-  },
-  "mail": {
-    "name": "Mail Agent",
-    "skills": [
-      "axiom-mail",
-      "axiom-notifications"
-    ]
-  },
-  "calendar": {
-    "name": "Calendar Agent",
-    "skills": [
-      "axiom-calendar",
-      "axiom-automation"
     ]
   },
   "finance": {
@@ -72,66 +63,77 @@
     "name": "Infrastructure Agent",
     "skills": [
       "axiom-infrastructure",
-      "axiom-maintenance"
+      "axiom-maintenance",
+      "axiom-health"
     ]
   },
   "learning": {
     "name": "Learning Agent",
     "skills": [
-      "axiom-learning",
-      "axiom-career"
+      "axiom-learning"
     ]
   },
-  "health": {
-    "name": "Health Agent",
+  "mail": {
+    "name": "Mail Agent",
     "skills": [
-      "axiom-health"
+      "axiom-mail",
+      "axiom-notifications"
     ]
   },
-  "onboarding": {
-    "name": "Onboarding Agent",
+  "project-manager": {
+    "name": "Project Manager Agent",
     "skills": [
-      "axiom-onboarding"
+      "axiom-project-manager",
+      "axiom-workflows"
+    ]
+  },
+  "research": {
+    "name": "Research Agent",
+    "skills": [
+      "axiom-research"
+    ]
+  },
+  "security": {
+    "name": "Security Agent",
+    "skills": [
+      "axiom-security",
+      "axiom-auth",
+      "axiom-connectors",
+      "axiom-connect"
     ]
   }
 });
-  const all = Object.freeze(["orchestrator", "onboarding"]);
+  const all = Object.freeze(["brain"]);
   const byMode = Object.freeze({
-    chatgpt: [],
-    hybrid: ["infrastructure"],
-    bridge: ["infrastructure", "security"]
+    chatgpt: [], hybrid: ["infrastructure"], bridge: ["infrastructure","security","auth"]
   });
   const byIntegration = Object.freeze({
-    github: ["code"],
-    outlook: ["mail"],
-    calendar: ["calendar"],
-    "remote-desktop": ["infrastructure", "security"],
-    files: ["brain", "security"]
+    github: ["code","project-manager"], outlook: ["mail"], calendar: ["calendar","automation"],
+    "remote-desktop": ["infrastructure","security","auth"], files: ["brain","security"]
   });
   const byPurpose = Object.freeze({
-    code: ["code"],
-    mail: ["mail"],
-    calendar: ["calendar"],
-    server: ["infrastructure", "security", "health"],
-    files: ["brain"],
-    finance: ["finance"],
-    learning: ["learning"],
-    design: ["design"],
-    research: ["code"]
+    code: ["code","project-manager"], mail: ["mail"], calendar: ["calendar","automation"],
+    server: ["infrastructure","security"], files: ["brain"], finance: ["finance"],
+    learning: ["learning","career"], design: ["design"], research: ["research"]
   });
+  const systemSkillIds = Object.freeze(["axiom-orchestrator","axiom-onboarding","axiom-actions","axiom-capabilities","axiom-runtime","axiom-verification"]);
   const unique = items => Array.from(new Set(items));
   const resolve = function (config) {
     if (!config || typeof config !== "object" || !Array.isArray(config.integrations)) throw new TypeError("Ungültige Auswahl für Agentenauflösung.");
     if (!Object.hasOwn(byMode, config.mode)) throw new RangeError("Unbekannte Betriebsart für Agentenauflösung.");
     const purposes = config.purposes === undefined ? [] : config.purposes;
-    if (!Array.isArray(purposes) || purposes.some(id => !Object.hasOwn(byPurpose, id)) || new Set(purposes).size !== purposes.length) throw new RangeError("Unbekannter oder doppelter Verwendungszweck.");
+    if (!Array.isArray(purposes) || purposes.some(id => !Object.hasOwn(byPurpose,id)) || new Set(purposes).size !== purposes.length)
+      throw new RangeError("Unbekannter oder doppelter Verwendungszweck.");
+    if (new Set(config.integrations).size !== config.integrations.length) throw new RangeError("Doppelte Integration.");
     const viaIntegrations = config.integrations.flatMap(id => {
-      if (!Object.hasOwn(byIntegration, id)) throw new RangeError("Unbekannte Integration für Agentenauflösung: " + id);
+      if (!Object.hasOwn(byIntegration,id)) throw new RangeError("Unbekannte Integration für Agentenauflösung: " + id);
       return byIntegration[id];
     });
-    const agentIds = unique(all.concat(byMode[config.mode], viaIntegrations, purposes.flatMap(id => byPurpose[id])));
-    const agents = agentIds.map(id => ({id: id, name: profiles[id].name, skills: profiles[id].skills.slice(), execution: "instruction-only"}));
-    return {agentIds: agentIds, agents: agents, skillIds: unique(agents.flatMap(agent => agent.skills)), reason: "Regelbasiertes Routing V1.3; Markdown-Rollen und Skills führen selbst keine Tools aus."};
+    const agentIds = unique(all.concat(byMode[config.mode],viaIntegrations,purposes.flatMap(id=>byPurpose[id])));
+    const agents = agentIds.map(id=>({id,name:profiles[id].name,skills:profiles[id].skills.slice(),execution:"instruction-only"}));
+    return {agentIds,agents,systemSkillIds:systemSkillIds.slice(),
+      skillIds:unique(systemSkillIds.concat(agents.flatMap(agent=>agent.skills))),
+      reason:"14 echte Markdown-Fachrollen plus separat ausgewiesene System-Skills; Routing ist instruktionsbasiert. Keine selbstständigen Agentenprozesse."};
   };
-  window.AxiomAgentCatalogue = Object.freeze({version: "1.3.0", resolve: resolve, profiles: profiles, rules: {all: all, byMode: byMode, byIntegration: byIntegration, byPurpose: byPurpose}});
+  window.AxiomAgentCatalogue = Object.freeze({version:"1.4.0",resolve,profiles,rules:{all,byMode,byIntegration,byPurpose}});
 })();
