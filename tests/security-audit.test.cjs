@@ -76,3 +76,12 @@ test("Security: manifest covers every versioned skill and agent exactly once",()
   for(const skill of catalogue.skills)assert.ok(dest.has("skills/"+skill.id+"/SKILL.md"));
   for(const agent of catalogue.agents)assert.ok(src.has(agent.definition.slice(1)));
 });
+
+test("Self-hosted cannot masquerade as connected ChatGPT or a bundled local model",()=>{
+  const r=win.AxiomWizardRules.buildGuide({...config,plan:"selfhosted",mode:"bridge",hardware:["mac"],roles:{mac:"client"}},win.AxiomGuide);
+  assert.equal(r.localModel.required,true);
+  assert.equal(r.localModel.verified,false);
+  assert.equal(r.installation.chatgptZipImportSupported,false);
+  assert.notEqual(r.compatibility.status,"supported");
+  assert.match(r.localModel.notice,/keine|ohne/i);
+});
