@@ -63,7 +63,8 @@ skip() {
   printf '  SKIP: %s\n' "$1"
   printf 'SKIP  %s\n' "$1" >> "$SUMMARY"
 }
-# shellcheck disable=SC2016 -- subshell expands $file internally as intended.
+# Subshell intentionally expands its own $file variable.
+# shellcheck disable=SC2016
 run "Syntax: all JS/CJS" bash -c '
   set -euo pipefail
   while IFS= read -r -d "" file; do node --check "$file"; done < <(find assets/js tests -type f \( -name "*.js" -o -name "*.cjs" \) -print0)
