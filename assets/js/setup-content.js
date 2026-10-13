@@ -1,8 +1,8 @@
 /* Axiom Web – publicly inspectable local-only content catalogue.
    No secrets, personal data or connection state belong in this file. */
 window.AxiomGuide = Object.freeze({
-  supportedPlans: ["free", "plus", "pro"],
-  deferredPlans: ["business", "enterprise", "edu", "independent"],
+  supportedPlans: ["free", "plus", "pro", "selfhosted"],
+  deferredPlans: ["business", "enterprise", "edu"],
   plans: {
     free: {
       name: "ChatGPT Free", label: "Basic", tagline: "Ohne Zusatzhardware einsteigen",
@@ -27,6 +27,14 @@ window.AxiomGuide = Object.freeze({
       limits: "Pro unterstützt bei eigenen MCP-Apps im Entwicklermodus derzeit nur Lesen/Abrufen, nicht vollständige Schreib- und Änderungsaktionen.",
       example: "„Axiom, zeig mir die vom MCP-Server bereitgestellten Statusinformationen.“",
       note: "Ein App-Connector mit eigenen Berechtigungen und eine Pro-MCP-App sind technisch unterschiedliche Integrationswege."
+    },
+    selfhosted: {
+      name: "Self-Hosted – Lokales LLM", label: "Vorschau", tagline: "Eigene KI, eigene Hardware – noch kein Installer",
+      intro: "Ein lokal betriebenes Sprachmodell übernimmt die KI-Verarbeitung. Dazu gehören ein kompatibler KI-Client, eine Model-Runtime, ein explizit ausgewähltes Modell und optional ein lokaler MCP-Server. Das Portal installiert davon nichts.",
+      needs: "Eigene Hardware mit ausreichend RAM/VRAM, vertrauenswürdige Modellquelle, lokale Inferenz-Runtime, kompatibler KI-Client und bei MCP-Bedarf ein separater MCP-Server.",
+      limits: "Self-Hosted ist ein Planungsweg ohne fertige Axiom-Distribution. Leistungsfähigkeit, Modell-Lizenz und Zugriffsschutz sind geräte- und modellabhängig. ChatGPT-Plugins sind hier nicht automatisch verfügbar.",
+      example: "„Axiom, analysiere meine lokale Datei über meinen eigenen KI-Client.“",
+      note: "Vorschau: Hardware und Runtime erst prüfen. Kein Modell-Download, kein API-Key, keine Installation, kein automatischer Remote-Zugriff."
     }
   },
   modes: {
@@ -104,6 +112,13 @@ window.AxiomGuide = Object.freeze({
         addSteps: ["Verbinde beispielsweise GitHub oder Kalender einzeln und prüfe mit einem Test, ob Axiom darauf zugreifen darf."],
         recommendation: "Ideal, wenn du keinen eigenen Server betreiben möchtest."
       },
+      selfhosted: {
+        level: "Nicht mit ChatGPT-Plugin-Modus kombinierbar", compatible: false,
+        message: "Self-Hosted verwendet einen lokalen KI-Client, nicht die ChatGPT-Plugin-Laufzeit.",
+        addRequirements: ["Wechsle zur Betriebsart Eigener MCP-Server und wähle lokale Hardware für das Modell."],
+        addSteps: ["Lokalen Modellhost und KI-Client als separate Voraussetzungen prüfen."],
+        recommendation: "Für den schnellen Einstieg zunächst Free, Plus oder Pro verwenden."
+      },
       pro: {
         level: "Plugins statt MCP-Aufwand", compatible: true,
         message: "Pro + normale Apps: die vorhandenen Plugins kannst du ohne selbst betriebenen MCP-Server nutzen. Der Developer Mode ist dafür nicht notwendig.",
@@ -127,6 +142,13 @@ window.AxiomGuide = Object.freeze({
         addSteps: ["Richte zunächst einen lesenden Dateizugriff ein und teste danach gezielt einen Serverstatus."],
         recommendation: "Für Self-Hosting-Fans oft der praktische nächste Schritt ohne lokales LLM."
       },
+      selfhosted: {
+        level: "Nicht mit ChatGPT-Hybrid kombinierbar", compatible: false,
+        message: "Hybrid nutzt ChatGPT als Modell; Self-Hosted setzt stattdessen eine lokale Modell-Runtime voraus.",
+        addRequirements: ["Eigenen MCP-Modus und einen lokal laufenden KI-Client wählen."],
+        addSteps: ["Betriebsart wechseln und Hardware prüfen."],
+        recommendation: "Lokalem Modell und ChatGPT-Hybrid getrennte Setups zuordnen."
+      },
       pro: {
         level: "Hybrid ohne Developer Mode", compatible: true,
         message: "Pro + Hybrid: die klassische Remote-Connector-Variante benötigt nicht automatisch einen eigenen MCP-Developer-Mode. Bei separaten benutzerdefinierten MCP-Apps gelten andere Regeln.",
@@ -149,6 +171,13 @@ window.AxiomGuide = Object.freeze({
         addRequirements: ["Erforderlich ist entweder ein unterstützter Developer-Mode-Zugang oder ein anderer MCP-fähiger KI-Client."],
         addSteps: ["Nutze für Plus vorerst Apps/Plugins oder Hybrid; für eigene MCP-Werkzeuge einen alternativen Client prüfen."],
         recommendation: "Starte lieber im Hybrid-Modus, wenn du einen Raspberry Pi mit ChatGPT verwenden willst."
+      },
+      selfhosted: {
+        level: "Self-Hosted Preview", compatible: true,
+        message: "Lokaler KI-Client mit lokalem LLM und optionalem MCP-Server ist grundsätzlich planbar. Das Portal liefert keine lauffähige KI, keinen Modell-Installer und keine automatische MCP-Verbindung.",
+        addRequirements: ["Hardware-RAM/VRAM, Modell-Lizenz, Inferenz-Runtime und Client/MCP-Kompatibilität konkret prüfen."],
+        addSteps: ["Geeignetes Modell auswählen, lokal isoliert testen, danach separat Read-only-MCP integrieren."],
+        recommendation: "Erst ChatGPT-basierte Wege stabilisieren; Self-Hosted vorerst dokumentieren."
       },
       pro: {
         level: "MCP Lesen/Abrufen", compatible: true,

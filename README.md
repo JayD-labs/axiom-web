@@ -48,6 +48,7 @@ Jeweils **eine** Option:
 | ChatGPT Free | Einstieg über tatsächlich angebotene Apps/Plugins, unter Berücksichtigung von Konto-Limits |
 | ChatGPT Plus | ChatGPT-Apps und ggf. unterstützte Remote-Connectoren, soweit freigegeben |
 | ChatGPT Pro | Zusätzliche eigene MCP-App-Möglichkeiten im verfügbaren Developer Mode; die Regeln unterscheiden Lese- und Schreibrechte |
+| Self-Hosted (Preview) | Lokales LLM auf eigener Hardware, separater KI-Client und optionale MCP-Tools; noch kein Installer |
 
 | Ohne ChatGPT | Eigener MCP-fähiger KI-Client mit lokalem oder externem Modell |
 
@@ -253,7 +254,7 @@ Es gibt **keine öffentliche, authentifizierte Plugin-Verzeichnis-API für diese
 
 Das eigenständige, dunkelgrüne **Frosch-Favicon** liegt unter [`assets/favicon.svg`](assets/favicon.svg) und ist im `<head>` von `index.html` als SVG-Favicon registriert. Der Browser braucht keine externe Icon-Bibliothek und keinen CDN-Abruf. Falls vorher die graue Weltkugel im Browser-Tab stand, die Seite nach dem Release einmal hart neu laden bzw. den Favicon-Cache leeren.
 
-Der Wizard bietet zum Start **nur Free, Plus und Pro** als ChatGPT-Pläne an. Business, Enterprise, Edu und der alternative KI-Client ohne ChatGPT bleiben für eine spätere Ausbaustufe zurückgestellt. Die drei Betriebsarten ChatGPT, Hybrid und eigener MCP-Server bleiben grundsätzlich erhalten, wobei Free/Plus bei eigener MCP-Anbindung explizite Kompatibilitätsgrenzen anzeigen.
+Der Wizard bietet **Free, Plus, Pro und Self-Hosted (lokales LLM, Vorschau)** als vier KI-Optionen an. Business, Enterprise und Edu bleiben zurückgestellt. Self-Hosted benötigt zwingend eigene Hardware und verwendet den Weg „Eigener MCP-Server“, keine ChatGPT-Plugins. Es gibt noch keinen Axiom-Installer für LLM, Runtime, Client oder Server. Die drei Betriebsarten ChatGPT, Hybrid und eigener MCP-Server bleiben grundsätzlich erhalten, wobei Free/Plus bei eigener MCP-Anbindung explizite Kompatibilitätsgrenzen anzeigen.
 
 ## Vollständiger Repository-Audit (lokal und optional live)
 
@@ -401,7 +402,7 @@ node --test tests/*.test.cjs
 ```
 
 Die Tests prüfen die drei unterstützten ChatGPT-Pläne, alle 64 gültigen Hardwareauswahlen (inklusive `none`), jede der sechs Rollen für alle sechs konkreten Geräte, fehlende Rollen, ungültige Eingaben, nicht unterstützte Konfigurationen, JSON/Markdown, Sicherheitsbedingungen und statische HTML/CSS-/Fokusanbindungen. Zusätzlich prüfen sie das vollständige 30-Skill-Inventar, eindeutige IDs, Agent-zu-Skill-Zuordnungen, fehlende Agentendateien, ungültige Rollenauflösung und die secret-freie, ausdrücklich nicht importierbare Paketgrundlage.
-**Matrix:** 18.432 Kombinationen = 64 Hardwareauswahlen × 3 Pläne × 3 Betriebsarten × 32 Integrationsauswahlen. Verwendungszwecke und Lebenszykluszustände werden separat getestet.
+**Matrix:** 24.576 Kombinationen = 64 Hardwareauswahlen × 4 KI-Optionen × 3 Betriebsarten × 32 Integrationsauswahlen. Verwendungszwecke und Lebenszykluszustände werden separat getestet.
 
 **Regressionstest für die Exporte:** `tests/wizard-export-ui.test.cjs` simuliert DOM-Eingaben, Zurück-/Weiter-Navigation und die echten JSON-/Markdown-Download-Handler für Plus + Raspberry Pi + macOS + Hybrid + GitHub. Sichtbare Zusammenfassung und Status werden mit beiden exportierten Dateien verglichen. Zusätzlich wird die exklusive Hardwareauswahl `none` geprüft. Der Test nutzt eine kleine DOM-Simulation, **keinen echten Browser**.
 
@@ -443,3 +444,15 @@ Feedback und Bugs bitte über [GitHub Issues](https://github.com/JayD-labs/axiom
 ---
 
 **Axiom 🐸 — YOUR AI. YOUR TOOLS. YOUR DATA.**
+
+## Next: ChatGPT als tatsächlich nutzbare Axiom-Installation
+
+Der Wizard ist ein lokales Konfigurations- und Exportportal, **kein Nachweis einer verbundenen ChatGPT-Installation**. Vor einer allgemeinen Installationsfreigabe werden folgende Punkte benötigt:
+
+1. Ein offizielles, validierbares **ChatGPT-Plugin-Paket** mit Orchestrator- und Skill-Manifest gemäß unterstützter Plugin-Creator-Schnittstelle, getrennt vom Offline-ZIP des Wizards.
+2. Ein erstes echtes ChatGPT-Setup mit dem Plugin-Verzeichnis/Plugin Creator; verfügbare Pläne und App-Verbindungen im jeweiligen Konto prüfen. Der Browser darf niemals automatisch ein fremdes Konto verbinden oder Credential-Dateien erzeugen.
+3. **ChatGPT-E2E-Abnahme:** Axiom-Plugin starten, Onboarding ausführen, Rolle & Skill auslösen, echte Capability-Anzeigen gegen laufende Tools prüfen. Für jeden Connector erst eine lesende Aktion erfolgreich ausführen; „selected“, „installed“, „connected“ und „verified“ getrennt dokumentieren.
+4. Eine tatsächlich mit dem Plugin kompatible Export- oder Installer-Strecke erst dann als „Installieren“ anbieten, wenn der Importweg nachgewiesen ist. Solange bleibt der ZIP-Export eine Anleitungs-/Quelldatei-Sammlung.
+5. Optional Self-Hosted später: Hardware-Benchmark, modellbezogene Lizenz-/RAM-Prüfung, lokale Runtime, Client, Read-only-MCP; keine Schein-Installation und keine implizite Cloud-Abhängigkeit.
+
+Referenz: [OpenAI – Plugins in ChatGPT](https://help.openai.com/en/articles/20001256-plugins-in-chatgpt) und [MCP/Developer Mode](https://help.openai.com/en/articles/12584461-developer-mode-and-mcp-apps-in-chatgpt). Verfügbarkeit kann sich nach Tarif, Region und Workspace unterscheiden.

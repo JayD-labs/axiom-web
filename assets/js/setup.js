@@ -112,7 +112,11 @@
         } else if (multi) {
           if (input.checked) state[group].add(id);
           else state[group].delete(id);
-        } else state[group] = id;
+        } else {
+          state[group] = id;
+          if (group === "plan" && id === "selfhosted") state.mode = "bridge";
+          if (group === "plan" && id !== "selfhosted" && state.mode === "bridge") state.mode = "chatgpt";
+        }
         refresh();
       });
     });
@@ -148,6 +152,10 @@
       return item.label + " → " + item.roleLabel;
     }) : ["Keine eigene Hardware ausgewählt."], "Deine Geräterollen");
     textList(specs, [guide.plan.requirements, guide.plan.limits], "ChatGPT / KI-Voraussetzungen");
+    if (guide.localModel.required) textList(specs, [
+      "Modell: noch nicht ausgewählt", "Modell-Runtime: noch nicht ausgewählt",
+      "Lokale Inferenz: nicht geprüft", guide.localModel.notice
+    ], "Lokales LLM – Self-Hosted-Vorschau");
     textList(specs, guide.hardware.prerequisites.concat([guide.hardware.server, guide.hardware.network, guide.hardware.llm]), "Hardware & Netzwerk");
     textList(specs, guide.software, "Benötigte Software");
     textList(specs, guide.connectors.length ? guide.connectors : ["Keine weiteren Connectoren ausgewählt."], "Benötigte Connectoren");

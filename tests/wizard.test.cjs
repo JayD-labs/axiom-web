@@ -22,7 +22,7 @@ const cfg=(overrides={})=>({plan:"plus",hardware:["none"],roles:{},mode:"chatgpt
 function guide(config){return rules.buildGuide(config,catalogue)}
 function subsets(items){return Array.from({length:1<<items.length},(_,mask)=>items.filter((_,i)=>(mask&(1<<i))!==0));}
 test("Catalogue and 6 role definitions are available without dependencies",()=>{
-  assert.deepEqual(plans,["free","plus","pro"]);
+  assert.deepEqual(plans,["free","plus","pro","selfhosted"]);
   assert.equal(modes.length,3);
   assert.equal(roleIds.length,6);
   for(const role of roleIds) {
@@ -84,7 +84,7 @@ test("Plans, modes, roles and integration combinations produce deterministic res
     else if(result.compatibility.conditions.length) assert.equal(result.compatibility.status,"conditional");
     checked++;
   }
-  assert.equal(checked,64*3*3*(2**integrations.length));
+  assert.equal(checked,64*4*3*(2**integrations.length));
 });
 test("Known unsupported configurations provide actionable causes and alternatives",()=>{
   for(const deferred of ["business","enterprise","none","edu"]) assert.throws(()=>guide(cfg({plan:deferred})),/Unbekannter ChatGPT-Plan/);
@@ -199,9 +199,33 @@ test("Purpose and integration input validation denies unknown and duplicate sele
   assert.ok(selected.agentPackage.agentIds.includes("security"));
 });
 
-test("Public plan catalogue is Free, Plus and Pro only",()=> {
-  assert.deepEqual(Object.keys(catalogue.plans),["free","plus","pro"]);
-  assert.equal(catalogue.supportedPlans.length,3);
-  for(const mode of modes) assert.deepEqual(Object.keys(catalogue.combinations[mode]),["free","plus","pro"]);
+test("Public plan catalogue offers Free, Plus, Pro and Self-Hosted local LLM",()=> {
+  assert.deepEqual(Object.keys(catalogue.plans),["free","plus","pro","selfhosted"]);
+  assert.equal(catalogue.supportedPlans.length,4);
+  for(const mode of modes) assert.deepEqual(Object.keys(catalogue.combinations[mode]).sort(),["free","plus","pro","selfhosted"].sort());
   for(const unsupported of ["business","enterprise","edu","none"]) assert.equal(Object.hasOwn(catalogue.plans,unsupported),false);
+});
+
+test("Self-Hosted local LLM preview needs hardware, explains runtime and never claims installation",()=>{
+  const noHardware=guide(cfg({plan:"selfhosted",mode:"bridge"}));
+  assert.equal(noHardware.compatibility.status,"blocked");
+  assert.match(noHardware.compatibility.blockers.join(" "),/eigene Hardware/);
+  const wrongMode=guide(cfg({plan:"selfhosted",mode:"chatgpt",hardware:["mac"],roles:{mac:"client"}}));
+  assert.equal(wrongMode.compatibility.status,"blocked");
+  assert.match(wrongMode.compatibility.blockers.join(" "),/kein ChatGPT-Modus/);
+  const viable=guide(cfg({plan:"selfhosted",mode:"bridge",hardware:["linux"],roles:{linux:"client"},purposes:["files"]}));
+  assert.equal(viable.compatibility.status,"conditional");
+  assert.equal(viable.localModel.required,true);
+  assert.equal(viable.localModel.verified,false);
+  assert.equal(viable.localModel.selectedModel,null);
+  assert.equal(viable.localModel.runtime,null);
+  assert.equal(viable.localModel.state,"not-configured");
+  assert.ok(viable.steps.some(x=>x.title.includes("Lokales LLM")));
+  const localFile=guide(cfg({plan:"selfhosted",mode:"bridge",hardware:["linux"],roles:{linux:"mcp"},integrations:["files"]}));
+  assert.equal(localFile.integrationRequirements[0].kind,"local-mcp-adapter-not-implemented");
+  assert.match(localFile.compatibility.warnings.join(" "),/nicht verwendbar/);
+  const exported=JSON.parse(exporter.json(viable));
+  assert.equal(exported.selection.plan,"selfhosted");
+  assert.equal(exported.localModel.verified,false);
+  assert.match(exporter.markdown(viable),/Self-Hosted/);
 });

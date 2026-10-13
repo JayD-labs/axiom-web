@@ -207,9 +207,15 @@
       "Server aktualisieren, Logs auf sensible Inhalte prüfen und Zugriffe jederzeit widerrufen können."
     ];
     const add = function (title, detail) { steps.push({title: title, detail: detail}); };
-    const usesChatGPT = config.plan !== "none";
+    const usesChatGPT = config.plan !== "selfhosted";
     const isMcp = config.mode === "bridge";
-    if (!usesChatGPT && config.mode !== "bridge") blockers.push("Ohne ChatGPT funktionieren die Betriebsarten „Axiom ChatGPT“ und „Axiom Hybrid“ nicht. Wähle „Eigener MCP-Server“ mit einem anderen KI-Client.");
+    if (!usesChatGPT && config.mode !== "bridge") blockers.push("Self-Hosted ist kein ChatGPT-Modus: Wähle „Eigener MCP-Server“ für den lokalen KI-Client."); 
+    if (!usesChatGPT && hardwareIds.includes("none")) blockers.push("Self-Hosted benötigt eigene Hardware für ein lokales LLM. Wähle ein Gerät und weise ihm eine Rolle zu.");
+    if (!usesChatGPT) {
+      conditions.push("Lokales Modell, Lizenz, Hardware-RAM/VRAM und Inferenz-Runtime müssen einzeln verifiziert werden. Die Axiom-Web-Preview liefert keinen Installer.");
+      conditions.push("Ein lokaler KI-Client muss Modell und optional MCP-Transport tatsächlich unterstützen; ohne echte Tool-Verbindung bleiben Agenten und Skills nur Anweisungen.");
+      if (ids.length) warnings.push("ChatGPT-Plugins sind im Self-Hosted-Modus nicht verwendbar. Ausgewählte Dienste erfordern selbst implementierte, separat autorisierte lokale MCP-Adapter.");
+    }
     if (config.mode === "hybrid" && hardwareIds.includes("none")) blockers.push("Hybrid benötigt ein erreichbares eigenes Gerät. Wähle Hardware oder wechsle zur reinen ChatGPT-Betriebsart.");
     const missingRoles = assignedDevices.filter(function (id) { return !roleOf(id); });
     if (missingRoles.length) blockers.push("Rolle fehlt für: " + missingRoles.map(function (id) { return hardware[id].label; }).join(", ") + ". Weise jedem ausgewählten Gerät eine Aufgabe zu (Schritt 2).");
@@ -223,13 +229,13 @@
       if (role === "remote" && (id === "nas" || id === "other")) conditions.push(hardware[id].label + ": Kompatibler Remote-Connector nicht zugesichert; Herstellerunterstützung prüfen.");
     });
     if (isMcp && assignedDevices.length && !assignedDevices.some(function (id) { return roleOf(id) === "mcp"; })) conditions.push("Kein ausgewähltes Gerät übernimmt die Rolle „Eigener MCP-Server“. Für diese Betriebsart musst du einen zusätzlichen MCP-Server-Host wählen oder eine solche Rolle zuweisen.");
-    if (config.plan === "none" && config.mode === "bridge" && assignedDevices.length && !assignedDevices.some(function (id) { return roleOf(id) === "client"; })) conditions.push("Noch kein Gerät als „KI-Client / Modell“ vorgesehen. Du benötigst einen separaten MCP-fähigen KI-Client und eine Modellquelle.");
+    if (config.plan === "selfhosted" && config.mode === "bridge" && assignedDevices.length && !assignedDevices.some(function (id) { return roleOf(id) === "client"; })) conditions.push("Keine primäre Geräterolle „KI-Client / Modell“ gewählt. Der KI-Client und das lokale LLM benötigen dennoch einen verifizierten Host; ein MCP-Server kann auch auf demselben Rechner laufen.");
     if (config.mode === "chatgpt" && assignedDevices.some(function (id) { return roleOf(id) === "remote" || roleOf(id) === "mcp"; })) warnings.push("Remote-/MCP-Geräterollen verbinden sich nicht automatisch mit der reinen ChatGPT-Betriebsart. Dafür Hybrid oder den eigenen MCP-Modus auswählen.");
     if (config.mode === "hybrid" && assignedDevices.some(function (id) { return roleOf(id) === "mcp"; })) warnings.push("Ein zusätzlich eingetragener MCP-Server wird nicht automatisch über den Hybrid-Connector angesprochen.");
     if (isMcp && usesChatGPT && (config.plan === "free" || config.plan === "plus")) blockers.push("Der direkte eigene Remote-MCP-Zugang über ChatGPT Developer Mode ist für diesen Plan nicht allgemein freigegeben. Alternative: unterstützte Apps oder ein separater MCP-fähiger Client; lokale MCP-Apps über ChatGPT-Desktop-Plugins sind ein eigener, geräteabhängiger Weg.");
     if (isMcp && config.plan === "pro") conditions.push("Pro-Developer-Mode: eigene Remote-MCP-Apps derzeit nur für Lesen/Abrufen. Keine allgemeinen Schreib-/Änderungsrechte versprechen.");
     if (isMcp && (config.plan === "business" || config.plan === "enterprise")) conditions.push("Eigene MCP-Apps und Schreibfunktionen sind Beta und abhängig von Admin-/Owner-Freigabe; Enterprise/Edu zusätzlich RBAC und zulässige Tool-Aktionen.");
-    if (isMcp && config.plan === "none") conditions.push("Ein anderer MCP-fähiger KI-Client und ein kompatibles Modell müssen separat gewählt und eingerichtet werden; die eigenständige Axiom-KI ist noch nicht veröffentlicht.");
+    if (isMcp && config.plan === "selfhosted") conditions.push("Self-Hosted-Vorschau: Einen lokalen MCP-fähigen Client und ein lokales Modell separat bereitstellen; Axiom Independent ist noch nicht veröffentlicht.");
     if (isMcp && hardwareIds.includes("none")) conditions.push("Kein eigener Rechner gewählt: eigener MCP-Server nur über gesondert bereitgestellten Host/Cloud möglich; die Website stellt keinen Server bereit.");
     if (config.mode === "hybrid") conditions.push("Hybrid funktioniert nur, wenn ein geeigneter Remote-Connector für dein Konto und das Zielsystem tatsächlich verfügbar und autorisiert ist.");
     if (config.mode === "chatgpt" && !hardwareIds.includes("none")) warnings.push("Die gewählte Hardware ist im reinen ChatGPT-Modus optional und wird nicht automatisch angebunden.");
@@ -273,7 +279,12 @@
         : "Im Client die angebotenen Tools inspizieren und zuerst eine Leseaktion auf ungefährlichen Testdaten ausführen.");
       if (config.plan === "pro") needed.push("Aktivierter Developer Mode (Read/Fetch)");
       if (config.plan === "business" || config.plan === "enterprise") needed.push("Developer Mode, Admin-/Owner-Freigabe und erlaubte Tool-Aktionen");
-      if (config.plan === "none") needed.push("Eigene Modellquelle (lokales LLM oder externer Modellanbieter)");
+      if (config.plan === "selfhosted") {
+        needed.push("Lokale LLM-Inferenz-Runtime und kompatibles Modell", "MCP-fähiger lokaler KI-Client");
+        add("Lokales LLM einrichten (manuell, nicht durch Axiom Web)", "Modell-Lizenz prüfen, RAM/VRAM und CPU/GPU-Kompatibilität messen. Nur vertrauenswürdige Runtime wählen und über localhost einen harmlosen Modell-Prompt testen; keine automatische Download-/Installationsfunktion vorhanden.");
+        add("Lokalen Client und Modell prüfen", "Nur auf eigenen Testdaten einen Inferenz-Aufruf durchführen. MCP separat und vorzugsweise lesend verbinden; keine Verbindung gilt als bestätigt.");
+        tests.push("Self-Hosted: Ist der lokale KI-Client ohne ChatGPT erreichbar und antwortet er mit dem tatsächlich ausgewählten lokalen Modell? Modellname, Ressourcennutzung und Offline-Betrieb selbst prüfen.");
+      }
       if (usesChatGPT) security.push("Ein eigener MCP-Server hinter NAT ist nicht automatisch erreichbar. Secure MCP Tunnel nur mit erforderlichem OpenAI-Platform-/Workspace-Zugang prüfen; niemals geheime Tunnel-Schlüssel veröffentlichen.");
     }
     for (const id of ids) {
@@ -321,10 +332,12 @@
         return {id: id, name: catalogue.integrations[id].name,
           purpose: info.purpose, provider: info.provider, data: info.data,
           permissions: info.permissions, privacy: info.privacy,
-          kind: config.mode === "bridge" ? "technical-mcp-connector" : "external-chatgpt-app",
+          kind: config.plan === "selfhosted" ? "local-mcp-adapter-not-implemented" : config.mode === "bridge" ? "technical-mcp-connector" : "external-chatgpt-app",
           status: {selected: true, configured: false, available: "unverified", installed: "unverified",
             connected: "unverified", authorized: "unverified", executable: "unverified", verified: false}};
       }),
+      localModel: {required: !usesChatGPT, selectedModel: null, runtime: null, state: "not-configured", verified: false,
+        notice: !usesChatGPT ? "Self-Hosted-Vorschau ohne mitgelieferte Modell-Dateien, Inferenz-Runtime, Client- oder MCP-Server-Distribution." : "Lokales Sprachmodell für ChatGPT nicht erforderlich."},
       installation: {
         chatgptZipImportSupported: false,
         packagePurpose: "Offline-Anweisungen und Setup-Dokumentation",
