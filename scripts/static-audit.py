@@ -86,7 +86,7 @@ def run():
             tags = [el.tag.split("}")[-1] for el in e.iter()]
             check(not set(tags).intersection({"script", "foreignObject", "image", "iframe", "use"}),
                   "Favicon contains unsafe linked/executable elements")
-            check(not re.search(r"(?:href|xlink:href)\\s*=\\s*[\'\\\"]\\s*(?:https?:|javascript:|data:)", icon, flags=re.I),
+            check(not re.search(r"(?:href|xlink:href)\s*=\s*['\"]\s*(?:https?:|javascript:|data:)", icon, flags=re.I),
                   "Favicon references remote/executable resource")
         except ET.ParseError as ex:
             ERRORS.append("Invalid favicon SVG: " + str(ex))
