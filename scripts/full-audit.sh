@@ -121,7 +121,7 @@ if [ "$LIVE" -eq 1 ]; then
         https://axiom.jd-schuldt.de/assets/favicon.svg
     if [ -s "$LOG_DIR/live-index.html" ]; then
       run "Live HTML favicon reference" grep -F 'rel="icon" type="image/svg+xml"' "$LOG_DIR/live-index.html"
-      run "Live HTML matches Free/Plus/Pro wizard scope" grep -F 'ChatGPT Free, Plus und Pro' "$LOG_DIR/live-index.html"
+      run "Live HTML advertises Self-Hosted preview" grep -F 'Self-Hosted mit eigenem lokalem LLM' "$LOG_DIR/live-index.html"
     fi
     if [ -s "$LOG_DIR/live-favicon.svg" ]; then
       run "Deployed favicon matches local Git revision" cmp assets/favicon.svg "$LOG_DIR/live-favicon.svg"
