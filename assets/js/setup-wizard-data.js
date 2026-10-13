@@ -360,7 +360,7 @@
       tests: tests,
       unavailable: availability,
       docs: documentation,
-      notice: "Konfigurationsleitfaden mit Rollen- und Skill-Anweisungen. selected ist keine Bestätigung für installed, connected, authorized, executable oder verified. Statischer App-Katalog: 13.10.2026."
+      notice: "Konfigurationsleitfaden mit Rollen- und Skill-Anweisungen. Keine Installation oder Freigabe erfolgt durch diese Website. selected ist keine Bestätigung für installed, connected, authorized, executable oder verified. Statischer App-Katalog: 13.10.2026."
     };
   }
   window.AxiomWizardRules = Object.freeze({hardware: hardware, roles: roles, documentation: documentation, special: special, validateConfig: validateConfig, buildGuide: buildGuide});

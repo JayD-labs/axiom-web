@@ -151,7 +151,7 @@ test("HTML structure, script load order, focus hooks, responsive rules and priva
   assert.match(ui,/\.focus\(\)/);
   assert.match(ui,/wizard-back/);
   assert.match(ui,/wizard-next/);
-  assert.match(ui,/axiom-setup-v1\.3\.json/);
+  assert.match(ui,/axiom-setup-v1\.4\.json/);
   assert.match(html,/connect-src 'self'/);
   assert.match(html,/rel="icon" type="image\/svg\+xml" href="\.\/assets\/favicon\.svg"/);
   assert.match(source("assets/favicon.svg"),/viewBox="0 0 128 128"/);
