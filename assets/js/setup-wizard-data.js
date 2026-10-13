@@ -322,7 +322,7 @@
           purpose: info.purpose, provider: info.provider, data: info.data,
           permissions: info.permissions, privacy: info.privacy,
           kind: config.mode === "bridge" ? "technical-mcp-connector" : "external-chatgpt-app",
-          status: {configured: true, available: "unverified", installed: "unverified",
+          status: {selected: true, configured: false, available: "unverified", installed: "unverified",
             connected: "unverified", authorized: "unverified", executable: "unverified", verified: false}};
       }),
       installation: {
