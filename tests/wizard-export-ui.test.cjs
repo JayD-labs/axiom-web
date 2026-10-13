@@ -169,7 +169,7 @@ test("Regression: displayed multi-device selection and compatibility match JSON 
   assert.equal(data.integrationRequirements[0].status.connected,"unverified");
   assert.equal(data.selection.mode,"hybrid");
   assert.equal(data.compatibility.status,"conditional");
-  assert.deepEqual(data.agentPackage.agentIds,["orchestrator","infrastructure","code"]);
+  assert.deepEqual(data.agentPackage.agentIds,["orchestrator","onboarding","infrastructure","code"]);
   assert.equal(data.summary,summary);
   assert.equal(data.hardware.assignments.length,2);
   assert.ok(data.hardware.prerequisites.some(s=>s.includes("Raspberry Pi [Remote-Ziel")));
