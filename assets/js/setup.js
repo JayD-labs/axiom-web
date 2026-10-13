@@ -1,4 +1,4 @@
-/* Axiom Web Setup Wizard V1.2 – nur Same-Origin-Ladevorgänge nach ZIP-Klick, keine Cookies/Storage.
+/* Axiom Web Setup Wizard V1.3 – nur Same-Origin-Ladevorgänge nach ZIP-Klick, keine Cookies/Storage.
  * Die Auswahl bleibt ausschließlich im Arbeitsspeicher des Browsers.
  */
 (function () {
@@ -8,7 +8,7 @@
   if (!catalogue || !rules) return;
   const $ = function (id) { return document.getElementById(id); };
   const stageLabels = ["KI / ChatGPT", "Hardware", "Betriebsart", "Apps / Plugins", "Deine Anleitung"];
-  const state = {plan: "plus", hardware: new Set(["none"]), roles: {}, mode: "chatgpt", integrations: new Set()};
+  const state = {plan: "plus", hardware: new Set(["none"]), roles: {}, mode: "chatgpt", purposes: new Set(), integrations: new Set()};
   let step = 0;
   const element = function (tag, text, cls) {
     const el = document.createElement(tag);
@@ -29,7 +29,7 @@
   };
   // One plain-data snapshot for screen and both exports: never pass a Set to buildGuide.
   const getConfig = function () {
-    return {plan: state.plan, hardware: Array.from(state.hardware), roles: {...state.roles}, mode: state.mode, integrations: Array.from(state.integrations)};
+    return {plan: state.plan, hardware: Array.from(state.hardware), roles: {...state.roles}, mode: state.mode, purposes: Array.from(state.purposes), integrations: Array.from(state.integrations)};
   };
   const renderRoles = function () {
     const target = $("wizard-device-roles");
@@ -81,13 +81,18 @@
       input.type = multi ? "checkbox" : "radio";
       input.name = group;
       input.value = id;
-      input.checked = multi ? (group === "hardware" ? state.hardware.has(id) : state.integrations.has(id)) : state[group] === id;
+      input.checked = multi ? (group === "hardware" ? state.hardware.has(id) : state[group].has(id)) : state[group] === id;
       const copy = element("span", null, "wizard-choice-copy");
       const name = data.name || data.label;
       copy.append(element("strong", (data.icon ? data.icon + " " : "") + name));
       const note = group === "plan" ? data.tagline : group === "hardware" ? data.summary :
-        group === "mode" ? data.slogan : data.chatgpt.description;
+        group === "mode" ? data.slogan : group === "purposes" ? data.detail : data.chatgpt.description;
       copy.append(element("span", note, "wizard-choice-detail"));
+      if (group === "integrations") {
+        const metadata = catalogue.integrationMeta[id];
+        copy.append(element("span", metadata.provider + " · " + metadata.purpose, "wizard-integration-tag"));
+        copy.append(element("span", "", "wizard-recommendation"));
+      }
       label.append(input, copy);
       target.append(label);
       input.addEventListener("change", function () {
@@ -105,8 +110,8 @@
           }
           renderRoles();
         } else if (multi) {
-          if (input.checked) state.integrations.add(id);
-          else state.integrations.delete(id);
+          if (input.checked) state[group].add(id);
+          else state[group].delete(id);
         } else state[group] = id;
         refresh();
       });
@@ -116,6 +121,7 @@
   makeChoices($("wizard-hardware"), "hardware", rules.hardware, true);
   renderRoles();
   makeChoices($("wizard-modes"), "mode", catalogue.modes, false);
+  makeChoices($("wizard-purposes"), "purposes", catalogue.purposes, true);
   makeChoices($("wizard-integrations"), "integrations", catalogue.integrations, true);
 
   const textList = function (container, values, title) {
@@ -145,6 +151,7 @@
     textList(specs, guide.hardware.prerequisites.concat([guide.hardware.server, guide.hardware.network, guide.hardware.llm]), "Hardware & Netzwerk");
     textList(specs, guide.software, "Benötigte Software");
     textList(specs, guide.connectors.length ? guide.connectors : ["Keine weiteren Connectoren ausgewählt."], "Benötigte Connectoren");
+    textList(specs, guide.labels.purposes.length ? guide.labels.purposes : ["Keine speziellen Verwendungszwecke ausgewählt."], "Deine Anwendungsbereiche");
     textList(specs, guide.agentPackage.agents.map(function (agent) {
       return agent.name + " → " + agent.skills.join(", ");
     }), "Vorgeschlagene Axiom-Rollen & Skills");
@@ -152,6 +159,12 @@
     appendList($("wizard-result-security"), guide.security);
     appendList($("wizard-result-tests"), guide.tests);
     appendList($("wizard-result-unavailable"), guide.unavailable);
+    appendList($("wizard-result-connector-status"), guide.integrationRequirements.length
+      ? guide.integrationRequirements.map(function (item) {
+          return item.name + " [" + item.kind + "]: ausgewählt, aber Verfügbarkeit/Installation/Verbindung/Berechtigung/Ausführung nicht verifiziert.";
+        })
+      : ["Keine zusätzlichen Connectoren gewählt; keine Verbindungen geprüft."]);
+    appendList($("wizard-result-installation"), guide.installation.alternatives);
     const docs = $("wizard-result-docs");
     docs.replaceChildren();
     guide.docs.forEach(function (item) {
@@ -174,6 +187,10 @@
       article.append(element("p", detail.description));
       article.append(element("p", "Voraussetzung: " + detail.needs));
       article.append(element("p", "Berechtigungen: " + extra.permission));
+      const metadata = catalogue.integrationMeta[id];
+      article.append(element("p", "Anbieter: " + metadata.provider));
+      article.append(element("p", "Daten: " + metadata.data + ". Datenschutz: " + metadata.privacy));
+      article.append(element("p", "Status: nur ausgewählt. Installation, Verbindung und Zugriff nicht nachgewiesen.", "subtle"));
       article.append(element("strong", "Einrichtung"));
       const ol = element("ol");
       appendList(ol, detail.steps, true);
