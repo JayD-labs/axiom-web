@@ -43,11 +43,11 @@ const smokePage = `<!DOCTYPE html><html lang="de"><meta charset="utf-8"><title>A
         plan:'plus',hardware:['pi','mac'],roles:{pi:'remote',mac:'admin'},mode:'hybrid',
         purposes:['code','files'],integrations:['github','files']
       },app.AxiomGuide);
-      check(guide.schemaVersion===5,'schema version');
+      check(guide.schemaVersion===6,'schema version');
       check(guide.installation.chatgptZipImportSupported===false,'installer status');
       check(guide.integrationRequirements.every(x=>x.status.connected==='unverified'),'connection state');
       check(doc.getElementById('wizard-result-summary').textContent===guide.summary,'screen/export data parity');
-      check(guide.agentPackage.agentIds.includes('onboarding')&&guide.agentPackage.agentIds.includes('brain'),'routing');
+      check(guide.agentPackage.skillIds.includes('axiom-onboarding')&&guide.agentPackage.agentIds.includes('brain'),'routing');
       frame.style.width='375px';
       const width=frame.contentWindow.innerWidth,scroll=doc.documentElement.scrollWidth;
       check(width>=375&&width<420,'mobile viewport '+width);

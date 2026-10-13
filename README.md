@@ -4,15 +4,15 @@
 
 [Axiom Web öffnen](https://axiom.jd-schuldt.de) · [GitHub-Repository](https://github.com/JayD-labs/axiom-web)
 
-Axiom Web ist die öffentliche Projektwebsite von **Axiom 🐸**, einem modular gedachten persönlichen KI-Assistenten. Der integrierte **Setup Wizard V1.3** hilft Besucherinnen und Besuchern, aus ihrem ChatGPT-/KI-Zugang, ihrer vorhandenen Hardware, der gewünschten Betriebsart und dem gewünschten Verwendungszweck passende, bewusst separat zu autorisierende Integrationen sowie eine individuelle Einrichtungsanleitung zusammenzustellen.
+Axiom Web ist die öffentliche Projektwebsite von **Axiom 🐸**, einem modular gedachten persönlichen KI-Assistenten. Der integrierte **Setup Wizard V1.4** hilft Besucherinnen und Besuchern, aus ihrem ChatGPT-/KI-Zugang, ihrer vorhandenen Hardware, der gewünschten Betriebsart und dem gewünschten Verwendungszweck passende, bewusst separat zu autorisierende Integrationen sowie eine individuelle Einrichtungsanleitung zusammenzustellen.
 
 > **Projektstatus (Oktober 2026):** Website und Wizard sind verfügbar. Ein für alle öffentlich installierbares Axiom-Plugin, ein Axiom-Installer und eine vollständige eigenständige Axiom-KI sind **noch nicht veröffentlicht**. Der Wizard installiert keine Software und stellt keine Verbindungen selbst her.
 
 ## Inhaltsverzeichnis
 
 - [Funktionsumfang](#funktionsumfang)
-- [Setup Wizard V1.3](#setup-wizard-v13)
-- [Axiom Agents & Skills V1.3](#axiom-agents--skills-v13)
+- [Setup Wizard V1.4](#setup-wizard-v14)
+- [Axiom Agents & Skills V1.4](#axiom-agents--skills-v14)
 - [Kompatibilitätsprüfung](#kompatibilitätsprüfung)
 - [Ergebnis und Export](#ergebnis-und-export)
 - [Projektarchitektur](#projektarchitektur)
@@ -21,6 +21,18 @@ Axiom Web ist die öffentliche Projektwebsite von **Axiom 🐸**, einem modular 
 - [Tests und Qualitätssicherung](#tests-und-qualitätssicherung)
 - [Projektstatus und Roadmap](#projektstatus-und-roadmap)
 - [Mitwirken und Lizenz](#mitwirken-und-lizenz)
+
+## Axiom Web V1.4 — Aktuelles Release (13. Oktober 2026)
+
+**Produkt:** Axiom V1.4 · **Website/Wizard:** `1.4.0` · **Plugin-Ziel:** `2.3.0` bei unveränderter privater Plugin-Identität.
+
+- Im privaten Plugin liegen **14 echte Agentenreferenzen** (Auth, Automation, Brain, Calendar, Career, Code, Design, Finance, Infrastructure, Learning, Mail, Project Manager, Research, Security). Sie sind synchron als lesbare Markdown-Dateien im Repository und Offline-Paket enthalten.
+- **30 echte Skill-Dateien** wurden inhaltlich geprüft: 25 bytegenau identisch, fünf mit reinem Whitespace-Unterschied.
+- Installationsweg: ChatGPT → Plugins → Persönlich → Von dir erstellt für Eigentümer; alternativ Plugin Creator für eigene Plugins. Die Website installiert keine Plugins. [Offizielle OpenAI-Anleitung](https://help.openai.com/en/articles/20001256-plugins-in-chatgpt).
+- **Status strikt getrennt:** selected / installed / connected / authorized / executable / verified; das Portal kann nur die Auswahl lokal erfassen.
+- ChatGPT Free, Plus und Pro sind die priorisierten Wege, keine garantierte identische Funktionalität; Self-Hosted mit lokalem LLM ist nur Vorschau. Business/Enterprise/Edu bleiben zurückgestellt.
+- Release-Details: [V1.4](docs/RELEASE-V1.4.md) · [Installationsleitfaden](assets/axiom/CHATGPT-INSTALL.md) · [CHANGELOG](CHANGELOG.md).
+- Historische V1.2/V1.3-Entwicklungsangaben bleiben in [Release V1.3](docs/RELEASE-V1.3.md) und [V1.2-Audit](assets/axiom/AUDIT.md) erhalten; sie beschreiben **nicht** den heutigen Lieferstand.
 
 ## Funktionsumfang
 
@@ -35,7 +47,7 @@ Axiom Web ist die öffentliche Projektwebsite von **Axiom 🐸**, einem modular 
 - **Lokaler JSON- und Markdown-Export** nach explizitem Klick.
 - Bestehendes dunkles **JD Design System** mit responsiven Auswahlkarten und Fokus-Styling.
 
-## Setup Wizard V1.3
+## Setup Wizard V1.4
 
 Auf der Website **„Axiom einrichten“** auswählen und die fünf Schritte durchgehen.
 
@@ -122,7 +134,7 @@ Das Ergebnis enthält:
 7. Noch nicht öffentlich verfügbare Axiom-Funktionen.
 8. Links zu weiterführender Dokumentation und lokale Export-Schaltflächen.
 
-Zusätzlich ermittelt V1.3 aus Betriebsart, Verwendungszweck und App-Auswahl passende Axiom-Rollen und Skills. Der Onboarding-Agent gehört als Basisrolle zum Setup. Über alle Verwendungszwecke sind die **12** Rollen erreichbar. Diese Auswahl ist eine lokale, exportierbare Konfigurationsgrundlage und erstellt keine Tools oder Berechtigungen.
+Zusätzlich ermittelt V1.3 aus Betriebsart, Verwendungszweck und App-Auswahl passende Axiom-Rollen und Skills. Der Onboarding-Skill gehört zur Basiskonfiguration; er ist keine zusätzliche eigenständige Agentendefinition. Über alle Verwendungszwecke sind die **14** Rollen erreichbar. Diese Auswahl ist eine lokale, exportierbare Konfigurationsgrundlage und erstellt keine Tools oder Berechtigungen.
 
 ## Kompatibilitätsprüfung
 
@@ -162,8 +174,8 @@ Der Wizard berechnet die Anleitung im Browser und lädt **nur auf ausdrückliche
 
 | Dateiname | Inhalt |
 | --- | --- |
-| `axiom-setup-v1.3.json` | Auswahl, Kompatibilität, Hardware, Software, Connectoren, Rollen, Skills, Schritte, Sicherheitsmaßnahmen und Tests |
-| `axiom-setup-v1.3.md` | Lesbare Markdown-Anleitung mit denselben thematischen Informationen |
+| `axiom-setup-v1.4.json` | Auswahl, Kompatibilität, Hardware, Software, Connectoren, Rollen, Skills, Schritte, Sicherheitsmaßnahmen und Tests |
+| `axiom-setup-v1.4.md` | Lesbare Markdown-Anleitung mit denselben thematischen Informationen |
 
 Das aktuelle **JSON-Schema hat `schemaVersion: 5`**. Hardware wird als **Array** gespeichert, um mehrere Geräte zu unterstützen. Neu ist `agentPackage`: die lokal berechnete Rollen-/Skill-Auswahl.
 
@@ -184,7 +196,7 @@ Geräterollen-IDs: `remote`, `mcp`, `client`, `storage`, `admin`, `other`. `sele
 
 Dies zeigt **nur den Ausschnitt `selection`** und kein vollständiges Exportbeispiel. Die Auswahl enthält keine Zugangsdaten und weist keine Verbindung als erfolgreich aus. `integrationRequirements` unterscheidet `selected`, `configured`, `available`, `installed`, `connected`, `authorized`, `executable` und `verified`. Eine Auswahl setzt nur `selected: true`; alle weiteren Schritte bleiben unbestätigt. `installation.chatgptZipImportSupported` ist immer `false`.
 
-## Axiom Agents & Skills V1.3
+## Axiom Agents & Skills V1.4
 
 | Begriff | Bedeutung in Axiom Web |
 | --- | --- |
@@ -193,7 +205,7 @@ Dies zeigt **nur den Ausschnitt `selection`** und kein vollständiges Exportbeis
 | Skill | Versionierte, wiederverwendbare Instruktion mit Aktivierung und Sicherheitsgrenzen |
 | MCP-Tool / Connector | Technische Fähigkeit eines externen, tatsächlich verbundenen Systems; nicht Teil dieses Exports |
 
-Der zentrale Katalog [`assets/axiom/catalogue.json`](assets/axiom/catalogue.json) enthält **12 Agentenrollen** und das vollständige **30-Skill-Inventar** des Axiom-Plugins. Der Browser verwendet nur die deterministischen Auswahlregeln in `assets/js/agent-catalogue.js`; er lädt keine Katalogdaten nach und verbindet nichts.
+Der zentrale Katalog [`assets/axiom/catalogue.json`](assets/axiom/catalogue.json) enthält **14 Plugin-Agentenreferenzen** und das vollständige **30-Skill-Inventar** des Axiom-Plugins. Der Browser verwendet nur die deterministischen Auswahlregeln in `assets/js/agent-catalogue.js`; er lädt keine Katalogdaten nach und verbindet nichts.
 
 | Agent | Verwendete Skills |
 | --- | --- |
@@ -222,9 +234,9 @@ Die Skillmatrix steht in [`assets/axiom/skills.md`](assets/axiom/skills.md), die
 
 ### Vollständiger Offline-ZIP-Export
 
-Im fünften Wizard-Schritt kann man **`axiom-setup-v1.3.zip`** herunterladen. Das Paket enthält tatsächlich:
+Im fünften Wizard-Schritt kann man **`axiom-setup-v1.4.zip`** herunterladen. Das Paket enthält tatsächlich:
 - **30 originale Skill-Hauptdateien** (`skills/axiom-*/SKILL.md`) aus dem Axiom-Plugin.
-- **12 Agentendefinitionen** (Orchestrator plus 11 Fach-Agenten).
+- **14 Agentendefinitionen** (14 Fach-Agenten aus dem Plugin; Orchestrator als System-Skill).
 - Die Referenz-Markdown-Dateien des Orchestrators, Capability-/Action-Policies und kleine Hilfsskripte aus den Skills.
 - `setup.md`, `setup.json` und `package-files.json` sowie einen Paket-README.
 
@@ -237,7 +249,7 @@ Alle 30 Skills sind bewusst enthalten, auch wenn für die gewählte Betriebsart 
 
 ### Installation ≠ Konfiguration (V1.3)
 
-Der Offline-Export ist **kein** ChatGPT-Plugin-Installer. Er enthält 30 versionierte Skill-Anweisungen, 12 Rollendefinitionen mit Orchestrator, Referenzen, Beispielskripte sowie `setup.json` und `setup.md`. Für die tatsächliche Verwendung sind getrennte manuelle Schritte nötig:
+Der Offline-Export ist **kein** ChatGPT-Plugin-Installer. Er enthält 30 versionierte Skill-Anweisungen, 14 Fachrollendefinitionen mit Orchestrator, Referenzen, Beispielskripte sowie `setup.json` und `setup.md`. Für die tatsächliche Verwendung sind getrennte manuelle Schritte nötig:
 
 1. **Anweisungen:** Eine ChatGPT-Projektanweisung übernehmen und die relevanten Quelldateien entsprechend Upload-Limits bereitstellen. Dies ist keine Plugin-Installation; vorhandene Skills werden nicht automatisch als ausführbare ChatGPT-Skills registriert.
 2. **Plugin/App:** Im ChatGPT-Plugin-Verzeichnis oder unter **Einstellungen → Plugins** nach einer offiziell angebotenen App suchen. Nur beim konkret verfügbaren Angebot Installieren/Verbinden auswählen und die angefragten Rechte prüfen.
@@ -261,7 +273,7 @@ Der Wizard bietet **Free, Plus, Pro und Self-Hosted (lokales LLM, Vorschau)** al
 Das vollständige Audit unter [`scripts/full-audit.sh`](scripts/full-audit.sh) startet **ohne zusätzliche Installation**:
 - Syntaxchecks für JavaScript/CJS und Python-Skripte.
 - Node-Tests für Wizard, Hardware, Pläne, Rollen, Skills, ZIP, Export, fehlerhafte und bösartige Eingaben.
-- Statische Prüfung von HTML-Links, Ankern, CSP, SVG-Favicon, ZIP-Manifestpfaden, Assets, 30 Skills, 12 Rollen, dynamischen JS-Sinks und häufigen Secret-Signaturen.
+- Statische Prüfung von HTML-Links, Ankern, CSP, SVG-Favicon, ZIP-Manifestpfaden, Assets, 30 Skills, 14 Fachrollen, dynamischen JS-Sinks und häufigen Secret-Signaturen.
 - Falls Chrome/Chromium vorhanden: echter Headless-Browser-Smoke inklusive Favicon, Fünf-Schritt-Navigation, 375px-Layout und Tastaturfokus.
 - Falls installiert: ShellCheck und Gitleaks als zusätzliche Scanner.
 - Nur mit `--live`: ein paar **passive** HTTPS-Anfragen ausschließlich an die Axiom-Website und Abgleich des ausgerollten Favicons.
@@ -286,7 +298,7 @@ axiom-web/
 └── assets/
     ├── axiom/
     │   ├── agents/              # Versionierte Rollenbeschreibungen
-    │   ├── catalogue.json       # Maschinenlesbare 12 Rollen / 30 Skills
+    │   ├── catalogue.json       # Maschinenlesbare 14 Fachrollen / 30 Skills
     │   ├── skills.md            # Lesbare Skillmatrix
     │   ├── skills/              # 30 SKILL.md + Referenzen/Skripte
     │   ├── export-manifest.json # 92 öffentliche Paketdateien
@@ -425,7 +437,7 @@ Der Headless-Chromium-Smoke wurde in CI ausgeführt; er prüft Navigation, 375px
 
 ## Projektstatus und Roadmap
 
-**Bereits umgesetzt:** Projektwebsite, Setup Wizard V1.3, Hardware-Mehrfachauswahl mit Geräterollen, Node-Testmatrix und GitHub Actions, kontextabhängige Kompatibilitätsregeln, fünf auswählbare ChatGPT-App-/Connector-Kategorien, lokale Rollen-/Skill-Auswahl, responsive Gestaltung sowie JSON-, Markdown- und Offline-ZIP-Export.
+**Bereits umgesetzt:** Projektwebsite, Setup Wizard V1.4, Hardware-Mehrfachauswahl mit Geräterollen, Node-Testmatrix und GitHub Actions, kontextabhängige Kompatibilitätsregeln, fünf auswählbare ChatGPT-App-/Connector-Kategorien, lokale Rollen-/Skill-Auswahl, responsive Gestaltung sowie JSON-, Markdown- und Offline-ZIP-Export.
 
 **Noch nicht fertig / öffentlich verfügbar:**
 

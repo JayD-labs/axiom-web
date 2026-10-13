@@ -111,16 +111,16 @@ test("Invalid objects, input types, role and integration identifiers are rejecte
     cfg({hardware:["none"],roles:{none:"admin"}})
   ]) assert.throws(()=>guide(invalid));
 });
-test("JSON export uses schemaVersion 5 and preserves device-role mapping plus agents",()=>{
+test("JSON export uses schemaVersion 6 and preserves device-role mapping plus agents",()=>{
   const c=cfg({plan:"pro",mode:"bridge",hardware:["pi","linux","mac"],roles:{pi:"mcp",linux:"storage",mac:"admin"},integrations:["github","calendar"]});
   const before=JSON.stringify(c);
   const value=exporter.json(guide(c));
   const data=JSON.parse(value);
-  assert.equal(data.schemaVersion,5);
+  assert.equal(data.schemaVersion,6);
   assert.equal(JSON.stringify(data.selection.hardwareRoles),JSON.stringify(c.roles));
   assert.equal(JSON.stringify(data.selection.hardware),JSON.stringify(c.hardware));
   assert.equal(data.hardware.assignments.length,3);
-  assert.deepEqual(data.agentPackage.agentIds,["orchestrator","onboarding","infrastructure","security","code","calendar"]);
+  assert.deepEqual(data.agentPackage.agentIds,["brain","infrastructure","security","auth","code","project-manager","calendar","automation"]);
   assert.ok(data.agentPackage.skillIds.includes("axiom-security"));
   assert.ok(value.endsWith("\n"));
   assert.equal(JSON.stringify(c),before);
@@ -166,7 +166,7 @@ test("HTML structure, script load order, focus hooks, responsive rules and priva
   }
 });
 
-test("V1.3 purpose selection maps to verified instruction-only agent descriptions",()=>{
+test("V1.4 purpose selection maps to verified instruction-only agent descriptions",()=>{
   const all=Object.keys(catalogue.purposes);
   const selected=guide(cfg({purposes:all,integrations:["github","files"]}));
   assert.deepEqual(Array.from(selected.selection.purposes),all);

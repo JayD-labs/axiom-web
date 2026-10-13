@@ -55,7 +55,7 @@ test("Manifest contains each file and every original skill exactly once", () => 
     assert.match(read("assets/axiom/" + target), /^---\nname: axiom-/);
   }
   assert.equal(catalogue.skills.length, 30);
-  assert.equal(catalogue.agents.length,12);
+  assert.equal(catalogue.agents.length,14);
   for(const agent of catalogue.agents) assert.ok(targets.includes(agent.definition === "/axiom-orchestrator.md" ? "axiom-orchestrator.md" : "agents/" + agent.definition.split("/").at(-1)), agent.id);
   assert.ok(targets.some(name => name.startsWith("skills/axiom-orchestrator/references/docs/")));
   assert.ok(targets.includes("agents/agent-code.md"));
@@ -70,11 +70,11 @@ test("Real ZIP includes 30 original skills, agent markdown, setup and supporting
   assert.equal(data.get("skills/axiom-orchestrator/references/docs/setup.md"),read("assets/axiom/skills/axiom-orchestrator/references/docs/setup.md"));
   const config = JSON.parse(data.get("setup.json"));
   assert.equal(config.selection.mode,"chatgpt");
-  assert.equal(config.agentPackage.agentIds[0],"orchestrator");
+  assert.equal(config.agentPackage.agentIds[0],"brain");
   assert.match(data.get("setup.md"),/Ausgewählte Axiom-Rollen/);
   assert.match(data.get("README.md"),/alle 30 Axiom-Skills/);
   assert.equal(JSON.parse(data.get("package-files.json")).skillCount,30);
-  assert.equal(JSON.parse(data.get("package-files.json")).agentCount,12);
+  assert.equal(JSON.parse(data.get("package-files.json")).agentCount,14);
   assert.equal(JSON.parse(data.get("setup.json")).installation.chatgptZipImportSupported,false);
 });
 
