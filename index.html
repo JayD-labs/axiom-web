@@ -34,7 +34,7 @@
           <a class="btn primary" href="#setup">Setup starten <span aria-hidden="true">↗</span></a>
           <a class="btn" href="https://github.com/JayD-labs/axiom-web" target="_blank" rel="noopener noreferrer">Auf GitHub ansehen <span aria-hidden="true">↗</span></a>
         </div>
-        <p class="hint">Axiom Web · Setup Wizard V1.2 · Öffentliches Projektportal im Aufbau</p>
+        <p class="hint">Axiom Web · Setup Wizard V1.3 · Öffentliches Projektportal im Aufbau</p>
       </div>
       <div class="hero-panel" aria-label="Vorschau auf das Axiom Control Center">
         <div class="panelhead"><span>AXIOM / CONTROL CENTER</span><span class="status">Konzept</span></div>
@@ -66,7 +66,7 @@
     <section id="setup" class="section">
       <div class="wrap">
         <div class="sectiontop setupintro">
-          <div class="eyebrow">Interaktiver Setup Wizard V1.2</div>
+          <div class="eyebrow">Interaktiver Setup Wizard V1.3</div>
           <h2>Richte Axiom nach deinen Möglichkeiten ein.</h2>
           <p>Vier Entscheidungen, eine individuelle Anleitung. Alle Berechnungen bleiben in deinem Browser; es wird nichts übertragen.</p>
         </div>
@@ -113,12 +113,16 @@
             </fieldset>
           </div>
           <div class="wizard-stage" data-stage="3" aria-labelledby="wizard-step-heading-3" hidden>
-            <h3 id="wizard-step-heading-3" tabindex="-1">Welche ChatGPT-Apps/Plugins möchtest du für Axiom einbinden?</h3>
-            <p class="subtle">Mehrfachauswahl möglich. Wähle nur den tatsächlichen Bedarf. Jede App braucht eine eigene Verfügbarkeit, Autorisierung und Berechtigungsprüfung.</p>
-            <fieldset class="wizard-fieldset"><legend>Optionale ChatGPT-Apps/Plugins</legend>
+            <h3 id="wizard-step-heading-3" tabindex="-1">Was soll Axiom für dich tun?</h3>
+            <p class="subtle">Wähle zunächst deinen Bedarf. Daraus leitet der Wizard passende Rollen, Skills und Integrationsvorschläge ab. Eine App ist nicht automatisch installiert.</p>
+            <fieldset class="wizard-fieldset"><legend>Verwendungszwecke (Mehrfachauswahl)</legend>
+              <div id="wizard-purposes" class="wizard-choices wizard-purposes" role="group" aria-label="Verwendungszwecke auswählen"></div>
+            </fieldset>
+            <p id="wizard-plugin-hint" class="subtle" role="status" aria-live="polite"></p>
+            <fieldset class="wizard-fieldset"><legend>Passende Apps / technische Connectoren (optional)</legend>
               <div id="wizard-integrations" class="wizard-choices" role="group" aria-label="ChatGPT-Apps und Plugins auswählen"></div>
             </fieldset>
-            <p class="subtle">Remote Desktop Commander bleibt als mögliche Hybrid-Option enthalten, jedoch nur, wenn es für dein Konto und Zielsystem tatsächlich angeboten wird. Weitere Apps werden ergänzt, sobald konkrete, dokumentierte Installationswege verfügbar sind.</p>
+            <p class="subtle">Versionierter, kuratierter Katalog vom 13.10.2026 – keine Live-Suche und keine Aussage über deinen Verbindungsstatus. Prüfe Apps in deinem eigenen ChatGPT-Konto. Bei eigener MCP-Anbindung gelten gesonderte Server- und Zugriffsanforderungen.</p>
           </div>
           <div class="wizard-stage" data-stage="4" aria-labelledby="wizard-step-heading-4" hidden>
             <div class="wizard-result-head">
@@ -143,6 +147,8 @@
               <section class="wizard-result-section"><h4>Sicherheitsmaßnahmen</h4><ul id="wizard-result-security"></ul></section>
               <section class="wizard-result-section"><h4>Konkrete Tests</h4><ul id="wizard-result-tests"></ul></section>
             </div>
+            <section class="wizard-result-section"><h4>Integrationen: Was ist wirklich verbunden?</h4><ul id="wizard-result-connector-status"></ul></section>
+            <section class="wizard-result-section"><h4>Installation ≠ Konfiguration</h4><ul id="wizard-result-installation"></ul></section>
             <section class="wizard-result-section"><h4>Noch nicht öffentlich verfügbar</h4><ul id="wizard-result-unavailable"></ul></section>
             <section class="wizard-result-section"><h4>Offizielle Dokumentation</h4><ul id="wizard-result-docs"></ul></section>
             <div class="wizard-export-actions">
