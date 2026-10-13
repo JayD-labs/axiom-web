@@ -95,7 +95,7 @@
     ]
   }
 });
-  const all = Object.freeze(["orchestrator"]);
+  const all = Object.freeze(["orchestrator", "onboarding"]);
   const byMode = Object.freeze({
     chatgpt: [],
     hybrid: ["infrastructure"],
