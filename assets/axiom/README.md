@@ -1,9 +1,7 @@
-# Axiom-Katalog V1.3 – vollständige Dateien
+# Axiom Web V1.4 – nachprüfbarer Plugin-Katalog
 
-`catalogue.json` ist die maschinenlesbare Übersicht über 12 Rollen und 30 Skills. Die tatsächlichen Skills sind unter `skills/<id>/SKILL.md` versioniert. Zugehörige Referenzen und Hilfsskripte liegen in den Unterordnern. Die Orchestrator-Datei und Fach-Agenten existieren im Repository.
+Die **14** Agenten-Referenzen unter `agents/` wurden aus `skills/axiom-orchestrator/references/agents/` des privaten Axiom-Plugins (Quellstand 2.2.0) übernommen. System-Skills `axiom-orchestrator`, `axiom-onboarding` und `axiom-health` sind **keine weiteren Agentendefinitionen**. Der Wizard routet Fachrollen als Anweisungen, nicht als Prozesse.
 
-`export-manifest.json` enthält die verbindliche, überprüfbare Dateiliste für den Offline-ZIP-Export des Wizards. Bei einem Skill-Update müssen Skill-Dateien, Manifest und Tests gemeinsam aktualisiert werden. Alle 30 Skills sind im Archiv enthalten, unabhängig von den empfohlenen Rollen des gewählten Modus.
+Alle **30** `skills/<id>/SKILL.md` wurden inhaltlich mit dem Plugin verglichen: 25 bytegleich, 5 mit ausschließlich abschließenden Whitespace-Unterschieden. Kein Skill wurde auf eine reine ID reduziert. Die exportierte Datei `catalogue.json` und das `export-manifest.json` enthalten die zugehörigen Dateipfade.
 
-Es handelt sich um **Instruktionsdateien, keine ausführbaren ChatGPT-Tools**. Das ZIP installiert keine Programme, führt keine Skripte aus, überträgt keine Auswahl an einen Drittdienst und enthält keine Tokens. Installationsskripte für Bridge oder Pi sind ausgeschlossen. `plugin-package.schema.json` ist weiterhin nur ein separater Entwurf und **kein** ChatGPT-Plugin-Manifest.
-
-Verfügbare Agentenrollen und Skills werden im Browser nur als Anweisungen geroutet. Der Plugin-Katalog ist kuratiert und statisch; Verfügbarkeit, Installationsstatus und Rechte müssen im jeweiligen ChatGPT-Konto geprüft werden.
+Das ZIP ist ein lokales Offline-Dokumentationspaket, **kein importierbares ChatGPT-Plugin**. Die echte Installation geht über ChatGPT → Plugins / Plugin Creator und gegebenenfalls die gesonderte Connector-Autorisierung. Lies `CHATGPT-INSTALL.md`.

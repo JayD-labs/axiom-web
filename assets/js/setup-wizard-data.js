@@ -1,4 +1,4 @@
-/* Axiom Setup Wizard V1.3 – ausschließlich lokale, deterministische Regeln.
+/* Axiom Setup Wizard V1.4 – ausschließlich lokale, deterministische Regeln.
  * Offizielle Produktvorgaben: siehe documentation; Verfügbarkeit immer im Konto prüfen.
  */
 (function () {
@@ -258,7 +258,8 @@
     });
     if (config.mode === "chatgpt") {
       needed.push("ChatGPT-Web/App", "Ausgewählte freigegebene Plugins/Apps");
-      add("Axiom als Arbeitsweise nutzen", "Axiom ist öffentlich noch nicht als fertiges Plugin installierbar. Bis dahin passende vorhandene ChatGPT-Apps einzeln installieren bzw. verbinden und den Assistenten mit eigenen Anweisungen organisieren.");
+      add("Privates Axiom-Plugin über ChatGPT einrichten", "ChatGPT → Plugins → Persönlich → Von dir erstellt: vorhandenes Axiom auswählen. Falls du selbst Plugin-Eigentümer bist, Plugin Creator öffnen und das bestehende Plugin aktualisieren. Ohne Zugriff ist die private Axiom-Version nicht installierbar. Das Website-ZIP ist kein Plugin-Installer.");
+      add("Axiom Onboarding lesend prüfen", "Starte Axiom in ChatGPT mit @Axiom und bitte um tatsächliche verfügbare Skills, Agenten und Connector-Status. Prüfe zuerst nur lesende Aktionen; keine Rechte aus Auswahl oder Installation ableiten.");
       add("Rechte prüfen", "Im Plugin-Verzeichnis Details, erlaubte Aktionen und ggf. separate Provider-Verbindung prüfen. Workspace-Sperren niemals umgehen.");
     } else if (config.mode === "hybrid") {
       needed.push("ChatGPT", "Unterstützter Remote-Connector auf Zielsystem");
@@ -313,7 +314,8 @@
     const agentPackage = agentCatalogue.resolve({mode: config.mode, integrations: ids, purposes: purposeIds});
     const compatibility = blockers.length ? "blocked" : conditions.length ? "conditional" : "supported";
     return {
-      schemaVersion: 5,
+      schemaVersion: 6,
+      release: {product:"Axiom V1.4",web:"1.4.0",plugin:"2.3.0",pluginAvailability:"private; account dependent"},
       selection: {plan: config.plan, hardware: hardwareIds, hardwareRoles: roleIds, mode: config.mode, purposes: purposeIds, integrations: ids},
       labels: {plan: p.name, hardware: devices.map(function (device) { return device.label; }), mode: m.name, purposes: purposeIds.map(function (id) { return catalogue.purposes[id].name; }), integrations: ids.map(function (id) {return catalogue.integrations[id].name;})},
       compatibility: {status: compatibility, blockers: blockers, conditions: conditions, warnings: warnings},
@@ -340,8 +342,12 @@
         notice: !usesChatGPT ? "Self-Hosted-Vorschau ohne mitgelieferte Modell-Dateien, Inferenz-Runtime, Client- oder MCP-Server-Distribution." : "Lokales Sprachmodell für ChatGPT nicht erforderlich."},
       installation: {
         chatgptZipImportSupported: false,
+        supportedPath: "ChatGPT → Plugins → Persönlich → Von dir erstellt / Plugin Creator (nur Eigentümer und berechtigte Konten)",
+        officialGuide: "https://help.openai.com/en/articles/20001256-plugins-in-chatgpt",
+        installed: "unverified", connected: "unverified", authorized: "unverified", executable: "unverified", verified: false,
         packagePurpose: "Offline-Anweisungen und Setup-Dokumentation",
         alternatives: [
+          "Offizieller Plugin-Weg: ChatGPT → Plugins → Persönlich → Von dir erstellt. Eigentümer können das bestehende private Plugin mit Plugin Creator aktualisieren; andere benötigen eine ausdrückliche Freigabe oder erstellen ihr eigenes Plugin.",
           "ChatGPT-Projekt: Orchestrator-Anweisungen bewusst übernehmen und benötigte Agenten-/Skill-Dateien als Projektdateien beifügen (abhängig von Upload-Limits). Das ist KEINE Plugin-Installation.",
           "Vorhandene ChatGPT-Apps einzeln im Konto über Einstellungen → Plugins oder das App-Verzeichnis suchen, Verfügbarkeit und Berechtigungen prüfen und dann explizit verbinden.",
           "Eigenen MCP-Server ausschließlich nach dokumentierter, für den Client unterstützter Remote-/lokaler MCP-Einrichtung anbinden. Dieses ZIP liefert keinen MCP-Server, keine App und keinen Tunnel.",
@@ -354,7 +360,7 @@
       tests: tests,
       unavailable: availability,
       docs: documentation,
-      notice: "Konfigurationsleitfaden mit Rollen- und Skill-Anweisungen. Keine Installation, Verbindung, Berechtigung, ausführbare Funktion oder Testerfolg bestätigt. Statischer App-Katalog: 13.10.2026."
+      notice: "Konfigurationsleitfaden mit Rollen- und Skill-Anweisungen. selected ist keine Bestätigung für installed, connected, authorized, executable oder verified. Statischer App-Katalog: 13.10.2026."
     };
   }
   window.AxiomWizardRules = Object.freeze({hardware: hardware, roles: roles, documentation: documentation, special: special, validateConfig: validateConfig, buildGuide: buildGuide});

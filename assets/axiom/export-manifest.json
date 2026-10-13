@@ -1,11 +1,15 @@
 {
   "format": "axiom-web-offline-assets",
   "version": 1,
-  "notes": "Alle 30 Skills samt unterstützenden Referenzen und 12 Agentendefinitionen. Kein ChatGPT-Plugin-Manifest oder Credential-Export.",
+  "notes": "14 exakt aus dem privaten Axiom-Plugin übernommene Fach-Agentendefinitionen plus 30 inhaltlich abgeglichene Skills. Reines Offline-Paket, niemals ein installierbares ChatGPT-Plugin.",
   "files": [
     {
-      "source": "assets/axiom/README.md",
-      "target": "docs/README.md"
+      "source": "assets/axiom/agents/agent-auth.md",
+      "target": "agents/agent-auth.md"
+    },
+    {
+      "source": "assets/axiom/agents/agent-automation.md",
+      "target": "agents/agent-automation.md"
     },
     {
       "source": "assets/axiom/agents/agent-brain.md",
@@ -14,6 +18,10 @@
     {
       "source": "assets/axiom/agents/agent-calendar.md",
       "target": "agents/agent-calendar.md"
+    },
+    {
+      "source": "assets/axiom/agents/agent-career.md",
+      "target": "agents/agent-career.md"
     },
     {
       "source": "assets/axiom/agents/agent-code.md",
@@ -28,10 +36,6 @@
       "target": "agents/agent-finance.md"
     },
     {
-      "source": "assets/axiom/agents/agent-health.md",
-      "target": "agents/agent-health.md"
-    },
-    {
       "source": "assets/axiom/agents/agent-infrastructure.md",
       "target": "agents/agent-infrastructure.md"
     },
@@ -44,28 +48,44 @@
       "target": "agents/agent-mail.md"
     },
     {
-      "source": "assets/axiom/agents/agent-onboarding.md",
-      "target": "agents/agent-onboarding.md"
+      "source": "assets/axiom/agents/agent-project-manager.md",
+      "target": "agents/agent-project-manager.md"
+    },
+    {
+      "source": "assets/axiom/agents/agent-research.md",
+      "target": "agents/agent-research.md"
     },
     {
       "source": "assets/axiom/agents/agent-security.md",
       "target": "agents/agent-security.md"
     },
     {
+      "source": "axiom-orchestrator.md",
+      "target": "axiom-orchestrator.md"
+    },
+    {
       "source": "assets/axiom/catalogue.json",
       "target": "docs/catalogue.json"
+    },
+    {
+      "source": "assets/axiom/CHATGPT-INSTALL.md",
+      "target": "docs/CHATGPT-INSTALL.md"
+    },
+    {
+      "source": "assets/axiom/README.md",
+      "target": "docs/README.md"
     },
     {
       "source": "assets/axiom/skills.md",
       "target": "docs/skills.md"
     },
     {
-      "source": "assets/axiom/skills/axiom-actions/SKILL.md",
-      "target": "skills/axiom-actions/SKILL.md"
-    },
-    {
       "source": "assets/axiom/skills/axiom-actions/references/action-policy.yaml",
       "target": "skills/axiom-actions/references/action-policy.yaml"
+    },
+    {
+      "source": "assets/axiom/skills/axiom-actions/SKILL.md",
+      "target": "skills/axiom-actions/SKILL.md"
     },
     {
       "source": "assets/axiom/skills/axiom-auth/SKILL.md",
@@ -76,20 +96,16 @@
       "target": "skills/axiom-automation/SKILL.md"
     },
     {
-      "source": "assets/axiom/skills/axiom-brain/SKILL.md",
-      "target": "skills/axiom-brain/SKILL.md"
-    },
-    {
       "source": "assets/axiom/skills/axiom-brain/scripts/document_planner.py",
       "target": "skills/axiom-brain/scripts/document_planner.py"
     },
     {
-      "source": "assets/axiom/skills/axiom-calendar/SKILL.md",
-      "target": "skills/axiom-calendar/SKILL.md"
+      "source": "assets/axiom/skills/axiom-brain/SKILL.md",
+      "target": "skills/axiom-brain/SKILL.md"
     },
     {
-      "source": "assets/axiom/skills/axiom-capabilities/SKILL.md",
-      "target": "skills/axiom-capabilities/SKILL.md"
+      "source": "assets/axiom/skills/axiom-calendar/SKILL.md",
+      "target": "skills/axiom-calendar/SKILL.md"
     },
     {
       "source": "assets/axiom/skills/axiom-capabilities/references/capabilities-v22.yaml",
@@ -102,6 +118,10 @@
     {
       "source": "assets/axiom/skills/axiom-capabilities/scripts/resolve_registry.py",
       "target": "skills/axiom-capabilities/scripts/resolve_registry.py"
+    },
+    {
+      "source": "assets/axiom/skills/axiom-capabilities/SKILL.md",
+      "target": "skills/axiom-capabilities/SKILL.md"
     },
     {
       "source": "assets/axiom/skills/axiom-career/SKILL.md",
@@ -148,32 +168,28 @@
       "target": "skills/axiom-learning/SKILL.md"
     },
     {
-      "source": "assets/axiom/skills/axiom-mail/SKILL.md",
-      "target": "skills/axiom-mail/SKILL.md"
-    },
-    {
       "source": "assets/axiom/skills/axiom-mail/scripts/mail_policy.py",
       "target": "skills/axiom-mail/scripts/mail_policy.py"
+    },
+    {
+      "source": "assets/axiom/skills/axiom-mail/SKILL.md",
+      "target": "skills/axiom-mail/SKILL.md"
     },
     {
       "source": "assets/axiom/skills/axiom-maintenance/SKILL.md",
       "target": "skills/axiom-maintenance/SKILL.md"
     },
     {
-      "source": "assets/axiom/skills/axiom-notifications/SKILL.md",
-      "target": "skills/axiom-notifications/SKILL.md"
-    },
-    {
       "source": "assets/axiom/skills/axiom-notifications/scripts/notification_center.py",
       "target": "skills/axiom-notifications/scripts/notification_center.py"
     },
     {
-      "source": "assets/axiom/skills/axiom-onboarding/SKILL.md",
-      "target": "skills/axiom-onboarding/SKILL.md"
+      "source": "assets/axiom/skills/axiom-notifications/SKILL.md",
+      "target": "skills/axiom-notifications/SKILL.md"
     },
     {
-      "source": "assets/axiom/skills/axiom-orchestrator/SKILL.md",
-      "target": "skills/axiom-orchestrator/SKILL.md"
+      "source": "assets/axiom/skills/axiom-onboarding/SKILL.md",
+      "target": "skills/axiom-onboarding/SKILL.md"
     },
     {
       "source": "assets/axiom/skills/axiom-orchestrator/references/agents/auth.md",
@@ -332,6 +348,10 @@
       "target": "skills/axiom-orchestrator/references/docs/v1-contract.md"
     },
     {
+      "source": "assets/axiom/skills/axiom-orchestrator/SKILL.md",
+      "target": "skills/axiom-orchestrator/SKILL.md"
+    },
+    {
       "source": "assets/axiom/skills/axiom-project-manager/SKILL.md",
       "target": "skills/axiom-project-manager/SKILL.md"
     },
@@ -360,16 +380,13 @@
       "target": "skills/axiom-verification/SKILL.md"
     },
     {
-      "source": "assets/axiom/skills/axiom-workflows/SKILL.md",
-      "target": "skills/axiom-workflows/SKILL.md"
-    },
-    {
       "source": "assets/axiom/skills/axiom-workflows/scripts/execution_guard.py",
       "target": "skills/axiom-workflows/scripts/execution_guard.py"
     },
     {
-      "source": "axiom-orchestrator.md",
-      "target": "axiom-orchestrator.md"
+      "source": "assets/axiom/skills/axiom-workflows/SKILL.md",
+      "target": "skills/axiom-workflows/SKILL.md"
     }
-  ]
+  ],
+  "webRelease": "1.4.0"
 }

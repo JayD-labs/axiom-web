@@ -1,4 +1,4 @@
-/* Axiom Web Setup Wizard V1.3 – nur Same-Origin-Ladevorgänge nach ZIP-Klick, keine Cookies/Storage.
+/* Axiom Web Setup Wizard V1.4 – nur Same-Origin-Ladevorgänge nach ZIP-Klick, keine Cookies/Storage.
  * Die Auswahl bleibt ausschließlich im Arbeitsspeicher des Browsers.
  */
 (function () {
@@ -306,7 +306,7 @@
     const url = URL.createObjectURL(blob);
     const a = element("a");
     a.href = url;
-    a.download = type === "json" ? "axiom-setup-v1.3.json" : "axiom-setup-v1.3.md";
+    a.download = type === "json" ? "axiom-setup-v1.4.json" : "axiom-setup-v1.4.md";
     document.body.append(a);
     a.click();
     a.remove();
@@ -358,10 +358,10 @@
       const blob = new Blob([archive], {type:"application/zip"});
       const url = URL.createObjectURL(blob);
       const anchor = element("a");
-      anchor.href = url; anchor.download = "axiom-setup-v1.3.zip";
+      anchor.href = url; anchor.download = "axiom-setup-v1.4.zip";
       document.body.append(anchor); anchor.click(); anchor.remove();
       setTimeout(function () {URL.revokeObjectURL(url);}, 1000);
-      status.textContent = "ZIP erstellt: 30 Skills, Agentendateien, Referenzen und deine Setup-Konfiguration.";
+      status.textContent = "ZIP erstellt: 30 Skills, 14 Plugin-Agentendefinitionen, Referenzen und deine Setup-Konfiguration.";
     } catch (error) {
       status.textContent = "ZIP konnte nicht erstellt werden: " + (error && error.message ? error.message : "Unbekannter Fehler.") + " Es wurde kein unvollständiges Archiv heruntergeladen.";
     } finally {
