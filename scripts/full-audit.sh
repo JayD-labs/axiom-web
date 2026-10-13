@@ -77,7 +77,7 @@ run "Static security, dependencies, links, favicon and 30/12 manifest" python3 s
 run "All unit, compatibility, export and malicious-input tests" node --test tests/wizard.test.cjs tests/wizard-export-ui.test.cjs tests/agent-catalogue.test.cjs tests/zip-package.test.cjs tests/security-audit.test.cjs
 
 if command -v google-chrome >/dev/null || command -v chromium >/dev/null ||
-   command -v chromium-browser >/dev/null || { [ -n "$CHROME_BIN" ] && command -v "$CHROME_BIN" >/dev/null; }; then
+   command -v chromium-browser >/dev/null || { [ -n "${CHROME_BIN:-}" ] && command -v "${CHROME_BIN:-}" >/dev/null; }; then
   run "Real Chromium: five-step wizard, mobile viewport, focus, favicon" node tests/browser-smoke.cjs
 else
   skip "Real Chromium browser test (no local Chrome/Chromium binary)"
