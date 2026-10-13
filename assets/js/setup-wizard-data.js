@@ -1,4 +1,4 @@
-/* Axiom Setup Wizard V1.2 – ausschließlich lokale, deterministische Regeln.
+/* Axiom Setup Wizard V1.3 – ausschließlich lokale, deterministische Regeln.
  * Offizielle Produktvorgaben: siehe documentation; Verfügbarkeit immer im Konto prüfen.
  */
 (function () {
@@ -147,12 +147,17 @@
       software: "Ein für Konto, Betriebssystem und Berechtigungen freigegebener Remote-Connector oder eigene MCP-Tools",
       permission: "Auf einen Testordner und reine Lesefunktionen begrenzen; keine pauschalen Shell-/Root-Rechte.",
       check: "Zeige den Benutzernamen und den Inhalt eines freigegebenen Testordners. Verändere nichts."
+    },
+    files: {
+      software: "Eigener eingeschränkter Datei-MCP-Server oder eine wirklich verfügbare Datei-App",
+      permission: "Nur ein dediziertes Testverzeichnis lesend freigeben, keinen Vollzugriff auf das Dateisystem.",
+      check: "Lies eine harmlose Testdatei im autorisierten Ordner, ohne Änderungen."
     }
   };
   function unique(items) { return Array.from(new Set(items)); }
   function validateConfig(config, catalogue) {
     if (!config || typeof config !== "object" || Array.isArray(config)) throw new TypeError("Konfiguration muss ein Objekt sein.");
-    if (!catalogue || !catalogue.plans || !catalogue.modes || !catalogue.integrations) throw new TypeError("Katalog fehlt.");
+    if (!catalogue || !catalogue.plans || !catalogue.modes || !catalogue.integrations || !catalogue.purposes || !catalogue.integrationMeta) throw new TypeError("Katalog fehlt.");
     if (!Object.hasOwn(catalogue.plans, config.plan)) throw new RangeError("Unbekannter ChatGPT-Plan.");
     if (!Object.hasOwn(catalogue.modes, config.mode)) throw new RangeError("Unbekannte Betriebsart.");
     if (!Array.isArray(config.hardware) || !config.hardware.length || config.hardware.some(id => typeof id !== "string" || !Object.hasOwn(hardware, id))) throw new RangeError("Hardwareauswahl enthält unbekannte oder fehlende Geräte.");
@@ -160,6 +165,8 @@
     if (config.hardware.includes("none") && config.hardware.length > 1) throw new RangeError("Keine eigene Hardware schließt andere Geräte aus.");
     if (!Array.isArray(config.integrations) || config.integrations.some(id => typeof id !== "string" || !Object.hasOwn(special, id) || !Object.hasOwn(catalogue.integrations, id))) throw new RangeError("Unbekannte Integration.");
     if (new Set(config.integrations).size !== config.integrations.length) throw new RangeError("Integrationen dürfen nicht doppelt ausgewählt werden.");
+    const purposes = config.purposes === undefined ? [] : config.purposes;
+    if (!Array.isArray(purposes) || purposes.some(id => typeof id !== "string" || !Object.hasOwn(catalogue.purposes,id)) || new Set(purposes).size !== purposes.length) throw new RangeError("Unbekannter oder doppelter Verwendungszweck.");
     const assigned = config.roles === undefined ? {} : config.roles;
     if (!assigned || typeof assigned !== "object" || Array.isArray(assigned)) throw new TypeError("Geräterollen müssen ein Objekt sein.");
     Object.keys(assigned).forEach(id => {
@@ -191,6 +198,7 @@
       llm: devices.map(function (device) { return device.label + ": " + device.llm; }).join(" ")
     };
     const ids = config.integrations.slice();
+    const purposeIds = (config.purposes || []).slice();
     const blockers = [], conditions = [], warnings = [];
     const steps = [], tests = [], needed = [], connectors = [], security = [
       "Nur vertrauenswürdige Plugins/Apps/Server verbinden und jede Berechtigung vor Freigabe prüfen.",
@@ -226,6 +234,7 @@
     if (config.mode === "hybrid") conditions.push("Hybrid funktioniert nur, wenn ein geeigneter Remote-Connector für dein Konto und das Zielsystem tatsächlich verfügbar und autorisiert ist.");
     if (config.mode === "chatgpt" && !hardwareIds.includes("none")) warnings.push("Die gewählte Hardware ist im reinen ChatGPT-Modus optional und wird nicht automatisch angebunden.");
     if (usesChatGPT) conditions.push("Plugin-/App-Verfügbarkeit, Konto-Limits und Workspace-Policies müssen im konkreten ChatGPT-Konto geprüft werden.");
+    if (ids.length) conditions.push("Der versionierte Integrationskatalog ist keine Live-Suche: keine der ausgewählten Apps ist hier als installiert, verbunden oder ausführbar nachgewiesen.");
     if (ids.includes("remote-desktop") && hardwareIds.includes("none")) {
       conditions.push("Remote Desktop / Server ohne eigenes Zielgerät lässt sich nicht testen. Für diesen Teil wird Hardware benötigt.");
     }
@@ -290,12 +299,12 @@
     ];
     const agentCatalogue = window.AxiomAgentCatalogue;
     if (!agentCatalogue || typeof agentCatalogue.resolve !== "function") throw new Error("Axiom-Agentenkatalog fehlt.");
-    const agentPackage = agentCatalogue.resolve({mode: config.mode, integrations: ids});
+    const agentPackage = agentCatalogue.resolve({mode: config.mode, integrations: ids, purposes: purposeIds});
     const compatibility = blockers.length ? "blocked" : conditions.length ? "conditional" : "supported";
     return {
-      schemaVersion: 4,
-      selection: {plan: config.plan, hardware: hardwareIds, hardwareRoles: roleIds, mode: config.mode, integrations: ids},
-      labels: {plan: p.name, hardware: devices.map(function (device) { return device.label; }), mode: m.name, integrations: ids.map(function (id) {return catalogue.integrations[id].name;})},
+      schemaVersion: 5,
+      selection: {plan: config.plan, hardware: hardwareIds, hardwareRoles: roleIds, mode: config.mode, purposes: purposeIds, integrations: ids},
+      labels: {plan: p.name, hardware: devices.map(function (device) { return device.label; }), mode: m.name, purposes: purposeIds.map(function (id) { return catalogue.purposes[id].name; }), integrations: ids.map(function (id) {return catalogue.integrations[id].name;})},
       compatibility: {status: compatibility, blockers: blockers, conditions: conditions, warnings: warnings},
       summary: p.name + " · " + h.label + " · " + m.name,
       plan: {requirements: p.needs, limits: p.limits, description: p.intro},
@@ -306,13 +315,33 @@
       },
       software: unique(needed.concat(h.software)),
       connectors: unique(connectors),
+      integrationCatalogue: Object.assign({}, catalogue.integrationCatalogue),
+      integrationRequirements: ids.map(function (id) {
+        const info = catalogue.integrationMeta[id];
+        return {id: id, name: catalogue.integrations[id].name,
+          purpose: info.purpose, provider: info.provider, data: info.data,
+          permissions: info.permissions, privacy: info.privacy,
+          kind: config.mode === "bridge" ? "technical-mcp-connector" : "external-chatgpt-app",
+          status: {selected: true, configured: false, available: "unverified", installed: "unverified",
+            connected: "unverified", authorized: "unverified", executable: "unverified", verified: false}};
+      }),
+      installation: {
+        chatgptZipImportSupported: false,
+        packagePurpose: "Offline-Anweisungen und Setup-Dokumentation",
+        alternatives: [
+          "ChatGPT-Projekt: Orchestrator-Anweisungen bewusst übernehmen und benötigte Agenten-/Skill-Dateien als Projektdateien beifügen (abhängig von Upload-Limits). Das ist KEINE Plugin-Installation.",
+          "Vorhandene ChatGPT-Apps einzeln im Konto über Einstellungen → Plugins oder das App-Verzeichnis suchen, Verfügbarkeit und Berechtigungen prüfen und dann explizit verbinden.",
+          "Eigenen MCP-Server ausschließlich nach dokumentierter, für den Client unterstützter Remote-/lokaler MCP-Einrichtung anbinden. Dieses ZIP liefert keinen MCP-Server, keine App und keinen Tunnel.",
+          "Weder Website noch Export können automatisch Plugins installieren, Verbindungen autorisieren oder freigeben."
+        ]
+      },
       agentPackage: agentPackage,
       steps: steps,
       security: unique(security),
       tests: tests,
       unavailable: availability,
       docs: documentation,
-      notice: "Konfigurationsleitfaden inklusive Agenten-/Skill-Auswahl, keine erfolgreiche Installation, Freigabe oder Verbindung bestätigt. Stand: Oktober 2026."
+      notice: "Konfigurationsleitfaden mit Rollen- und Skill-Anweisungen. Keine Installation, Verbindung, Berechtigung, ausführbare Funktion oder Testerfolg bestätigt. Statischer App-Katalog: 13.10.2026."
     };
   }
   window.AxiomWizardRules = Object.freeze({hardware: hardware, roles: roles, documentation: documentation, special: special, validateConfig: validateConfig, buildGuide: buildGuide});

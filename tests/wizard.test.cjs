@@ -79,7 +79,7 @@ test("Plans, modes, roles and integration combinations produce deterministic res
     assert.equal(result.selection.integrations.length,selected.length);
     assert.equal(result.selection.hardware.length,devices.length);
     assert.ok(result.steps.length>0);
-    assert.ok(result.notice.includes("keine erfolgreiche Installation"));
+    assert.match(result.notice,/Keine Installation/);
     if(result.compatibility.blockers.length) assert.equal(result.compatibility.status,"blocked");
     else if(result.compatibility.conditions.length) assert.equal(result.compatibility.status,"conditional");
     checked++;
@@ -113,16 +113,16 @@ test("Invalid objects, input types, role and integration identifiers are rejecte
     cfg({hardware:["none"],roles:{none:"admin"}})
   ]) assert.throws(()=>guide(invalid));
 });
-test("JSON export uses schemaVersion 4 and preserves device-role mapping plus agents",()=>{
+test("JSON export uses schemaVersion 5 and preserves device-role mapping plus agents",()=>{
   const c=cfg({plan:"pro",mode:"bridge",hardware:["pi","linux","mac"],roles:{pi:"mcp",linux:"storage",mac:"admin"},integrations:["github","calendar"]});
   const before=JSON.stringify(c);
   const value=exporter.json(guide(c));
   const data=JSON.parse(value);
-  assert.equal(data.schemaVersion,4);
+  assert.equal(data.schemaVersion,5);
   assert.equal(JSON.stringify(data.selection.hardwareRoles),JSON.stringify(c.roles));
   assert.equal(JSON.stringify(data.selection.hardware),JSON.stringify(c.hardware));
   assert.equal(data.hardware.assignments.length,3);
-  assert.deepEqual(data.agentPackage.agentIds,["orchestrator","infrastructure","security","code","calendar"]);
+  assert.deepEqual(data.agentPackage.agentIds,["orchestrator","onboarding","infrastructure","security","code","calendar"]);
   assert.ok(data.agentPackage.skillIds.includes("axiom-security"));
   assert.ok(value.endsWith("\n"));
   assert.equal(JSON.stringify(c),before);
@@ -142,6 +142,7 @@ test("Markdown export includes roles, requirements, steps, status and safety not
 test("HTML structure, script load order, focus hooks, responsive rules and privacy are preserved",()=>{
   const html=source("index.html"), css=source("assets/css/styles.css"), ui=source("assets/js/setup.js");
   for(const id of ["wizard-device-roles","wizard-roles-panel","wizard-role-error","wizard-progress","wizard-back","wizard-next",
+    "wizard-purposes","wizard-plugin-hint","wizard-result-connector-status","wizard-result-installation",
     ...Array.from({length:5},(_,i)=>"wizard-step-heading-"+i)]) assert.ok(html.includes('id="'+id+'"'),id);
   const scripts=["setup-content.js","agent-catalogue.js","setup-wizard-data.js","setup-export.js","setup.js"];
   for(let i=1;i<scripts.length;i++) assert.ok(html.indexOf('src="./assets/js/'+scripts[i-1]+'"')<html.indexOf('src="./assets/js/'+scripts[i]+'"'));
@@ -152,7 +153,7 @@ test("HTML structure, script load order, focus hooks, responsive rules and priva
   assert.match(ui,/\.focus\(\)/);
   assert.match(ui,/wizard-back/);
   assert.match(ui,/wizard-next/);
-  assert.match(ui,/axiom-setup-v1\.2\.json/);
+  assert.match(ui,/axiom-setup-v1\.3\.json/);
   assert.match(html,/connect-src 'self'/);
   // ZIP assets are loaded on demand from our own static origin; no outbound
   // requests, background upload, storage or external API are permitted.
@@ -163,4 +164,37 @@ test("HTML structure, script load order, focus hooks, responsive rules and priva
     const data=source("assets/js/"+file);
     assert.doesNotMatch(data,/\b(XMLHttpRequest|WebSocket|localStorage|sessionStorage|sendBeacon)\s*\(/);
   }
+});
+
+test("V1.3 purpose selection maps to verified instruction-only agent descriptions",()=>{
+  const all=Object.keys(catalogue.purposes);
+  const selected=guide(cfg({purposes:all,integrations:["github","files"]}));
+  assert.deepEqual(Array.from(selected.selection.purposes),all);
+  assert.equal(selected.agentPackage.agents.some(a=>a.id==="brain"),true);
+  assert.equal(selected.agentPackage.agents.some(a=>a.id==="design"),true);
+  assert.equal(selected.agentPackage.agents.some(a=>a.id==="finance"),true);
+  assert.equal(selected.agentPackage.agents.every(a=>a.execution==="instruction-only"),true);
+  assert.equal(selected.integrationCatalogue.kind,"static-curated");
+  assert.equal(selected.integrationRequirements.length,2);
+  for(const requirement of selected.integrationRequirements){
+    assert.equal(requirement.status.selected,true);
+    assert.equal(requirement.status.configured,false);
+    assert.equal(requirement.status.available,"unverified");
+    assert.equal(requirement.status.installed,"unverified");
+    assert.equal(requirement.status.connected,"unverified");
+    assert.equal(requirement.status.authorized,"unverified");
+    assert.equal(requirement.status.executable,"unverified");
+    assert.equal(requirement.status.verified,false);
+  }
+  assert.equal(selected.installation.chatgptZipImportSupported,false);
+  assert.match(exporter.markdown(selected),/Installation und manuelle Konfiguration/);
+});
+test("Purpose and integration input validation denies unknown and duplicate selections",()=>{
+  assert.throws(()=>guide(cfg({purposes:"code"})),/Verwendungszweck/);
+  assert.throws(()=>guide(cfg({purposes:["bogus"]})),/Verwendungszweck/);
+  assert.throws(()=>guide(cfg({purposes:["code","code"]})),/Verwendungszweck/);
+  assert.throws(()=>guide(cfg({integrations:["files","files"]})),/doppelt/);
+  const selected=guide(cfg({purposes:["files"],integrations:["files"]}));
+  assert.ok(selected.agentPackage.agentIds.includes("brain"));
+  assert.ok(selected.agentPackage.agentIds.includes("security"));
 });

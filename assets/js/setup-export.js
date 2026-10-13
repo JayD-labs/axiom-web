@@ -1,4 +1,4 @@
-/* Axiom Setup Wizard V1.2 – lokale, separat testbare Export-Serialisierung. */
+/* Axiom Setup Wizard V1.3 – lokale, separat testbare Export-Serialisierung. */
 (function () {
   "use strict";
   function markdown(guide) {
@@ -11,7 +11,7 @@
       (entries.length ? entries : ["Keine."]).forEach(function (entry) { lines.push("- " + entry); });
       lines.push("");
     };
-    section("Auswahl", [guide.labels.plan].concat(guide.labels.hardware, [guide.labels.mode], guide.labels.integrations));
+    section("Auswahl", [guide.labels.plan].concat(guide.labels.hardware, [guide.labels.mode], guide.labels.purposes, guide.labels.integrations));
     section("Geräterollen", guide.hardware.assignments.map(function (item) {
       return item.label + ": " + item.roleLabel;
     }));
@@ -20,6 +20,12 @@
     section("Hardware & Netzwerk", guide.hardware.prerequisites.concat([guide.hardware.network, guide.hardware.server, guide.hardware.llm]));
     section("Software", guide.software);
     section("Connectoren", guide.connectors);
+    section("Integrationen: Status und Datenverarbeitung", guide.integrationRequirements.map(function (item) {
+      return item.name + " | " + item.kind + " | " + item.provider + " | Daten: " + item.data +
+        " | Rechte: " + item.permissions + " | Datenschutz: " + item.privacy +
+        " | ausgewählt, nicht verbunden oder verifiziert";
+    }));
+    section("Installation und manuelle Konfiguration", guide.installation.alternatives);
     section("Ausgewählte Axiom-Rollen", guide.agentPackage.agents.map(function (agent) {
       return agent.name + " (" + agent.skills.join(", ") + ")";
     }));
@@ -44,9 +50,19 @@
     if (!catalogueAsset) throw new Error("Der Skill-Katalog fehlt.");
     const catalogue = JSON.parse(catalogueAsset.content);
     if (!Array.isArray(catalogue.skills) || catalogue.skills.length !== 30) throw new Error("Unvollständiger Skill-Katalog.");
+    if (!Array.isArray(catalogue.agents) || catalogue.agents.length !== 12) throw new Error("Unvollständiger Agenten-Katalog.");
     const required = catalogue.skills.map(skill => "skills/" + skill.id + "/SKILL.md");
     required.push("axiom-orchestrator.md");
+    catalogue.agents.forEach(function (agent) {
+      if (typeof agent.definition !== "string" || !/^\/(axiom-orchestrator\.md|assets\/axiom\/agents\/agent-[a-z-]+\.md)$/.test(agent.definition))
+        throw new Error("Unsichere Agentendefinition.");
+      if (agent.definition !== "/axiom-orchestrator.md")
+        required.push("agents/" + agent.definition.split("/").at(-1));
+    });
     const paths = new Set(assets.map(item => item.target));
+    if (paths.size !== assets.length) throw new Error("Doppelte ZIP-Pfade.");
+    if (!guide || !guide.selection || !guide.installation || guide.installation.chatgptZipImportSupported !== false)
+      throw new Error("Unsichere Setup- oder Installationsdaten.");
     for (const path of required) if (!paths.has(path)) throw new Error("Erforderliche Datei fehlt: " + path);
     const about = [
       "# Axiom 🐸 – Offline-Paket", "",
@@ -59,6 +75,8 @@
       "4. Unterstützende Dateien liegen in den jeweiligen skills/*/references/ und scripts/.", "",
       "## Sicherheits- und Produktgrenze", "",
       "Ein ZIP installiert **keine** ChatGPT-Plugins, KI-Modelle oder MCP-Tools.",
+       "Das ZIP ist nicht direkt als ChatGPT-Plugin importierbar.",
+       "Alternativen: Projektanweisungen übernehmen, Apps einzeln verbinden oder MCP separat einrichten.",
       "Es aktiviert keine Connectoren, Berechtigungen, Tunnel oder Automationen.",
       "Skripte sind Quelldateien; führe sie nicht ungeprüft aus.",
       "Installer/Bridge-Setups werden ausdrücklich **nicht** mitgeliefert.",
@@ -78,6 +96,7 @@
     entries.push({name:"package-files.json", text:JSON.stringify({
       format:"axiom-web-offline-package", version:1,
       skillCount:catalogue.skills.length,
+       agentCount:catalogue.agents.length,
       files:entries.map(entry => entry.name)
     }, null, 2) + "\n"});
     return writeZip(entries);

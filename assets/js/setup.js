@@ -1,4 +1,4 @@
-/* Axiom Web Setup Wizard V1.2 – nur Same-Origin-Ladevorgänge nach ZIP-Klick, keine Cookies/Storage.
+/* Axiom Web Setup Wizard V1.3 – nur Same-Origin-Ladevorgänge nach ZIP-Klick, keine Cookies/Storage.
  * Die Auswahl bleibt ausschließlich im Arbeitsspeicher des Browsers.
  */
 (function () {
@@ -8,7 +8,7 @@
   if (!catalogue || !rules) return;
   const $ = function (id) { return document.getElementById(id); };
   const stageLabels = ["KI / ChatGPT", "Hardware", "Betriebsart", "Apps / Plugins", "Deine Anleitung"];
-  const state = {plan: "plus", hardware: new Set(["none"]), roles: {}, mode: "chatgpt", integrations: new Set()};
+  const state = {plan: "plus", hardware: new Set(["none"]), roles: {}, mode: "chatgpt", purposes: new Set(), integrations: new Set()};
   let step = 0;
   const element = function (tag, text, cls) {
     const el = document.createElement(tag);
@@ -29,7 +29,7 @@
   };
   // One plain-data snapshot for screen and both exports: never pass a Set to buildGuide.
   const getConfig = function () {
-    return {plan: state.plan, hardware: Array.from(state.hardware), roles: {...state.roles}, mode: state.mode, integrations: Array.from(state.integrations)};
+    return {plan: state.plan, hardware: Array.from(state.hardware), roles: {...state.roles}, mode: state.mode, purposes: Array.from(state.purposes), integrations: Array.from(state.integrations)};
   };
   const renderRoles = function () {
     const target = $("wizard-device-roles");
@@ -81,13 +81,18 @@
       input.type = multi ? "checkbox" : "radio";
       input.name = group;
       input.value = id;
-      input.checked = multi ? (group === "hardware" ? state.hardware.has(id) : state.integrations.has(id)) : state[group] === id;
+      input.checked = multi ? (group === "hardware" ? state.hardware.has(id) : state[group].has(id)) : state[group] === id;
       const copy = element("span", null, "wizard-choice-copy");
       const name = data.name || data.label;
       copy.append(element("strong", (data.icon ? data.icon + " " : "") + name));
       const note = group === "plan" ? data.tagline : group === "hardware" ? data.summary :
-        group === "mode" ? data.slogan : data.chatgpt.description;
+        group === "mode" ? data.slogan : group === "purposes" ? data.detail : data.chatgpt.description;
       copy.append(element("span", note, "wizard-choice-detail"));
+      if (group === "integrations") {
+        const metadata = catalogue.integrationMeta[id];
+        copy.append(element("span", metadata.provider + " · " + metadata.purpose, "wizard-integration-tag"));
+        copy.append(element("span", "", "wizard-recommendation"));
+      }
       label.append(input, copy);
       target.append(label);
       input.addEventListener("change", function () {
@@ -105,8 +110,8 @@
           }
           renderRoles();
         } else if (multi) {
-          if (input.checked) state.integrations.add(id);
-          else state.integrations.delete(id);
+          if (input.checked) state[group].add(id);
+          else state[group].delete(id);
         } else state[group] = id;
         refresh();
       });
@@ -116,6 +121,7 @@
   makeChoices($("wizard-hardware"), "hardware", rules.hardware, true);
   renderRoles();
   makeChoices($("wizard-modes"), "mode", catalogue.modes, false);
+  makeChoices($("wizard-purposes"), "purposes", catalogue.purposes, true);
   makeChoices($("wizard-integrations"), "integrations", catalogue.integrations, true);
 
   const textList = function (container, values, title) {
@@ -145,6 +151,7 @@
     textList(specs, guide.hardware.prerequisites.concat([guide.hardware.server, guide.hardware.network, guide.hardware.llm]), "Hardware & Netzwerk");
     textList(specs, guide.software, "Benötigte Software");
     textList(specs, guide.connectors.length ? guide.connectors : ["Keine weiteren Connectoren ausgewählt."], "Benötigte Connectoren");
+    textList(specs, guide.labels.purposes.length ? guide.labels.purposes : ["Keine speziellen Verwendungszwecke ausgewählt."], "Deine Anwendungsbereiche");
     textList(specs, guide.agentPackage.agents.map(function (agent) {
       return agent.name + " → " + agent.skills.join(", ");
     }), "Vorgeschlagene Axiom-Rollen & Skills");
@@ -152,6 +159,12 @@
     appendList($("wizard-result-security"), guide.security);
     appendList($("wizard-result-tests"), guide.tests);
     appendList($("wizard-result-unavailable"), guide.unavailable);
+    appendList($("wizard-result-connector-status"), guide.integrationRequirements.length
+      ? guide.integrationRequirements.map(function (item) {
+          return item.name + " [" + item.kind + "]: ausgewählt, aber Verfügbarkeit/Installation/Verbindung/Berechtigung/Ausführung nicht verifiziert.";
+        })
+      : ["Keine zusätzlichen Connectoren gewählt; keine Verbindungen geprüft."]);
+    appendList($("wizard-result-installation"), guide.installation.alternatives);
     const docs = $("wizard-result-docs");
     docs.replaceChildren();
     guide.docs.forEach(function (item) {
@@ -174,6 +187,10 @@
       article.append(element("p", detail.description));
       article.append(element("p", "Voraussetzung: " + detail.needs));
       article.append(element("p", "Berechtigungen: " + extra.permission));
+      const metadata = catalogue.integrationMeta[id];
+      article.append(element("p", "Anbieter: " + metadata.provider));
+      article.append(element("p", "Daten: " + metadata.data + ". Datenschutz: " + metadata.privacy));
+      article.append(element("p", "Status: nur ausgewählt. Installation, Verbindung und Zugriff nicht nachgewiesen.", "subtle"));
       article.append(element("strong", "Einrichtung"));
       const ol = element("ol");
       appendList(ol, detail.steps, true);
@@ -189,10 +206,28 @@
     const guide = rules.buildGuide(cfg, catalogue);
     document.querySelectorAll(".wizard-choice").forEach(function (label) {
       const input = label.querySelector("input");
-      const selected = input.type === "checkbox" ? (input.name === "hardware" ? state.hardware.has(input.value) : state.integrations.has(input.value)) : state[input.name] === input.value;
+      const selected = input.type === "checkbox" ? (input.name === "hardware" ? state.hardware.has(input.value) : state[input.name].has(input.value)) : state[input.name] === input.value;
       input.checked = selected;
       label.classList.toggle("is-selected", selected);
     });
+    const suggested = new Set(Array.from(state.purposes).flatMap(function (id) { return catalogue.purposes[id].integrations; }));
+    const integrationBox = $("wizard-integrations");
+    const choices = Array.from(integrationBox.querySelectorAll(".wizard-choice"));
+    choices.sort(function (a, b) {
+      const av = suggested.has(a.querySelector("input").value) ? 0 : 1;
+      const bv = suggested.has(b.querySelector("input").value) ? 0 : 1;
+      return av - bv;
+    });
+    choices.forEach(function (label) {
+      const recommended = suggested.has(label.querySelector("input").value);
+      label.classList.toggle("is-recommended", recommended);
+      label.querySelector(".wizard-recommendation").textContent = recommended ? "✓ Für deinen Zweck empfohlen" : "";
+      integrationBox.append(label);
+    });
+    $("wizard-plugin-hint").textContent = state.purposes.size
+      ? suggested.size ? "Empfohlen: " + Array.from(suggested).map(function (id) { return catalogue.integrations[id].name; }).join(", ") + ". Wähle die Apps selbst aus; es erfolgt keine Installation."
+        : "Für diesen Zweck ist keine zusätzliche App notwendig. Die Fachrolle kann ohne Connector vorbereitet werden."
+      : "Wähle oben einen Verwendungszweck für gezielte Vorschläge. Alle angezeigten Apps stammen aus einem statischen Katalog.";
     const p = catalogue.plans[state.plan], devices = Array.from(state.hardware, function (id) { return rules.hardware[id]; }), m = catalogue.modes[state.mode];
     const hardwareNames = devices.map(function (device) { return device.label; }).join(" + ");
     const chosenRoles = Array.from(state.hardware).filter(function (id) { return id !== "none"; }).map(function (id) { return rules.hardware[id].label + ": " + (state.roles[id] ? rules.roles[state.roles[id]].label : "Rolle offen"); });
@@ -200,15 +235,16 @@
       p.name + " · " + p.tagline,
       hardwareNames + " · Voraussetzungen",
       m.name + " · " + m.slogan,
-      state.integrations.size + " App(s) / Plugin(s) gewählt"
+      state.purposes.size + " Zweck(e) · " + state.integrations.size + " App(s) / Connector(en) gewählt"
     ];
     const descriptions = [
       p.intro + " Grenzen: " + p.limits + " " + p.note,
       devices.map(function (device) { return device.label + ": " + device.summary + " Serverbetrieb: " + device.server + " Netzwerk: " + device.network + " Lokales LLM: " + device.llm; }).join(" ") + (chosenRoles.length ? " Rollen: " + chosenRoles.join("; ") : ""),
       catalogue.combinations[state.mode][state.plan].message + " " + m.introduction,
       state.integrations.size
-        ? Array.from(state.integrations).map(function (id) { return catalogue.integrations[id].name; }).join(", ") + ". Jede Verbindung benötigt eigene Freigaben und einen erfolgreichen Test."
-        : "Apps/Plugins sind optional. Du kannst auch ohne zusätzliche Verbindungen fortfahren."
+        ? Array.from(state.integrations).map(function (id) { return catalogue.integrations[id].name; }).join(", ") + ". " + catalogue.integrationCatalogue.note
+        : state.purposes.size ? "Für die gewählten Aufgaben sind Fachrollen vorbereitet. Apps sind optional; die Auswahl bleibt unverbindlich."
+          : "Apps/Plugins sind optional. Wähle einen Zweck für passende Vorschläge."
     ];
     if (step < 4) {
       $("wizard-context").hidden = false;
@@ -262,7 +298,7 @@
     const url = URL.createObjectURL(blob);
     const a = element("a");
     a.href = url;
-    a.download = type === "json" ? "axiom-setup-v1.2.json" : "axiom-setup-v1.2.md";
+    a.download = type === "json" ? "axiom-setup-v1.3.json" : "axiom-setup-v1.3.md";
     document.body.append(a);
     a.click();
     a.remove();
@@ -291,7 +327,8 @@
             !(/^(assets\/axiom\/|axiom-orchestrator\.md$)/.test(item.source)) ||
             !/^[A-Za-z0-9._/-]+$/.test(item.source) ||
             !/^[A-Za-z0-9._/-]+$/.test(item.target) ||
-            item.source.split("/").includes("..") || item.target.split("/").includes("..") ||
+            item.source.split("/").some(part => !part || part === "." || part === "..") ||
+             item.target.split("/").some(part => !part || part === "." || part === "..") ||
             sources.has(item.source) || targets.has(item.target)) {
           throw new Error("Ungültiger oder doppelter Dateipfad im Paket-Manifest.");
         }
@@ -313,7 +350,7 @@
       const blob = new Blob([archive], {type:"application/zip"});
       const url = URL.createObjectURL(blob);
       const anchor = element("a");
-      anchor.href = url; anchor.download = "axiom-setup-v1.2.zip";
+      anchor.href = url; anchor.download = "axiom-setup-v1.3.zip";
       document.body.append(anchor); anchor.click(); anchor.remove();
       setTimeout(function () {URL.revokeObjectURL(url);}, 1000);
       status.textContent = "ZIP erstellt: 30 Skills, Agentendateien, Referenzen und deine Setup-Konfiguration.";

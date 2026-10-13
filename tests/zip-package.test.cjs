@@ -55,6 +55,8 @@ test("Manifest contains each file and every original skill exactly once", () => 
     assert.match(read("assets/axiom/" + target), /^---\nname: axiom-/);
   }
   assert.equal(catalogue.skills.length, 30);
+  assert.equal(catalogue.agents.length,12);
+  for(const agent of catalogue.agents) assert.ok(targets.includes(agent.definition === "/axiom-orchestrator.md" ? "axiom-orchestrator.md" : "agents/" + agent.definition.split("/").at(-1)), agent.id);
   assert.ok(targets.some(name => name.startsWith("skills/axiom-orchestrator/references/docs/")));
   assert.ok(targets.includes("agents/agent-code.md"));
   assert.ok(targets.includes("axiom-orchestrator.md"));
@@ -72,6 +74,8 @@ test("Real ZIP includes 30 original skills, agent markdown, setup and supporting
   assert.match(data.get("setup.md"),/Ausgewählte Axiom-Rollen/);
   assert.match(data.get("README.md"),/alle 30 Axiom-Skills/);
   assert.equal(JSON.parse(data.get("package-files.json")).skillCount,30);
+  assert.equal(JSON.parse(data.get("package-files.json")).agentCount,12);
+  assert.equal(JSON.parse(data.get("setup.json")).installation.chatgptZipImportSupported,false);
 });
 
 test("ZIP rejects incomplete data and path traversal instead of creating partial archive", () => {
@@ -79,4 +83,11 @@ test("ZIP rejects incomplete data and path traversal instead of creating partial
   const invalid = assets();
   invalid.push({target:"../breakout.md",content:"bad"});
   assert.throws(() => context.window.AxiomWizardExport.zip(guide,invalid),/ZIP-Pfad/);
+});
+
+test("ZIP refuses missing agent definitions and duplicated targets",()=>{
+  assert.throws(()=>context.window.AxiomWizardExport.zip(guide,assets().filter(item=>item.target!=="agents/agent-mail.md")),/Erforderliche Datei fehlt/);
+  const duplicated=assets();
+  duplicated.push({...duplicated[0]});
+  assert.throws(()=>context.window.AxiomWizardExport.zip(guide,duplicated),/Doppelte ZIP-Pfade/);
 });

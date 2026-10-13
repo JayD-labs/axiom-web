@@ -205,3 +205,33 @@
 .wizard-role-error{border-left:3px solid var(--color-warning);padding:10px 13px;margin-top:14px;background:var(--color-surface-soft);font-weight:700}
 @media(max-width:760px){.wizard-role-grid{grid-template-columns:1fr}}
 @media(max-width:460px){.wizard-role-card{padding:14px}}
+
+/* V1.3: intent-based integration suggestions without changing JD design tokens. */
+.wizard-purposes { margin-bottom: 1rem; }
+.wizard-choice.is-recommended {
+  border-color: var(--accent, #4cae67);
+  box-shadow: inset 0 0 0 1px var(--accent, #4cae67);
+}
+.wizard-integration-tag {
+  display: block;
+  margin-top: .4rem;
+  font-size: .83rem;
+  opacity: .86;
+  overflow-wrap: anywhere;
+}
+.wizard-recommendation {
+  display: inline-block;
+  margin-top: .35rem;
+  font-weight: 700;
+  color: var(--accent, #6bcf79);
+}
+.wizard-choice input:focus-visible + .wizard-choice-copy,
+.wizard-role-card select:focus-visible {
+  outline: 2px solid currentColor;
+  outline-offset: 4px;
+}
+#wizard-plugin-hint { min-height: 1.5em; }
+@media(max-width:760px) {
+  .wizard-purposes { grid-template-columns: 1fr; }
+  .wizard-integration-tag { font-size: .8rem; }
+}

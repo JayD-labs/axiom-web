@@ -1,4 +1,4 @@
-# Axiom 🐸 – Orchestrator V1.2
+# Axiom 🐸 – Orchestrator V1.3
 
 ## Auftrag und Wahrheitsregel
 

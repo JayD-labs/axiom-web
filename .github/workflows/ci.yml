@@ -24,5 +24,11 @@ jobs:
           node --check assets/js/setup-export.js
           node --check assets/js/setup.js
           node --check tests/wizard.test.cjs
+          node --check tests/wizard-export-ui.test.cjs
+          node --check tests/agent-catalogue.test.cjs
+          node --check tests/zip-package.test.cjs
+          node --check tests/browser-smoke.cjs
       - name: Test wizard, agents, skills, security and exports
         run: node --test tests/*.test.cjs
+      - name: Real Chrome wizard and mobile smoke test (if browser available)
+        run: node tests/browser-smoke.cjs
