@@ -43,7 +43,7 @@ test("Every agent has a valid unique ID, definition and declared skills", () => 
 
 test("Browser selection selects valid roles and skills deterministically", () => {
   const selected = resolver.resolve({mode:"hybrid", integrations:["github", "remote-desktop"]});
-  assert.deepEqual(Array.from(selected.agentIds), ["orchestrator", "infrastructure", "code", "security"]);
+  assert.deepEqual(Array.from(selected.agentIds), ["orchestrator", "onboarding", "infrastructure", "code", "security"]);
   assert.ok(selected.skillIds.includes("axiom-code"));
   assert.ok(selected.skillIds.includes("axiom-security"));
   for (const agent of selected.agents) {
@@ -52,6 +52,8 @@ test("Browser selection selects valid roles and skills deterministically", () =>
   }
   assert.deepEqual(Object.keys(resolver.profiles).sort(), catalogue.agents.map(a=>a.id).sort());
   const all=resolver.resolve({mode:"chatgpt", integrations:[], purposes:["code","mail","calendar","server","files","finance","learning","design"]});
+  assert.deepEqual(new Set(all.agentIds).size,12);
+  assert.ok(all.agentIds.includes("onboarding"));
   assert.ok(all.agentIds.includes("health"));
   assert.ok(all.agentIds.includes("finance"));
   assert.ok(all.agentIds.includes("brain"));
