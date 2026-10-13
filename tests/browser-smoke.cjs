@@ -19,7 +19,7 @@ const smokePage = `<!DOCTYPE html><html lang="de"><meta charset="utf-8"><title>A
       const doc=frame.contentDocument, app=frame.contentWindow;
       const favicon=doc.querySelector('link[rel="icon"]');
       check(favicon && favicon.href.endsWith('/assets/favicon.svg'),'Axiom favicon missing');
-      check(Object.keys(app.AxiomGuide.plans).join(',')==='free,plus,pro','plan scope');
+      check(Object.keys(app.AxiomGuide.plans).join(',')==='free,plus,pro,selfhosted','plan scope');
       const choice=(group,value)=>{
         const input=doc.querySelector('#wizard-'+group+' input[value="'+value+'"]');
         check(!!input,'missing '+group+'/'+value);input.click();
@@ -54,7 +54,10 @@ const smokePage = `<!DOCTYPE html><html lang="de"><meta charset="utf-8"><title>A
       check(scroll<=width+2,'mobile horizontal overflow '+scroll+'>'+width);
       const back=doc.getElementById('wizard-back');back.focus();
       check(doc.activeElement===back,'keyboard focus');
-      result.textContent='AXIOM_BROWSER_SMOKE_'+'PASS: real Chrome wizard, mobile layout and focus';
+      choice('plans','selfhosted');
+      check(doc.querySelector('#wizard-modes input[value="bridge"]').checked,'selfhosted selects bridge');
+      check(doc.getElementById('wizard-result-status').textContent.includes('Unter Voraussetzungen'),'selfhosted remains conditional');
+      result.textContent='AXIOM_BROWSER_SMOKE_'+'PASS: real Chrome wizard, mobile layout, focus, and Self-Hosted preview';
     }catch(error){result.textContent='AXIOM_BROWSER_SMOKE_'+'FAIL: '+error.message;}
   },{once:true});
 })();
