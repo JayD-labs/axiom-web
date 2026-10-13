@@ -1,0 +1,18 @@
+<svg xmlns="http://www.w3.org/2000/svg" viewBox="0 0 128 128" role="img" aria-labelledby="t">
+<title id="t">Axiom – Frosch</title>
+<defs><linearGradient id="b" x2="1" y2="1"><stop stop-color="#1c2821"/><stop offset="1" stop-color="#101712"/></linearGradient><linearGradient id="g" x2=".8" y2="1"><stop stop-color="#88df61"/><stop offset="1" stop-color="#328e42"/></linearGradient></defs>
+<rect width="128" height="128" rx="27" fill="url(#b)"/>
+<circle cx="37" cy="40" r="21" fill="url(#g)" stroke="#0a311d" stroke-width="5"/>
+<circle cx="91" cy="40" r="21" fill="url(#g)" stroke="#0a311d" stroke-width="5"/>
+<path d="M18 64c0-23 19-42 46-42s46 19 46 42v10c0 25-22 41-46 41S18 99 18 74Z" fill="url(#g)" stroke="#0a311d" stroke-width="5"/>
+<ellipse cx="40" cy="43" rx="10.5" ry="13.5" fill="#fffdf0"/>
+<ellipse cx="88" cy="43" rx="10.5" ry="13.5" fill="#fffdf0"/>
+<ellipse cx="43" cy="46" rx="5" ry="8" fill="#132b1b"/>
+<ellipse cx="85" cy="46" rx="5" ry="8" fill="#132b1b"/>
+<circle cx="44" cy="42" r="2.2" fill="#ffffff"/>
+<circle cx="86" cy="42" r="2.2" fill="#ffffff"/>
+<circle cx="49" cy="78" r="3" fill="#246d35"/>
+<circle cx="79" cy="78" r="3" fill="#246d35"/>
+<path d="M42 89q22 20 44 0" fill="none" stroke="#183621" stroke-width="6" stroke-linecap="round"/>
+<path d="M50 96q14 8 28 0" fill="none" stroke="#a255be" stroke-width="3" stroke-linecap="round"/>
+</svg>

@@ -22,7 +22,7 @@ const cfg=(overrides={})=>({plan:"plus",hardware:["none"],roles:{},mode:"chatgpt
 function guide(config){return rules.buildGuide(config,catalogue)}
 function subsets(items){return Array.from({length:1<<items.length},(_,mask)=>items.filter((_,i)=>(mask&(1<<i))!==0));}
 test("Catalogue and 6 role definitions are available without dependencies",()=>{
-  assert.equal(plans.length,6);
+  assert.deepEqual(plans,["free","plus","pro"]);
   assert.equal(modes.length,3);
   assert.equal(roleIds.length,6);
   for(const role of roleIds) {
@@ -84,12 +84,10 @@ test("Plans, modes, roles and integration combinations produce deterministic res
     else if(result.compatibility.conditions.length) assert.equal(result.compatibility.status,"conditional");
     checked++;
   }
-  assert.equal(checked,64*6*3*(2**integrations.length));
+  assert.equal(checked,64*3*3*(2**integrations.length));
 });
 test("Known unsupported configurations provide actionable causes and alternatives",()=>{
-  const noChatGPT=guide(cfg({plan:"none",mode:"chatgpt"}));
-  assert.equal(noChatGPT.compatibility.status,"blocked");
-  assert.match(noChatGPT.compatibility.blockers.join(" "),/anderen KI-Client/);
+  for(const deferred of ["business","enterprise","none","edu"]) assert.throws(()=>guide(cfg({plan:deferred})),/Unbekannter ChatGPT-Plan/);
   const hybridNoHardware=guide(cfg({mode:"hybrid"}));
   assert.equal(hybridNoHardware.compatibility.status,"blocked");
   const hybridNoRemote=guide(cfg({mode:"hybrid",hardware:["mac"],roles:{mac:"admin"}}));
@@ -155,6 +153,8 @@ test("HTML structure, script load order, focus hooks, responsive rules and priva
   assert.match(ui,/wizard-next/);
   assert.match(ui,/axiom-setup-v1\.3\.json/);
   assert.match(html,/connect-src 'self'/);
+  assert.match(html,/rel="icon" type="image\/svg\+xml" href="\.\/assets\/favicon\.svg"/);
+  assert.match(source("assets/favicon.svg"),/viewBox="0 0 128 128"/);
   // ZIP assets are loaded on demand from our own static origin; no outbound
   // requests, background upload, storage or external API are permitted.
   assert.match(ui,/fetch\("\.\/assets\/axiom\/export-manifest\.json"/);
@@ -197,4 +197,11 @@ test("Purpose and integration input validation denies unknown and duplicate sele
   const selected=guide(cfg({purposes:["files"],integrations:["files"]}));
   assert.ok(selected.agentPackage.agentIds.includes("brain"));
   assert.ok(selected.agentPackage.agentIds.includes("security"));
+});
+
+test("Public plan catalogue is Free, Plus and Pro only",()=> {
+  assert.deepEqual(Object.keys(catalogue.plans),["free","plus","pro"]);
+  assert.equal(catalogue.supportedPlans.length,3);
+  for(const mode of modes) assert.deepEqual(Object.keys(catalogue.combinations[mode]),["free","plus","pro"]);
+  for(const unsupported of ["business","enterprise","edu","none"]) assert.equal(Object.hasOwn(catalogue.plans,unsupported),false);
 });

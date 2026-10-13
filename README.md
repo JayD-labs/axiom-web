@@ -48,8 +48,7 @@ Jeweils **eine** Option:
 | ChatGPT Free | Einstieg über tatsächlich angebotene Apps/Plugins, unter Berücksichtigung von Konto-Limits |
 | ChatGPT Plus | ChatGPT-Apps und ggf. unterstützte Remote-Connectoren, soweit freigegeben |
 | ChatGPT Pro | Zusätzliche eigene MCP-App-Möglichkeiten im verfügbaren Developer Mode; die Regeln unterscheiden Lese- und Schreibrechte |
-| ChatGPT Business | Workspace-kontrollierte Integrationen, Freigaben und ggf. eigene MCP-Apps |
-| ChatGPT Enterprise / Edu | Zugriffsrollen, Organisationsrichtlinien und administrative Freigaben |
+
 | Ohne ChatGPT | Eigener MCP-fähiger KI-Client mit lokalem oder externem Modell |
 
 **Wichtig:** Der konkrete Funktionsumfang hängt vom tatsächlich angebotenen Konto-/Workspace-Zugang ab. Ein Abonnement allein garantiert keine bestimmte App oder Verbindung.
@@ -139,7 +138,7 @@ Beispiele der implementierten Logik:
 - **Plus + Raspberry Pi + Hybrid:** Bedingt möglich, wenn ein geeigneter Remote-Connector im Konto verfügbar und autorisiert ist.
 - **Pro + eigener MCP-Server:** Developer Mode, erreichbarer Remote-MCP-Zugang und die derzeit vorgesehenen Grenzen für Schreibaktionen beachten.
 - **Free/Plus + eigener Remote-MCP-Server über ChatGPT Developer Mode:** Nicht direkt als allgemeine Möglichkeit zusagen; Alternativen prüfen.
-- **Business/Enterprise/Edu + eigener MCP-Server:** Workspace-/Admin-Freigaben und gegebenenfalls Rollenrechte erforderlich.
+- **Business/Enterprise/Edu sowie eigener KI-Client:** im Wizard vorerst nicht auswählbar. Diese Varianten können später mit separater Prüfung ergänzt werden.
 - **Ohne ChatGPT + eigener MCP-Server:** Anderen MCP-fähigen Client und passendes Modell einrichten; Axiom Independent ist noch keine vollständige Distribution.
 - **Hybrid + keine eigene Hardware:** Blockiert, da ein Zielgerät fehlt.
 - **Hybrid ohne Remote-Ziel-Rolle:** Blockiert, Rolle zuweisen.
@@ -250,6 +249,31 @@ Es gibt **keine öffentliche, authentifizierte Plugin-Verzeichnis-API für diese
 
 **Datenschutz:** Die Wizard-Auswahl verbleibt im flüchtigen Browserzustand. Erst ein vom Nutzer geklickter ZIP-Export lädt versionierte Dateien von der *gleichen Herkunft* nach. Keine Datenübertragung an einen Drittanbieter durch den Wizard. GitHub Pages selbst verarbeitet technische Abrufdaten; gewählte spätere Connectoren können eigene Datenflüsse verursachen. Keine Tokens, Secrets, OAuth-Verbindungen oder Datenquellen im Export.
 
+## Browser-Favicon und Einsteiger-Scope
+
+Das eigenständige, dunkelgrüne **Frosch-Favicon** liegt unter [`assets/favicon.svg`](assets/favicon.svg) und ist im `<head>` von `index.html` als SVG-Favicon registriert. Der Browser braucht keine externe Icon-Bibliothek und keinen CDN-Abruf. Falls vorher die graue Weltkugel im Browser-Tab stand, die Seite nach dem Release einmal hart neu laden bzw. den Favicon-Cache leeren.
+
+Der Wizard bietet zum Start **nur Free, Plus und Pro** als ChatGPT-Pläne an. Business, Enterprise, Edu und der alternative KI-Client ohne ChatGPT bleiben für eine spätere Ausbaustufe zurückgestellt. Die drei Betriebsarten ChatGPT, Hybrid und eigener MCP-Server bleiben grundsätzlich erhalten, wobei Free/Plus bei eigener MCP-Anbindung explizite Kompatibilitätsgrenzen anzeigen.
+
+## Vollständiger Repository-Audit (lokal und optional live)
+
+Das vollständige Audit unter [`scripts/full-audit.sh`](scripts/full-audit.sh) startet **ohne zusätzliche Installation**:
+- Syntaxchecks für JavaScript/CJS und Python-Skripte.
+- Node-Tests für Wizard, Hardware, Pläne, Rollen, Skills, ZIP, Export, fehlerhafte und bösartige Eingaben.
+- Statische Prüfung von HTML-Links, Ankern, CSP, SVG-Favicon, ZIP-Manifestpfaden, Assets, 30 Skills, 12 Rollen, dynamischen JS-Sinks und häufigen Secret-Signaturen.
+- Falls Chrome/Chromium vorhanden: echter Headless-Browser-Smoke inklusive Favicon, Fünf-Schritt-Navigation, 375px-Layout und Tastaturfokus.
+- Falls installiert: ShellCheck und Gitleaks als zusätzliche Scanner.
+- Nur mit `--live`: ein paar **passive** HTTPS-Anfragen ausschließlich an die Axiom-Website und Abgleich des ausgerollten Favicons.
+- Nur mit `--zap`: optionale **passive** OWASP-ZAP-Baseline, **ausschließlich wenn das Docker-Image bereits lokal vorliegt**. Kein Docker-Pull, kein aggressiver Scan, keine automatische Installation.
+
+```bash
+git clone --depth 1 https://github.com/JayD-labs/axiom-web.git
+cd axiom-web
+bash scripts/full-audit.sh --live
+```
+
+Ergebnis: PASS / FAIL / SKIP pro Prüfung sowie detaillierte Logs im ausgegebenen temporären Verzeichnis. Ein übersprungener Scanner ist ausdrücklich **nicht** als bestanden zu interpretieren. Dies ersetzt **kein** professionelles Pentest-Mandat und führt keine Angriffstests gegen GitHub, ChatGPT oder andere Drittanbieter durch.
+
 ## Projektarchitektur
 
 Axiom Web ist eine **statische Website** ohne erforderliches Backend, Nutzerdatenbank oder Build-Tool.
@@ -354,7 +378,7 @@ Der Setup Wizard folgt einem **Local-first-Prinzip**:
 - Lokaler Export nur bei aktivem Klick.
 - Zugangsdaten, Tokens oder Secrets niemals in öffentliches Git oder JSON/Markdown-Exporte eintragen.
 
-Die HTML-Seite setzt eine restriktive **Content Security Policy**, darunter `connect-src 'none'`.
+Die HTML-Seite setzt eine restriktive **Content Security Policy**, darunter `connect-src 'self'` für beim ZIP-Klick angeforderte gleichherkunftige Dateien.
 
 **Transparenz:** Der Hostinganbieter **GitHub Pages** verarbeitet beim Seitenaufruf technisch notwendige Verbindungsdaten. Wer freiwillig ChatGPT, GitHub, Microsoft oder andere externe Apps verwendet, unterliegt zusätzlich deren Bedingungen. Die Website überträgt die Wizard-Auswahl nicht automatisch an diese Dienste.
 
@@ -376,8 +400,8 @@ node --check tests/wizard.test.cjs
 node --test tests/*.test.cjs
 ```
 
-Die Tests prüfen alle 64 gültigen Hardwareauswahlen (inklusive `none`), jede der sechs Rollen für alle sechs konkreten Geräte, fehlende Rollen, ungültige Eingaben, nicht unterstützte Konfigurationen, JSON/Markdown, Sicherheitsbedingungen und statische HTML/CSS-/Fokusanbindungen. Zusätzlich prüfen sie das vollständige 30-Skill-Inventar, eindeutige IDs, Agent-zu-Skill-Zuordnungen, fehlende Agentendateien, ungültige Rollenauflösung und die secret-freie, ausdrücklich nicht importierbare Paketgrundlage.
-**Matrix:** 36.864 Kombinationen = 64 Hardwareauswahlen × 6 Pläne × 3 Betriebsarten × 32 Integrationsauswahlen. Verwendungszwecke und Lebenszykluszustände werden separat getestet.
+Die Tests prüfen die drei unterstützten ChatGPT-Pläne, alle 64 gültigen Hardwareauswahlen (inklusive `none`), jede der sechs Rollen für alle sechs konkreten Geräte, fehlende Rollen, ungültige Eingaben, nicht unterstützte Konfigurationen, JSON/Markdown, Sicherheitsbedingungen und statische HTML/CSS-/Fokusanbindungen. Zusätzlich prüfen sie das vollständige 30-Skill-Inventar, eindeutige IDs, Agent-zu-Skill-Zuordnungen, fehlende Agentendateien, ungültige Rollenauflösung und die secret-freie, ausdrücklich nicht importierbare Paketgrundlage.
+**Matrix:** 18.432 Kombinationen = 64 Hardwareauswahlen × 3 Pläne × 3 Betriebsarten × 32 Integrationsauswahlen. Verwendungszwecke und Lebenszykluszustände werden separat getestet.
 
 **Regressionstest für die Exporte:** `tests/wizard-export-ui.test.cjs` simuliert DOM-Eingaben, Zurück-/Weiter-Navigation und die echten JSON-/Markdown-Download-Handler für Plus + Raspberry Pi + macOS + Hybrid + GitHub. Sichtbare Zusammenfassung und Status werden mit beiden exportierten Dateien verglichen. Zusätzlich wird die exklusive Hardwareauswahl `none` geprüft. Der Test nutzt eine kleine DOM-Simulation, **keinen echten Browser**.
 
@@ -387,7 +411,7 @@ Die Tests prüfen alle 64 gültigen Hardwareauswahlen (inklusive `none`), jede d
 
 ### Browser- und Accessibility-Prüfung
 
-Die Node-Tests sind keine ausgeführten Browser-End-to-End-Tests. **Echte Browserprüfungen auf Desktop, Tablet und Smartphone sowie visuelle Kontrast-/Layoutmessungen stehen noch aus.**
+Der Headless-Chromium-Smoke wurde in CI ausgeführt; er prüft Navigation, 375px-Layout, Tastaturfokus und Favicon. **Weitere echte Browser-/Screenreader- und Kontrastmessungen auf verschiedenen Geräten stehen noch aus.**
 
 - [ ] Desktop (ca. 1440px), Tablet (768px) und Smartphone (375px) ohne horizontales Überlaufen.
 - [ ] Tab/Shift+Tab erreicht Karten, Rollenauswahl, Navigation und Exportbuttons.

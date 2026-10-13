@@ -28,7 +28,11 @@ jobs:
           node --check tests/agent-catalogue.test.cjs
           node --check tests/zip-package.test.cjs
           node --check tests/browser-smoke.cjs
+          node --check tests/security-audit.test.cjs
+          bash -n scripts/full-audit.sh
       - name: Test wizard, agents, skills, security and exports
         run: node --test tests/*.test.cjs
       - name: Real Chrome wizard and mobile smoke test (if browser available)
         run: node tests/browser-smoke.cjs
+      - name: Full local-first audit including favicon, links and static security
+        run: bash scripts/full-audit.sh

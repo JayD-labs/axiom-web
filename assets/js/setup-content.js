@@ -1,6 +1,8 @@
 /* Axiom Web – publicly inspectable local-only content catalogue.
    No secrets, personal data or connection state belong in this file. */
 window.AxiomGuide = Object.freeze({
+  supportedPlans: ["free", "plus", "pro"],
+  deferredPlans: ["business", "enterprise", "edu", "independent"],
   plans: {
     free: {
       name: "ChatGPT Free", label: "Basic", tagline: "Ohne Zusatzhardware einsteigen",
@@ -25,30 +27,6 @@ window.AxiomGuide = Object.freeze({
       limits: "Pro unterstützt bei eigenen MCP-Apps im Entwicklermodus derzeit nur Lesen/Abrufen, nicht vollständige Schreib- und Änderungsaktionen.",
       example: "„Axiom, zeig mir die vom MCP-Server bereitgestellten Statusinformationen.“",
       note: "Ein App-Connector mit eigenen Berechtigungen und eine Pro-MCP-App sind technisch unterschiedliche Integrationswege."
-    },
-    business: {
-      name: "ChatGPT Business", label: "Workspace", tagline: "MCP im verwalteten Team",
-      intro: "Eigene MCP-Apps einschließlich erweiterter Aktionen werden in Business als Beta über die Workspace-Verwaltung freigegeben.",
-      needs: "Business-Workspace und Admin-/Owner-Freigabe; eigene MCP-App-Veröffentlichung erfordert passende Rechte.",
-      limits: "In Business sind die Admins/Owner für Developer Mode und das Veröffentlichen eigener MCP-Apps zuständig.",
-      example: "„Axiom, zeige die für meinen Workspace erlaubten Projektinformationen.“",
-      note: "Plane zuerst mit dem Workspace-Administrator, welche Datenquellen und Aktionen erlaubt sein sollen."
-    },
-    enterprise: {
-      name: "ChatGPT Enterprise / Edu", label: "Organization", tagline: "Kontrollierte MCP-Zugriffe mit Rollen",
-      intro: "Organisationen können eigene MCP-Apps testen und freigeben. In Enterprise/Edu ermöglichen RBAC-Rollen eine gezielte Vergabe von Developer- und App-Zugriffen.",
-      needs: "Enterprise-/Edu-Workspace, passende Rolle und ausdrückliche Berechtigung durch die Verwaltung.",
-      limits: "Zugriff, Ausführung und Veröffentlichung können durch Richtlinien, RBAC und Adminfreigaben beschränkt sein.",
-      example: "„Axiom, fasse die freigegebenen Informationen aus meinen Organisationstools zusammen.“",
-      note: "Vor einer Integration sind Datenrichtlinien, Berechtigungen und Freigabeprozess mit dem Admin-Team abzustimmen."
-    },
-    none: {
-      name: "Ohne ChatGPT", label: "Independent", tagline: "Eigener KI-Client statt ChatGPT",
-      intro: "Du verwendest einen MCP-fähigen KI-Client mit lokalem oder anderweitig angebundenem Modell. Die KI-Software gehört dabei nicht automatisch zu Axiom.",
-      needs: "MCP-fähiger KI-Client, kompatibles KI-Modell und – bei lokalem Betrieb – ausreichend Hardware.",
-      limits: "ChatGPT-Apps und ChatGPT-Plugin-Rechte stehen einem anderen KI-Client nicht automatisch zur Verfügung.",
-      example: "„Prüfe über meinen eigenen MCP-Client den Zustand meines Servers.“",
-      note: "Axiom Independent ist eine Entwicklungsrichtung und derzeit keine fertig ausgelieferte Standalone-KI."
     }
   },
   modes: {
@@ -132,27 +110,6 @@ window.AxiomGuide = Object.freeze({
         addRequirements: ["Achte darauf, ob eine gewünschte Funktion über eine normale App oder nur über eine eigene MCP-App möglich ist."],
         addSteps: ["Entscheide pro Aufgabe, ob ein bestehender Plugin-Connector ausreicht; nutze erst dann bei Bedarf Developer Mode."],
         recommendation: "Pro lohnt sich hier nur für die zusätzlichen Funktionen, die du wirklich brauchst."
-      },
-      business: {
-        level: "Workspace-kontrolliert", compatible: true,
-        message: "Business + ChatGPT-Apps: Mitglieder verwenden nur die Apps, die der Workspace zulässt. Axiom kann solche Berechtigungen nicht umgehen.",
-        addRequirements: ["Genehmigung der verwendeten Apps durch den Workspace, sofern erforderlich."],
-        addSteps: ["Mit dem Workspace-Admin klären, welche Apps freigegeben sind; danach eine erlaubte Leseabfrage testen."],
-        recommendation: "Für Teams zuerst Berechtigungen und Datentrennung festlegen."
-      },
-      enterprise: {
-        level: "Rollenbasiert", compatible: true,
-        message: "Enterprise/Edu + ChatGPT-Apps: Regeln der Organisation und RBAC-Berechtigungen bestimmen, welche Apps verfügbar sind.",
-        addRequirements: ["Die passende organisatorische Rolle und eine freigegebene Datenquelle."],
-        addSteps: ["Die erlaubten Apps und Zugriffsrollen mit dem Admin-Team prüfen und in einem Test mit nicht sensiblen Daten verifizieren."],
-        recommendation: "Keine Freigaben annehmen, die dir nicht zugewiesen wurden."
-      },
-      none: {
-        level: "Nicht passend", compatible: false,
-        message: "Dieser Modus setzt ChatGPT voraus. Ohne ChatGPT kannst du dessen Apps nicht einfach verwenden.",
-        addRequirements: ["Für eine ChatGPT-unabhängige Lösung wird ein eigener MCP-fähiger KI-Client benötigt."],
-        addSteps: ["Wähle stattdessen „Eigener MCP-Server“ und prüfe die Anforderungen deines KI-Clients."],
-        recommendation: "Wechsle zu einem eigenen Client; die Axiom-Standalone-Version ist noch in Planung."
       }
     },
     hybrid: {
@@ -176,27 +133,6 @@ window.AxiomGuide = Object.freeze({
         addRequirements: ["Ein freigegebener Remote-Connector und sichere Remote-Berechtigungen."],
         addSteps: ["Verwende den vorhandenen Remote-Connector oder wähle bewusst den separaten MCP-Modus, falls du eine eigene MCP-App entwickeln willst."],
         recommendation: "Hybrid ist nicht automatisch gleichbedeutend mit eigenem MCP-Server."
-      },
-      business: {
-        level: "Admin-Abhängigkeit", compatible: true,
-        message: "Business + Hybrid: ein freigegebener Remote-Connector kann auf eigene Team-Hardware zugreifen. Solche Zugriffe sollten administrativ geprüft werden.",
-        addRequirements: ["Freigabe der App durch den Workspace und sichere Zugriffstrennung auf der Zielhardware."],
-        addSteps: ["Zielsystem und Berechtigungen mit Admins abstimmen, anschließend Read-only-Zugriff testen."],
-        recommendation: "Teamdaten niemals über einen privaten, unverwalteten Server routen."
-      },
-      enterprise: {
-        level: "Kontrollierte Infrastruktur", compatible: true,
-        message: "Enterprise/Edu + Hybrid: eine organisationsseitig genehmigte Remote-Anbindung kann eigene Infrastruktur einbeziehen; Rollen und Richtlinien bleiben verbindlich.",
-        addRequirements: ["Genehmigter Connector, Netzwerkrichtlinien und RBAC-Zugriff auf die Datenquelle."],
-        addSteps: ["Datenschutz, Logs und Connector-Rechte vor dem Zugriff mit dem Admin-Team abstimmen."],
-        recommendation: "Testzugriffe auf einen isolierten, nicht produktiven Bereich begrenzen."
-      },
-      none: {
-        level: "Anderer Modus nötig", compatible: false,
-        message: "Der hier definierte Hybrid-Modus kombiniert ChatGPT mit eigener Hardware. Ohne ChatGPT wähle einen eigenen KI-Client und passenden MCP-Weg.",
-        addRequirements: ["Für eine andere KI-Oberfläche ist eine getrennte Client- und Tool-Anbindung nötig."],
-        addSteps: ["Wähle den MCP-Modus und prüfe, welcher Client und welches Modell für dein Gerät geeignet sind."],
-        recommendation: "Keinen ChatGPT-Connector ohne ChatGPT voraussetzen."
       }
     },
     bridge: {
@@ -220,27 +156,6 @@ window.AxiomGuide = Object.freeze({
         addRequirements: ["Aktivierter ChatGPT Developer Mode und ein von ChatGPT erreichbarer Remote-MCP-Endpunkt oder Secure MCP Tunnel."],
         addSteps: ["Developer Mode aktivieren, eigene App mit Remote-MCP-Endpunkt konfigurieren und ein reines Lesewerkzeug testen."],
         recommendation: "Einen Schreibzugriff nicht als gegeben einplanen, auch wenn dein MCP-Server solche Tools bereitstellt."
-      },
-      business: {
-        level: "MCP Beta mit Adminfreigabe", compatible: true,
-        message: "Business + eigene MCP-App: erweiterte Aktionen einschließlich Schreiben werden im Beta-Rahmen unterstützt. Admins/Owner verwalten Developer Mode und Veröffentlichung.",
-        addRequirements: ["Business-Admin- oder Owner-Zugriff für Developer Mode und eigene App-Freigaben."],
-        addSteps: ["App durch Admin/Owner privat testen, Sicherheitsprüfung durchführen und erst dann im Workspace veröffentlichen."],
-        recommendation: "Schreibaktionen als gesonderte Risikoklasse behandeln und einzeln autorisieren."
-      },
-      enterprise: {
-        level: "MCP Beta mit RBAC", compatible: true,
-        message: "Enterprise/Edu + eigene MCP-App: erweiterte Aktionen werden in Beta angeboten. Berechtigte Entwickler können testen; Admins/Owner veröffentlichen und definieren RBAC-Zugriff.",
-        addRequirements: ["Developer-Berechtigung per RBAC und passende Adminfreigaben für die Tool-Aktionen."],
-        addSteps: ["Freigabeprozess mit Admins festlegen, MCP-App privat testen, Tool-Liste prüfen und Rollen vor Veröffentlichung zuweisen."],
-        recommendation: "Neue oder geänderte Werkzeuge nicht ungeprüft auf bestehende Berechtigungen übernehmen."
-      },
-      none: {
-        level: "Eigener KI-Stack", compatible: true,
-        message: "Ohne ChatGPT brauchst du einen MCP-fähigen KI-Client. Das Modell kann auf deinem eigenen Rechner laufen oder über einen selbst gewählten Dienst erreichbar sein. Lokale Modelle benötigen ausreichend Leistung.",
-        addRequirements: ["MCP-fähige Client-Software plus kompatibles Modell; GPU/RAM-Anforderungen hängen vom Modell ab."],
-        addSteps: ["Modell/Client auswählen, MCP-Verbindung lokal prüfen, nur notwendige Tools freigeben und mit Read-only testen."],
-        recommendation: "Ein MCP-Server ersetzt das Sprachmodell nicht. Eine eigenständige Axiom-KI ist ein späteres Entwicklungsziel."
       }
     }
   },
